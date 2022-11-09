@@ -5,6 +5,11 @@ const Color = require('color')
 module.exports = {
     purge: ['./storage/framework/views/*.php', './resources/views/**/*.blade.php'],
 
+    future: {
+        removeDeprecatedGapUtilities: true,
+        purgeLayersByDefault: true,
+    },
+
     theme: {
         themeVariants: ['dark'],
         customForms: (theme) => ({
