@@ -1,5 +1,8 @@
 <?php
 
+use App\Http\Controllers\ConsignmentInstruction;
+use App\Http\Controllers\ContainerController;
+use App\Http\Controllers\ShippingInstructionController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -31,4 +34,19 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function () {
     Route::view('modals', 'modals')->name('modals');
     Route::view('tables', 'tables')->name('tables');
     Route::view('calendar', 'calendar')->name('calendar');
+
+    /**
+     * Route Shipping Instruction
+     */
+    Route::resource('shipping-instruction', ShippingInstructionController::class);
+
+    /**
+     * Route Consigment Instruction
+     */
+    Route::resource('consigment-instruction', ConsignmentInstruction::class);
+
+    /**
+     * Route Container
+     */
+    Route::resource('container', ContainerController::class);
 });
