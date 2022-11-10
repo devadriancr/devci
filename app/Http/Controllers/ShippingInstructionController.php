@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Imports\ShippingInstructionImport;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ShippingInstructionController extends Controller
 {
@@ -13,7 +15,7 @@ class ShippingInstructionController extends Controller
      */
     public function index()
     {
-        //
+        return view('shipping-instruction.index');
     }
 
     /**
@@ -34,7 +36,11 @@ class ShippingInstructionController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $file = $request->file('import_file');
+
+        Excel::import(new ShippingInstructionImport, $file);
+
+        return redirect()->back()->with('success', 'Shipping Instrument Importado Exitosamente');
     }
 
     /**
