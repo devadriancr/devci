@@ -8,15 +8,18 @@
 
         <div class="px-4 py-3 my-2 bg-white rounded-lg shadow-md dark:bg-gray-800">
             <form method="POST" action="{{ route('consigment-instruction.store') }}">
+                <h4 class="mt-2 mb-4 text-center text-lg font-semibold text-gray-600 dark:text-gray-300">
+                    Recibó de Consigna
+                </h4>
                 @csrf
-                <div class="grid grid-cols-12 gap-4 my-2 uppercase font-bold text-gray-600 dark:text-gray-300">
+                <div class="grid grid-cols-12 gap-4 my-2 uppercase font-bold md:font-medium md:text-base sm:text-base sm:font-normal text-gray-600 dark:text-gray-300">
                     <div class="col-span-6">
                         <input name="container_id" value="{{ $container->id }}" hidden>
                         <span>
                             {{ $container->code }}
                         </span>
                     </div>
-                    <div class="col-span-6">
+                    <div class="col-span-6 text-right">
                         <span>
                             {{ $container->date }} {{ $container->time }}
                         </span>
