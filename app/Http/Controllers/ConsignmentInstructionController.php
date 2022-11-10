@@ -2,10 +2,21 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ConsignmentInstruction;
+use App\Models\Container;
+use Carbon\Carbon;
+use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
 
-class ConsignmentInstruction extends Controller
+class ConsignmentInstructionController extends Controller
 {
+
+    public function container()
+    {
+        $containers = Container::where('date', '=', Carbon::now()->format('Y-m-d'))->orderBy('created_at', 'ASC')->get();
+        dd($containers);
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -13,7 +24,10 @@ class ConsignmentInstruction extends Controller
      */
     public function index()
     {
-        //
+
+        $consignments = ConsignmentInstruction::orderBy('created_at', 'DESC')->paginate(10);
+
+        return view('consignment-instruction.index', ['consignments' => $consignments]);
     }
 
     /**
@@ -34,7 +48,10 @@ class ConsignmentInstruction extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $data = $request->only(['serial', 'container_id']);
+        $consignment = ConsignmentInstruction::create($data);
+
+        return redirect()->back();
     }
 
     /**
