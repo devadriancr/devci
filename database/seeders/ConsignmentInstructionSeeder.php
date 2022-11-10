@@ -15,6 +15,6 @@ class ConsignmentInstructionSeeder extends Seeder
      */
     public function run()
     {
-        ConsignmentInstruction::factory(50)->create();
+        ConsignmentInstruction::factory(20)->create();
     }
 }

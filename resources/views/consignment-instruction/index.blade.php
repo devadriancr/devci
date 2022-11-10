@@ -4,32 +4,6 @@
             Consignment Instruction
         </h2>
 
-        <form method="POST" action="{{ route('consigment-instruction.store') }}">
-            @csrf
-            <div class="grid grid-cols-12 gap-2 px-4 py-3 mb-4 mt-2 bg-white rounded-lg shadow-md dark:bg-gray-800">
-                <div class="col-span-4">
-                    <label class="block text-sm">
-                        <span class="text-gray-700 dark:text-gray-400">
-                            Contenedor
-                        </span>
-                        <select name="container_id" class="block w-full mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-select focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:focus:shadow-outline-gray">
-                            <option></option>
-                            @foreach ($containers as $container)
-                            <option value="{{ $container->id }}">{{ $container->code }}</option>
-                            @endforeach
-                        </select>
-                    </label>
-                </div>
-                <div class="col-span-8">
-                    <label class="block text-sm">
-                        <span class="text-gray-700 dark:text-gray-400">Serial</span>
-                        <input name="serial" class="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input" placeholder="S6030XXX1234XX" />
-                    </label>
-                </div>
-            </div>
-        </form>
-
-
         <div class="w-full overflow-hidden rounded-lg shadow-xs">
             <div class="w-full overflow-x-auto">
                 <table class="w-full whitespace-no-wrap">

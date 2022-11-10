@@ -44,6 +44,7 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function () {
      * Route Consigment Instruction
      */
     Route::resource('consigment-instruction', ConsignmentInstructionController::class);
+    Route::get('container-ci', [ConsignmentInstructionController::class, 'container'])->name('consigment-instruction.container');
 
     /**
      * Route Container

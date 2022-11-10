@@ -10,11 +10,11 @@ use Illuminate\Http\Request;
 
 class ConsignmentInstructionController extends Controller
 {
-
     public function container()
     {
-        $containers = Container::where('date', '=', Carbon::now()->format('Y-m-d'))->orderBy('created_at', 'ASC')->get();
-        dd($containers);
+        $containers = Container::where('date', '=', Carbon::now()->format('Y-m-d'))->orderBy('date', 'ASC')->orderBy('time', 'ASC')->get();
+
+        return view('consignment-instruction.container', ['containers' => $containers]);
     }
 
     /**
@@ -24,10 +24,10 @@ class ConsignmentInstructionController extends Controller
      */
     public function index()
     {
-
+        $containers = Container::where('date', '=', Carbon::now()->format('Y-m-d'))->orderBy('created_at', 'ASC')->get();
         $consignments = ConsignmentInstruction::orderBy('created_at', 'DESC')->paginate(10);
 
-        return view('consignment-instruction.index', ['consignments' => $consignments]);
+        return view('consignment-instruction.index', ['consignments' => $consignments, 'containers' => $containers]);
     }
 
     /**
@@ -35,9 +35,12 @@ class ConsignmentInstructionController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create(Request $request)
     {
-        //
+        $container = Container::find($request->container);
+        $consignments = ConsignmentInstruction::where('container_id', '=', $request->container)->orderBy('created_at', 'DESC')->paginate(5);
+
+        return view('consignment-instruction.create', ['container' => $container, 'consignments' => $consignments]);
     }
 
     /**
@@ -48,10 +51,14 @@ class ConsignmentInstructionController extends Controller
      */
     public function store(Request $request)
     {
+        $request->validate([
+            'serial' => ['required', 'string', 'max:14', 'min:14', 'unique:consignment_instructions'],
+        ]);
+
         $data = $request->only(['serial', 'container_id']);
         $consignment = ConsignmentInstruction::create($data);
 
-        return redirect()->back();
+        return redirect()->back()->with('success', 'Registro Exitoso');
     }
 
     /**

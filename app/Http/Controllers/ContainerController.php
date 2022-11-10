@@ -14,7 +14,7 @@ class ContainerController extends Controller
      */
     public function index()
     {
-        $containers = Container::orderBy('created_at', 'DESC')->paginate(10);
+        $containers = Container::orderBy('date', 'DESC')->paginate(10);
 
         return view('container.index', ['containers' => $containers]);
     }

@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('consignment_instructions', function (Blueprint $table) {
             $table->id();
-            $table->string('serial');
+            $table->string('serial')->unique();
             $table->unsignedBigInteger('container_id')->nullable();
             $table->timestamps();
 
