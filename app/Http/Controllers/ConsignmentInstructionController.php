@@ -59,9 +59,8 @@ class ConsignmentInstructionController extends Controller
                 }
             }
         }
-        dd($dataArray);
-
-        return view('consignment-instruction.index', ['data' => $dataArray]);
+        // dd($dataArray);
+        return view('consignment-instruction.index')->with([$dataArray]);
     }
 
     /**
