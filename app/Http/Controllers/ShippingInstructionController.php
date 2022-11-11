@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Imports\ShippingInstructionImport;
+use App\Models\ShippingInstruction;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Facades\Excel;
 
 class ShippingInstructionController extends Controller
@@ -15,7 +17,9 @@ class ShippingInstructionController extends Controller
      */
     public function index()
     {
-        return view('shipping-instruction.index');
+        $shippings = ShippingInstruction::orderBy('id', 'DESC')->paginate(10);
+
+        return view('shipping-instruction.index', ['shippings' => $shippings]);
     }
 
     /**

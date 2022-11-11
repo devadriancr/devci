@@ -12,7 +12,7 @@ class Container extends Model
     use HasFactory;
 
     protected $fillable = [
-        'code', 'date', 'time', 'user_id'
+        'code', 'date', 'time', 'status','user_id'
     ];
 
     public function user(): BelongsTo

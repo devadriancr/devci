@@ -16,8 +16,9 @@ return new class extends Migration
         Schema::create('containers', function (Blueprint $table) {
             $table->id();
             $table->string('code');
-            $table->string('date');
+            $table->date('date');
             $table->string('time');
+            $table->boolean('status')->default(1);
             $table->unsignedBigInteger('user_id')->nullable();
             $table->timestamps();
 

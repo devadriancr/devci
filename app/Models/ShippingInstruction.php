@@ -10,6 +10,6 @@ class ShippingInstruction extends Model
     use HasFactory;
 
     protected $fillable = [
-        'trans_mode', 'ct_no', 'ct_gr', 'invoice_no', 'module_no', 'parts_no', 'clr', 'parts_qty', 'vanning', 'time',
+        'container', 'invoice', 'serial', 'part_no', 'part_qty', 'user_id'
     ];
 }

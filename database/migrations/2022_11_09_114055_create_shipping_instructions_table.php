@@ -15,17 +15,15 @@ return new class extends Migration
     {
         Schema::create('shipping_instructions', function (Blueprint $table) {
             $table->id();
-            $table->string('trans_mode')->nullable();
-            $table->string('ct_no')->nullable();
-            $table->string('ct_gr')->nullable();
-            $table->string('invoice_no')->nullable();
-            $table->string('module_no')->nullable();
-            $table->string('parts_no')->nullable();
-            $table->string('clr')->nullable();
-            $table->integer('parts_qty')->nullable();
-            $table->string('vanning')->nullable();
-            $table->string('time')->nullable();
+            $table->string('container')->nullable();
+            $table->string('invoice')->nullable();
+            $table->string('serial')->nullable();
+            $table->string('part_no')->nullable();
+            $table->integer('part_qty')->nullable();
+            $table->unsignedBigInteger('user_id')->nullable();
             $table->timestamps();
+
+            $table->foreign('user_id')->references('id')->on('users');
         });
     }
 

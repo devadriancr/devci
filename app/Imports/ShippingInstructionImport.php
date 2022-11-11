@@ -3,6 +3,7 @@
 namespace App\Imports;
 
 use App\Models\ShippingInstruction;
+use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithBatchInserts;
 use Maatwebsite\Excel\Concerns\WithChunkReading;
@@ -18,26 +19,22 @@ class ShippingInstructionImport implements ToModel, WithHeadingRow, WithBatchIns
     public function model(array $row)
     {
         return new ShippingInstruction([
-            'trans_mode' => $row['trans_mode'],
-            'ct_no' => $row['ct_no'],
-            'ct_gr' => $row['ct_gr'],
-            'invoice_no' => $row['invoice_no'],
-            'module_no' => $row['module_no'],
-            'parts_no' => $row['parts_no'],
-            'clr' => $row['clr'],
-            'parts_qty' => $row['parts_qty'],
-            'vanning' => $row['vanning'],
-            'time' => $row['time'],
+            'container' => $row['ct_no'],
+            'invoice' => $row['invoice_no'],
+            'serial' => $row['module_no'],
+            'part_no' => $row['parts_no'],
+            'part_qty' => $row['parts_qty'],
+            'user_id' => Auth::id()
         ]);
     }
 
     public function batchSize(): int
     {
-        return 2000;
+        return 1000;
     }
 
     public function chunkSize(): int
     {
-        return 2000;
+        return 1000;
     }
 }

@@ -18,7 +18,7 @@ class ConsignmentInstructionFactory extends Factory
     {
         return [
             'serial' => $this->faker->randomDigit . $this->faker->randomLetter .  $this->faker->randomDigit . $this->faker->randomLetter .  $this->faker->randomDigit . $this->faker->randomLetter,
-            'container_id' => $this->faker->randomElement([1, 2, 3, 4, 5, 6]),
+            'container_id' => $this->faker->randomElement([1, 2]),
         ];
     }
 }

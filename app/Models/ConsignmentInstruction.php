@@ -11,11 +11,16 @@ class ConsignmentInstruction extends Model
     use HasFactory;
 
     protected $fillable = [
-        'serial', 'container_id',
+        'serial', 'container_id', 'user_id'
     ];
 
     public function container(): BelongsTo
     {
         return $this->belongsTo(Container::class);
+    }
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
     }
 }
