@@ -24,6 +24,8 @@ class ShippingInstructionImport implements ToModel, WithHeadingRow, WithBatchIns
             'serial' => $row['module_no'],
             'part_no' => $row['parts_no'],
             'part_qty' => $row['parts_qty'],
+            'date' => $row['delivery_date'],
+            'time' => $row['time'],
             'user_id' => Auth::id()
         ]);
     }

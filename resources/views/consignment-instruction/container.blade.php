@@ -7,6 +7,24 @@
             <h4 class="my-2 text-center text-lg font-semibold text-gray-600 dark:text-gray-300">
                 Unidad de Transporte
             </h4>
+
+            @if ($errors->any())
+            <div class="mb-4">
+                <div class="font-medium text-red-600">¡Oh no! Algo salió mal.</div>
+                <ul class="mt-3 text-sm text-red-600 list-disc list-inside">
+                    @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+            @endif
+
+            @if (session('success'))
+            <div class="mb-4 text-lg font-bold text-green-600">
+                {{ session('success') }}
+            </div>
+            @endif
+
             <form method="GET" action="{{ route('consigment-instruction.create') }}">
                 <label class="block mt-4 text-sm">
                     <span class="text-gray-700 dark:text-gray-400">

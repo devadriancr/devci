@@ -25,11 +25,11 @@ class ConsignmentInstructionController extends Controller
      */
     public function index()
     {
-        dd("¿Alto!");
-        $containers = Container::where('date', '=', Carbon::now()->format('Y-m-d'))->orderBy('created_at', 'ASC')->get();
-        $consignments = ConsignmentInstruction::orderBy('created_at', 'DESC')->paginate(10);
+        // dd("¿Alto!");
+        // $containers = Container::where('date', '=', Carbon::now()->format('Y-m-d'))->orderBy('created_at', 'ASC')->get();
+        // $consignments = ConsignmentInstruction::orderBy('created_at', 'DESC')->paginate(10);
 
-        return view('consignment-instruction.index', ['consignments' => $consignments, 'containers' => $containers]);
+        // return view('consignment-instruction.index', ['consignments' => $consignments, 'containers' => $containers]);
     }
 
     /**
@@ -39,6 +39,9 @@ class ConsignmentInstructionController extends Controller
      */
     public function create(Request $request)
     {
+        $request->validate([
+            'container' => ['required', 'numeric'],
+        ]);
         $container = Container::find($request->container);
         $consignments = ConsignmentInstruction::where('container_id', '=', $request->container)->orderBy('created_at', 'DESC')->paginate(5);
 

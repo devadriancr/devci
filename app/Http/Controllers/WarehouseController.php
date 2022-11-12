@@ -2,13 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Imports\ShippingInstructionImport;
-use App\Models\ShippingInstruction;
+use App\Models\Warehouse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Maatwebsite\Excel\Facades\Excel;
 
-class ShippingInstructionController extends Controller
+class WarehouseController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -17,9 +14,7 @@ class ShippingInstructionController extends Controller
      */
     public function index()
     {
-        $shippings = ShippingInstruction::orderBy('id', 'DESC')->paginate(10);
-
-        return view('shipping-instruction.index', ['shippings' => $shippings]);
+        //
     }
 
     /**
@@ -40,24 +35,16 @@ class ShippingInstructionController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
-            'import_file' => 'required'
-        ]);
-
-        $file = $request->file('import_file');
-
-        Excel::import(new ShippingInstructionImport, $file);
-
-        return redirect()->back()->with('success', 'Shipping Instrument Importado Exitosamente');
+        //
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param  \App\Models\Warehouse  $warehouse
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Warehouse $warehouse)
     {
         //
     }
@@ -65,10 +52,10 @@ class ShippingInstructionController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
+     * @param  \App\Models\Warehouse  $warehouse
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(Warehouse $warehouse)
     {
         //
     }
@@ -77,10 +64,10 @@ class ShippingInstructionController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param  \App\Models\Warehouse  $warehouse
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Warehouse $warehouse)
     {
         //
     }
@@ -88,10 +75,10 @@ class ShippingInstructionController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param  \App\Models\Warehouse  $warehouse
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Warehouse $warehouse)
     {
         //
     }

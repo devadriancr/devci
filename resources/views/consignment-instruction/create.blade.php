@@ -26,7 +26,7 @@
 
                 <label class="block text-sm">
                     <span class="text-gray-700 dark:text-gray-400">Serial</span>
-                    <input name="serial" class="block w-full my-2 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input" placeholder="S6030XXX1234XX" />
+                    <input name="serial" class="block w-full my-2 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input" placeholder="S6030XXX1234XX" autofocus />
                 </label>
 
                 <div class="flex justify-end mt-2 gap-2">
@@ -38,6 +38,7 @@
                     </button>
                 </div>
             </form>
+
             @if ($errors->any())
             <div class="mb-4">
                 <div class="font-medium text-red-600">¡Oh no! Algo salió mal.</div>

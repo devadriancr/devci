@@ -8,6 +8,22 @@
             Table with actions
         </h4> -->
         <div class="px-4 py-3 mt-2 mb-4 bg-white rounded-lg shadow-md dark:bg-gray-800">
+            @if ($errors->any())
+            <div class="mb-4">
+                <div class="font-medium text-red-600">¡Oh no! Algo salió mal.</div>
+                <ul class="mt-3 text-sm text-red-600 list-disc list-inside">
+                    @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+            @endif
+
+            @if (session('success'))
+            <div class="mb-4 font-medium text-green-600">
+                {{ session('success') }}
+            </div>
+            @endif
             <form method="POST" action="{{ route('shipping-instruction.store') }}" enctype="multipart/form-data">
                 @csrf
                 <label class="block text-sm">
