@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Container;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ContainerController extends Controller
 {
@@ -14,7 +15,7 @@ class ContainerController extends Controller
      */
     public function index()
     {
-        $containers = Container::orderBy('created_at', 'DESC')->paginate(10);
+        $containers = Container::where('status', '=', 1)->orderBy('date', 'DESC')->orderBy('time', 'DESC')->paginate(10);
 
         return view('container.index', ['containers' => $containers]);
     }
@@ -38,13 +39,17 @@ class ContainerController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'code' => ['required', 'string', 'max:11'],
+            'code' => ['required', 'string', 'max:11', 'min:11'],
             'date' => ['required', 'date_format:Y-m-d'],
             'time' => ['required', 'date_format:H:i'],
         ]);
 
-        $data = $request->only(['code', 'date', 'time']);
-        $container = Container::create($data);
+        $container = Container::create([
+            'code' => $request->code,
+            'date' => $request->date,
+            'time' => $request->time,
+            'user_id' => Auth::id(),
+        ]);
 
         return redirect('container');
     }
@@ -97,7 +102,7 @@ class ContainerController extends Controller
      */
     public function destroy(Container $container)
     {
-        $container->delete();
+        $container->update(['status' => 0]);
         return redirect()->back();
     }
 }

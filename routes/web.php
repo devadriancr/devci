@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\ConsignmentInstruction;
+use App\Http\Controllers\ConsignmentInstructionController;
 use App\Http\Controllers\ContainerController;
 use App\Http\Controllers\ShippingInstructionController;
 use Illuminate\Support\Facades\Route;
@@ -43,7 +43,9 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function () {
     /**
      * Route Consigment Instruction
      */
-    Route::resource('consigment-instruction', ConsignmentInstruction::class);
+    Route::resource('consigment-instruction', ConsignmentInstructionController::class);
+    Route::get('container-ci', [ConsignmentInstructionController::class, 'container'])->name('consigment-instruction.container');
+    Route::post('check-ci', [ConsignmentInstructionController::class, 'check'])->name('consigment-instruction.check');
 
     /**
      * Route Container

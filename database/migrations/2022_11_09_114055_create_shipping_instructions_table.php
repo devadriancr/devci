@@ -15,7 +15,17 @@ return new class extends Migration
     {
         Schema::create('shipping_instructions', function (Blueprint $table) {
             $table->id();
+            $table->string('container')->nullable();
+            $table->string('invoice')->nullable();
+            $table->string('serial')->nullable();
+            $table->string('part_no')->nullable();
+            $table->integer('part_qty')->nullable();
+            $table->integer('date')->nullable();
+            $table->integer('time')->nullable();
+            $table->unsignedBigInteger('user_id')->nullable();
             $table->timestamps();
+
+            $table->foreign('user_id')->references('id')->on('users');
         });
     }
 

@@ -8,4 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 class ShippingInstruction extends Model
 {
     use HasFactory;
+
+    protected $fillable = [
+        'container', 'invoice', 'serial', 'part_no', 'part_qty', 'user_id'
+    ];
 }

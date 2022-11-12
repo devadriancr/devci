@@ -13,15 +13,9 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('consignment_instructions', function (Blueprint $table) {
+        Schema::create('items', function (Blueprint $table) {
             $table->id();
-            $table->string('serial')->unique();
-            $table->unsignedBigInteger('container_id')->nullable();
-            $table->unsignedInteger('user_id')->nullable();
             $table->timestamps();
-
-            $table->foreign('container_id')->references('id')->on('containers');
-            $table->foreign('user_id')->references('id')->on('users');
         });
     }
 
@@ -32,6 +26,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('consignment_instructions');
+        Schema::dropIfExists('items');
     }
 };
