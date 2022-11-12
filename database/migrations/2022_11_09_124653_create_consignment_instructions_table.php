@@ -17,7 +17,7 @@ return new class extends Migration
             $table->id();
             $table->string('serial')->unique();
             $table->unsignedBigInteger('container_id')->nullable();
-            $table->unsignedInteger('user_id')->nullable();
+            $table->unsignedBigInteger('user_id')->nullable();
             $table->timestamps();
 
             $table->foreign('container_id')->references('id')->on('containers');

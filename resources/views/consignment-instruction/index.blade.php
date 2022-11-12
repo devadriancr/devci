@@ -24,19 +24,19 @@
                         @foreach ($dataArray as $data)
                         <tr class="text-gray-700 dark:text-gray-400">
                             <td class="px-4 py-3 text-sm">
-                                {{ $data->container }}
+                                {{ $data['container'] }}
                             </td>
                             <td class="px-4 py-3 text-sm">
-                                {{ $data->invoice }}
+                                {{ $data['invoice'] }}
                             </td>
                             <td class="px-4 py-3 text-sm">
-                                {{ $data->serial }}
+                                {{ $data['serial'] }}
                             </td>
                             <td class="px-4 py-3 text-sm">
-                                {{ $data->part_no }}
+                                {{ $data['part_no'] }}
                             </td>
                             <td class="px-4 py-3 text-sm">
-                                {{ $data->part_qty }}
+                                {{ $data['part_qty'] }}
                             </td>
                         </tr>
                         @endforeach

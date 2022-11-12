@@ -50,7 +50,13 @@ class ConsignmentInstructionController extends Controller
 
     public function check(Request $request)
     {
-        $shipments = ShippingInstruction::where([['container', '=', $request->container_code]])->get();
+        $date = Carbon::parse($request->container_date)->format('Ymd');
+        $shipments = ShippingInstruction::where([
+            // ['container', 'LIKE', $request->container_code],
+            ['date', 'LIKE', $date],
+            // ['time', 'LIKE', $request->container_time]
+        ])->count();
+        dd($shipments, $date);
         $consignments = ConsignmentInstruction::join('containers', 'containers.id', '=', 'consignment_instructions.container_id')->where([['container_id', '=', $request->container_id]])->get();
         $dataArray = [];
         foreach ($shipments as $shipment) {
@@ -62,8 +68,7 @@ class ConsignmentInstructionController extends Controller
                 }
             }
         }
-        // dd($dataArray);
-        return view('consignment-instruction.index')->with([$dataArray]);
+        return view('consignment-instruction.index', ['dataArray' => $dataArray]);
     }
 
     /**

@@ -46,6 +46,8 @@
                             <th class="px-4 py-3">Serial</th>
                             <th class="px-4 py-3">No. Parte</th>
                             <th class="px-4 py-3">No. Parte</th>
+                            <th class="px-4 py-3">Date</th>
+                            <th class="px-4 py-3">Time</th>
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y dark:divide-gray-700 dark:bg-gray-800">
@@ -65,6 +67,12 @@
                             </td>
                             <td class="px-4 py-3 text-sm">
                                 {{ $shipping->part_qty }}
+                            </td>
+                            <td class="px-4 py-3 text-sm">
+                                {{ $shipping->date }}
+                            </td>
+                            <td class="px-4 py-3 text-sm">
+                                {{ $shipping->time }}
                             </td>
                         </tr>
                         @endforeach
