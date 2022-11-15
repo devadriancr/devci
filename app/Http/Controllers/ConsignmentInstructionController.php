@@ -5,9 +5,14 @@ namespace App\Http\Controllers;
 use App\Models\ConsignmentInstruction;
 use App\Models\Container;
 use App\Models\ShippingInstruction;
+use App\Models\YF006;
 use Carbon\Carbon;
+use Carbon\Doctrine\CarbonDoctrineType;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use PhpOffice\PhpSpreadsheet\Calculation\TextData\Format;
+use PhpParser\Node\Expr\AssignOp\Concat;
+use Symfony\Component\Mailer\Transport\Dsn;
 
 class ConsignmentInstructionController extends Controller
 {
@@ -48,24 +53,6 @@ class ConsignmentInstructionController extends Controller
         return view('consignment-instruction.create', ['container' => $container, 'consignments' => $consignments]);
     }
 
-    public function check(Request $request)
-    {
-        $shipments = ShippingInstruction::where([['container', '=', $request->container_code]])->get();
-        $consignments = ConsignmentInstruction::join('containers', 'containers.id', '=', 'consignment_instructions.container_id')->where([['container_id', '=', $request->container_id]])->get();
-        $dataArray = [];
-        foreach ($shipments as $shipment) {
-            foreach ($consignments as $consignment) {
-                if ($shipment->container == $consignment->container->code) {
-                    if ($shipment->serial == $consignment->serial) {
-                        array_push($dataArray, ['container' => $shipment->container, 'invoice' => $shipment->invoice, 'serial' => $shipment->serial, 'part_no' => $shipment->part_no, 'part_qty' => $shipment->part_qty]);
-                    }
-                }
-            }
-        }
-        // dd($dataArray);
-        return view('consignment-instruction.index')->with([$dataArray]);
-    }
-
     /**
      * Store a newly created resource in storage.
      *
@@ -75,16 +62,108 @@ class ConsignmentInstructionController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'serial' => ['required', 'string', 'max:14', 'min:14', 'unique:consignment_instructions'],
+            'code_qr' => ['required', 'string'],
         ]);
 
+        $dataRequest = $request->code_qr;
+
+        list($a, $b, $c, $d, $e, $f, $g, $h, $i, $j, $part_qty, $supplier, $m, $serial, $o, $p, $q, $r, $s, $t, $u, $v, $w, $x, $y, $z, $part_no) = explode(',', $dataRequest);
+
         $consignment = ConsignmentInstruction::create([
-            'serial' => $request->serial,
+            'supplier' => $supplier,
+            'serial' => $serial,
+            'part_qty' => $part_qty,
+            'part_no' => $part_no,
             'container_id' => $request->container_id,
             'user_id' => Auth::id(),
         ]);
 
         return redirect()->back()->with('success', 'Registro Exitoso');
+    }
+
+    public function check(Request $request)
+    {
+        $container = $request->container_code;
+        $date = Carbon::parse($request->container_date)->format('Ymd');
+        $time = $request->container_time;
+
+        $consignments = ConsignmentInstruction::join('containers', 'consignment_instructions.container_id', '=', 'containers.id')
+            ->where([
+                ['containers.date', '=', $date],
+                ['containers.time', '=', $time],
+                ['containers.status', '=', true]
+            ])
+            ->get();
+
+        $shipments = ShippingInstruction::where([
+                ['container', '=', $container],
+                ['date', '=', $date],
+                ['time', '=', $time]
+            ])
+            ->orderBy('serial', 'ASC')
+            ->get();
+
+        $arrayFound = [];
+
+        foreach ($shipments as $key => $shipment) {
+            foreach ($consignments as $key => $consignment) {
+                $serialConsignment = $consignment->supplier . $consignment->serial;
+                if ($shipment->serial == $serialConsignment) {
+                    array_push($arrayFound, [
+                        'container' => $shipment->container,
+                        'invoice' => $shipment->invoice,
+                        'supplier' => $consignment->supplier,
+                        'serial' => $consignment->serial,
+                        'part_no' => $shipment->part_no,
+                        'part_qty' => $shipment->part_qty,
+                        'date' => $shipment->date,
+                        'time' => $shipment->time,
+                    ]);
+                }
+            }
+        }
+
+        return view('consignment-instruction.index', ['dataArray' => $arrayFound, 'found' => count($arrayFound), 'total' => count($shipments), 'container_id' => $request->container_id]);
+    }
+
+    public function finish(Request $request)
+    {
+        foreach ($request->arrayData as $key => $data) {
+            $scanData = ConsignmentInstruction::query()
+                ->where([
+                    ['supplier', '=', $data['supplier']],
+                    ['serial', '=', $data['serial']],
+                    ['part_no', '=', $data['part_no']],
+                    ['part_qty', '=', $data['part_qty']],
+                ])->first();
+            $insert = YF006::query()->insert([
+                // 'H3SINO' => ,
+                'H3CONO' => $data['container'],
+                'H3DDTE' => $data['date'],
+                'H3DTIM' => Carbon::parse($data['time'])->format('Hi'),
+                'H3PROD' => $data['part_no'],
+                'H3SUCD' => $data['supplier'],
+                // 'H3SPCD' => ,
+                'H3SENO' => $data['serial'],
+                'H3RQTY' => $data['part_qty'],
+                'H3RDTE' => Carbon::parse($scanData->created_at)->format('Ymd'),
+                'H3RTIM' => Carbon::parse($scanData->created_at)->format('Hi'),
+                // 'H3CUSR' => ,
+                // 'H3CCDT' => ,
+                // 'H3CCTM' => ,
+            ]);
+        }
+
+        $conn = odbc_connect("Driver={Client Access ODBC Driver (32-bit)};System=192.168.200.7;", "LXSECOFR;", "LXSECOFR;");
+        $query = "CALL LX834OU02.YPU180C";
+        $result = odbc_exec($conn, $query);
+
+        $container = Container::where([
+                ['id', '=', $request->container_id]
+            ])
+            ->update(['status' => 0]);
+
+        return redirect('container-ci');
     }
 
     /**

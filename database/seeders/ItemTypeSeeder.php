@@ -2,11 +2,11 @@
 
 namespace Database\Seeders;
 
-use App\Models\ConsignmentInstruction;
+use App\Models\ItemType;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
-class ConsignmentInstructionSeeder extends Seeder
+class ItemTypeSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -15,6 +15,6 @@ class ConsignmentInstructionSeeder extends Seeder
      */
     public function run()
     {
-        ConsignmentInstruction::factory(10)->create();
+        ItemType::factory(10)->create();
     }
 }
