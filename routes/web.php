@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ConsignmentInstructionController;
 use App\Http\Controllers\ContainerController;
+use App\Http\Controllers\WHExtInOutController;
 use App\Http\Controllers\ShippingInstructionController;
 use Illuminate\Support\Facades\Route;
 
@@ -51,4 +52,15 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function () {
      * Route Container
      */
     Route::resource('container', ContainerController::class);
+     /**
+     * Route  In and Out Wherehouse extern
+     */
+    Route::resource('Scan-In_Out',WHExtInOutController::class);
+    Route::POST('Scan-In_Out', [WHExtInOutController::class, 'store'])->name('WHExtInOutController.store');
+    Route::POST('shipping',[WHExtInOutController::class, 'shipping'])->name('WHExtInOutController.shipping');
+    Route::POST('saveshipping',[WHExtInOutController::class, 'saveshipping'])->name('WHExtInOutController.saveshipping');
+    Route::get('export', [WHExtInOutController::class, 'export'])->name('WHExtInOutController.export');
+    Route::get('exportdetail', [WHExtInOutController::class, 'exportDetail'])->name('WHExtInOutController.exportDetail');
+
 });
+

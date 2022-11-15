@@ -13,16 +13,14 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('containers', function (Blueprint $table) {
+        Schema::create('shipping_in_outs', function (Blueprint $table) {
             $table->id();
-            $table->string('code');
-            $table->date('date');
-            $table->string('time');
-            $table->boolean('status')->default(1);
-            $table->unsignedBigInteger('user_id')->nullable();
+            $table->string('usuario');
+            $table->date('fecha_shi');
+            $table->time('hora_shi');
+            $table->string('transfer_flag');
+            $table->String('wharehouse');
             $table->timestamps();
-
-            // $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
     }
 
@@ -33,6 +31,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('containers');
+        Schema::dropIfExists('shipping_in_outs');
     }
 };
