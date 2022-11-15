@@ -5,11 +5,17 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class ShippingInstruction extends Model
+class IIC extends Model
 {
     use HasFactory;
 
+    protected $connection = 'odbc-lx834f02';
+    protected $table = 'LX834F02.IIC';
+
     protected $fillable = [
-        'container', 'invoice', 'serial', 'part_no', 'part_qty', 'date', 'time', 'user_id'
+        'IID',
+        'ICLAS',
+        'ICDES',
+
     ];
 }

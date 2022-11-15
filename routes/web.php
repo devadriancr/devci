@@ -2,8 +2,13 @@
 
 use App\Http\Controllers\ConsignmentInstructionController;
 use App\Http\Controllers\ContainerController;
+<<<<<<< HEAD
 use App\Http\Controllers\WHExtInOutController;
+=======
+use App\Http\Controllers\ItemClassController;
+>>>>>>> 1b859211dd2d6edec0e81967467834df8dc91914
 use App\Http\Controllers\ShippingInstructionController;
+use App\Models\ItemClass;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -37,23 +42,25 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function () {
     Route::view('calendar', 'calendar')->name('calendar');
 
     /**
-     * Route Shipping Instruction
+     * Routes Container
      */
-    Route::resource('shipping-instruction', ShippingInstructionController::class);
+    Route::resource('container', ContainerController::class);
 
     /**
-     * Route Consigment Instruction
+     * Routes Consigment Instruction
      */
     Route::resource('consigment-instruction', ConsignmentInstructionController::class);
     Route::get('container-ci', [ConsignmentInstructionController::class, 'container'])->name('consigment-instruction.container');
     Route::post('check-ci', [ConsignmentInstructionController::class, 'check'])->name('consigment-instruction.check');
+    Route::post('finish-ci', [ConsignmentInstructionController::class, 'finish'])->name('consigment-instruction.finish');
 
     /**
-     * Route Container
+     * Routes Shipping Instruction
      */
     Route::resource('container', ContainerController::class);
+
      /**
-     * Route  In and Out Wherehouse extern
+     * Routes  In and Out Wherehouse extern
      */
     Route::resource('Scan-In_Out',WHExtInOutController::class);
     Route::POST('Scan-In_Out', [WHExtInOutController::class, 'store'])->name('WHExtInOutController.store');
@@ -61,6 +68,14 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function () {
     Route::POST('saveshipping',[WHExtInOutController::class, 'saveshipping'])->name('WHExtInOutController.saveshipping');
     Route::get('export', [WHExtInOutController::class, 'export'])->name('WHExtInOutController.export');
     Route::get('exportdetail', [WHExtInOutController::class, 'exportDetail'])->name('WHExtInOutController.exportDetail');
+    Route::resource('shipping-instruction', ShippingInstructionController::class);
+
+    /**
+     * Routes Item Class
+     */
+    Route::resource('item-class', ItemClassController::class);
+    Route::get('item-class-upload', [ItemClassController::class, 'upload']);
+
 
 });
 

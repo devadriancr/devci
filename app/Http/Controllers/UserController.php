@@ -2,12 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Imports\ShippingInstructionImport;
-use App\Models\ShippingInstruction;
+use App\Models\User;
 use Illuminate\Http\Request;
-use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Facades\Auth;
 
-class ShippingInstructionController extends Controller
+class UseController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -16,9 +15,9 @@ class ShippingInstructionController extends Controller
      */
     public function index()
     {
-        $shippings = ShippingInstruction::orderBy('id', 'DESC')->paginate(10);
-
-        return view('shipping-instruction.index', ['shippings' => $shippings]);
+        $users = User::where('id', '!=', Auth::id())->orderBy('id', 'DESC')->paginate(10);
+        dd($users);
+        return view('user.index', ['user' => $users]);
     }
 
     /**
@@ -28,7 +27,7 @@ class ShippingInstructionController extends Controller
      */
     public function create()
     {
-        //
+        return view('user.create');
     }
 
     /**
@@ -39,24 +38,16 @@ class ShippingInstructionController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
-            'import_file' => 'required'
-        ]);
-
-        $file = $request->file('import_file');
-
-        Excel::import(new ShippingInstructionImport, $file);
-
-        return redirect()->back()->with('success', 'Documento Importado Exitosamente');
+        //
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param  \App\Models\User  $user
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(User $user)
     {
         //
     }
@@ -64,22 +55,22 @@ class ShippingInstructionController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
+     * @param  \App\Models\User  $user
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(User $user)
     {
-        //
+        return view('user.edit');
     }
 
     /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param  \App\Models\User  $user
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, User $user)
     {
         //
     }
@@ -87,10 +78,10 @@ class ShippingInstructionController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param  \App\Models\User  $user
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(User $user)
     {
         //
     }

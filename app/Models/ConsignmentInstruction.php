@@ -11,7 +11,7 @@ class ConsignmentInstruction extends Model
     use HasFactory;
 
     protected $fillable = [
-        'serial', 'container_id', 'user_id'
+        'supplier', 'serial', 'part_no', 'part_qty', 'container_id', 'user_id'
     ];
 
     public function container(): BelongsTo

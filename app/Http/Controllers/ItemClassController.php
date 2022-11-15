@@ -2,13 +2,30 @@
 
 namespace App\Http\Controllers;
 
-use App\Imports\ShippingInstructionImport;
-use App\Models\ShippingInstruction;
+use App\Models\IIC;
+use App\Models\ItemClass;
 use Illuminate\Http\Request;
-use Maatwebsite\Excel\Facades\Excel;
 
-class ShippingInstructionController extends Controller
+class ItemClassController extends Controller
 {
+    public function upload()
+    {
+        $itemClasses = IIC::query()->select(['IID', 'ICLAS', 'ICDES',])->get();
+
+        foreach ($itemClasses as $value) {
+            echo "$value->ICLAS &nbsp $value->ICDES &nbsp $value->IID <br>";
+            ItemClass::updateOrCreate(
+                [
+                    'code' =>  $value->ICLAS
+                ],
+                [
+                    'description' => $value->ICDES,
+                    'status' =>  $value->IID
+                ],
+            );
+        }
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -16,9 +33,7 @@ class ShippingInstructionController extends Controller
      */
     public function index()
     {
-        $shippings = ShippingInstruction::orderBy('id', 'DESC')->paginate(10);
-
-        return view('shipping-instruction.index', ['shippings' => $shippings]);
+        //
     }
 
     /**
@@ -39,15 +54,7 @@ class ShippingInstructionController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
-            'import_file' => 'required'
-        ]);
-
-        $file = $request->file('import_file');
-
-        Excel::import(new ShippingInstructionImport, $file);
-
-        return redirect()->back()->with('success', 'Documento Importado Exitosamente');
+        //
     }
 
     /**
