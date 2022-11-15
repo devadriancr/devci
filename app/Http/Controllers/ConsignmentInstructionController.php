@@ -137,20 +137,20 @@ class ConsignmentInstructionController extends Controller
                     ['part_qty', '=', $data['part_qty']],
                 ])->first();
             $insert = YF006::query()->insert([
-                // 'H3SINO' => $data->,
+                // 'H3SINO' => ,
                 'H3CONO' => $data['container'],
                 'H3DDTE' => $data['date'],
                 'H3DTIM' => Carbon::parse($data['time'])->format('Hi'),
                 'H3PROD' => $data['part_no'],
                 'H3SUCD' => $data['supplier'],
-                // 'H3SPCD' => $data->,
+                // 'H3SPCD' => ,
                 'H3SENO' => $data['serial'],
                 'H3RQTY' => $data['part_qty'],
                 'H3RDTE' => Carbon::parse($scanData->created_at)->format('Ymd'),
                 'H3RTIM' => Carbon::parse($scanData->created_at)->format('Hi'),
-                // 'H3CUSR' => $data->,
-                // 'H3CCDT' => $data->,
-                // 'H3CCTM' => $data->,
+                // 'H3CUSR' => ,
+                // 'H3CCDT' => ,
+                // 'H3CCTM' => ,
             ]);
         }
 

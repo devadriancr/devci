@@ -18,6 +18,9 @@ class DatabaseSeeder extends Seeder
             UsersSeeder::class,
             ContainerSeeder::class,
             ConsignmentInstructionSeeder::class,
+            ItemClassSeeder::class,
+            ItemTypeSeeder::class,
+            MeasurementUnitSeeder::class,
         ]);
     }
 }

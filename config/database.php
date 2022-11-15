@@ -91,6 +91,21 @@ return [
             'prefix_indexes' => true,
         ],
 
+        /**
+         *
+         */
+        'odbc-lx834f02' => [
+            'driver' => 'odbc',
+            'dsn' => "Driver={Client Access ODBC Driver (32-bit)};System=192.168.200.7;",
+            'database' => "LX834F02",
+            'host' => "192.168.200.7",
+            'username' => "LXSECOFR",
+            'password' => "LXSECOFR"
+        ],
+
+        /**
+         *
+         */
         'odbc-lx834fu02' => [
             'driver' => 'odbc',
             'dsn' => "Driver={Client Access ODBC Driver (32-bit)};System=192.168.200.7;",
@@ -132,7 +147,7 @@ return [
 
         'options' => [
             'cluster' => env('REDIS_CLUSTER', 'redis'),
-            'prefix' => env('REDIS_PREFIX', Str::slug(env('APP_NAME', 'laravel'), '_').'_database_'),
+            'prefix' => env('REDIS_PREFIX', Str::slug(env('APP_NAME', 'laravel'), '_') . '_database_'),
         ],
 
         'default' => [
