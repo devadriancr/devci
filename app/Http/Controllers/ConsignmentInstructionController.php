@@ -5,10 +5,12 @@ namespace App\Http\Controllers;
 use App\Models\ConsignmentInstruction;
 use App\Models\Container;
 use App\Models\ShippingInstruction;
+use App\Models\YF006;
 use Carbon\Carbon;
 use Carbon\Doctrine\CarbonDoctrineType;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use PhpOffice\PhpSpreadsheet\Calculation\TextData\Format;
 use PhpParser\Node\Expr\AssignOp\Concat;
 use Symfony\Component\Mailer\Transport\Dsn;
 
@@ -65,7 +67,7 @@ class ConsignmentInstructionController extends Controller
 
         $dataRequest = $request->code_qr;
 
-        list($a, $b, $c, $d, $e, $f, $g, $h, $i, $j, $k, $supplier, $m, $serial, $o, $p, $q, $r, $s, $t, $u, $v, $w, $part_qty, $y, $z, $part_no) = explode(',', $dataRequest);
+        list($a, $b, $c, $d, $e, $f, $g, $h, $i, $j, $part_qty, $supplier, $m, $serial, $o, $p, $q, $r, $s, $t, $u, $v, $w, $x, $y, $z, $part_no) = explode(',', $dataRequest);
 
         $consignment = ConsignmentInstruction::create([
             'supplier' => $supplier,
@@ -98,47 +100,67 @@ class ConsignmentInstructionController extends Controller
                 ['date', '=', $date],
                 ['time', '=', $time]
             ])
+            ->orderBy('serial', 'ASC')
             ->get();
 
-        $arrayFount = [];
-        $arrayNotFount = [];
+        $arrayFound = [];
 
-        foreach ($consignments as $consignment) {
-            foreach ($shipments as $shipment) {
-                $serial = $consignment->supplier . $consignment->serial;
-                if ($shipment->serial == $serial) {
-                    array_push($arrayFount, ['container' => $shipment->container, 'invoice' => $shipment->invoice, 'serial' => $shipment->serial, 'part_no' => $shipment->part_no, 'part_qty' => $shipment->part_qty, 'date' => $shipment->date, 'time' => $shipment->time]);
-                } else {
-                    array_push($arrayNotFount, ['container' => $shipment->container, 'invoice' => $shipment->invoice, 'serial' => $shipment->serial, 'part_no' => $shipment->part_no, 'part_qty' => $shipment->part_qty, 'date' => $shipment->date, 'time' => $shipment->time]);
+        foreach ($shipments as $key => $shipment) {
+            foreach ($consignments as $key => $consignment) {
+                $serialConsignment = $consignment->supplier . $consignment->serial;
+                if ($shipment->serial == $serialConsignment) {
+                    array_push($arrayFound, [
+                        'container' => $shipment->container,
+                        'invoice' => $shipment->invoice,
+                        'supplier' => $consignment->supplier,
+                        'serial' => $consignment->serial,
+                        'part_no' => $shipment->part_no,
+                        'part_qty' => $shipment->part_qty,
+                        'date' => $shipment->date,
+                        'time' => $shipment->time,
+                    ]);
                 }
             }
         }
-        $details = self::unique_multidim_array($arrayNotFount, 'serial');
 
-        return view('consignment-instruction.index', ['dataArray' => $details, 'container_id' => $request->container_id]);
-    }
-
-    public function unique_multidim_array($array, $key)
-    {
-        $temp_array = array();
-        $i = 0;
-        $key_array = array();
-
-        foreach ($array as $val) {
-            if (!in_array($val[$key], $key_array)) {
-                $key_array[$i] = $val[$key];
-                $temp_array[$i] = $val;
-            }
-            $i++;
-        }
-        return $temp_array;
+        return view('consignment-instruction.index', ['dataArray' => $arrayFound, 'found' => count($arrayFound), 'total' => count($shipments), 'container_id' => $request->container_id]);
     }
 
     public function finish(Request $request)
     {
+        foreach ($request->arrayData as $key => $data) {
+            $scanData = ConsignmentInstruction::query()
+                ->where([
+                    ['supplier', '=', $data['supplier']],
+                    ['serial', '=', $data['serial']],
+                    ['part_no', '=', $data['part_no']],
+                    ['part_qty', '=', $data['part_qty']],
+                ])->first();
+            $insert = YF006::query()->insert([
+                // 'H3SINO' => $data->,
+                'H3CONO' => $data['container'],
+                'H3DDTE' => $data['date'],
+                'H3DTIM' => Carbon::parse($data['time'])->format('Hi'),
+                'H3PROD' => $data['part_no'],
+                'H3SUCD' => $data['supplier'],
+                // 'H3SPCD' => $data->,
+                'H3SENO' => $data['serial'],
+                'H3RQTY' => $data['part_qty'],
+                'H3RDTE' => Carbon::parse($scanData->created_at)->format('Ymd'),
+                'H3RTIM' => Carbon::parse($scanData->created_at)->format('Hi'),
+                // 'H3CUSR' => $data->,
+                // 'H3CCDT' => $data->,
+                // 'H3CCTM' => $data->,
+            ]);
+        }
+
+        $conn = odbc_connect("Driver={Client Access ODBC Driver (32-bit)};System=192.168.200.7;", "LXSECOFR;", "LXSECOFR;");
+        $query = "CALL LX834OU02.YPU180C";
+        $result = odbc_exec($conn, $query);
+
         $container = Container::where([
-            ['id', '=', $request->container_id]
-        ])
+                ['id', '=', $request->container_id]
+            ])
             ->update(['status' => 0]);
 
         return redirect('container-ci');

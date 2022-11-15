@@ -91,6 +91,15 @@ return [
             'prefix_indexes' => true,
         ],
 
+        'odbc-lx834fu02' => [
+            'driver' => 'odbc',
+            'dsn' => "Driver={Client Access ODBC Driver (32-bit)};System=192.168.200.7;",
+            'database' => "LX834FU02",
+            'host' => "192.168.200.7",
+            'username' => "LXSECOFR",
+            'password' => "LXSECOFR"
+        ],
+
     ],
 
     /*
