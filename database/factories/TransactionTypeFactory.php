@@ -17,7 +17,9 @@ class TransactionTypeFactory extends Factory
     public function definition()
     {
         return [
-            //
+            'code' => $this->faker->randomLetter,
+            'name' => $this->faker->word,
+            'description' => $this->faker->sentence
         ];
     }
 }

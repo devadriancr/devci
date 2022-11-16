@@ -15,9 +15,9 @@ return new class extends Migration
     {
         Schema::create('measurement_units', function (Blueprint $table) {
             $table->id();
-            $table->string('unit');
-            $table->string('description');
-            $table->string('status');
+            $table->string('unit')->unique();
+            $table->string('description')->nullable();
+            $table->string('status')->nullable();
             $table->timestamps();
         });
     }

@@ -2,11 +2,43 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\IIM;
 use App\Models\Item;
 use Illuminate\Http\Request;
+use PhpParser\Node\Stmt\Echo_;
 
 class ItemController extends Controller
 {
+    public function upload()
+    {
+        $items = IIM::query()
+            ->select(['IID', 'IPROD', 'IDESC', 'IOPB', 'IMIN', 'IITYP', 'ICLAS', 'IUMS', 'IMENDT', 'IMENTM',])
+            ->orderBy('IMENDT', 'DESC')
+            ->get();
+
+        echo count($items) . "<br>";
+
+        foreach ($items as $key => $value) {
+            echo "$key &nbsp &nbsp $value->IID &nbsp &nbsp $value->IPROD &nbsp &nbsp $value->IDESC &nbsp &nbsp $value->IOPB &nbsp &nbsp $value->IMIN &nbsp &nbsp $value->IITYP &nbsp &nbsp $value->ICLAS &nbsp &nbsp $value->IUMS <br>";
+            Item::updateOrCreate(
+                [
+                    'item' => $value->IPROD,
+                ],
+                [
+                    'status' => $value->IID,
+                    'description' => preg_replace('([^A-Za-z0-9])', '', $value->IDESC),
+                    'opening_balance' => $value->IOPB,
+                    'minimum_balance' => $value->IMIN,
+                    'item_type' => $value->IITYP,
+                    'item_class' => $value->ICLAS,
+                    'measurement_unit' => $value->IUMS,
+                    'creation_date' => $value->IMENDT,
+                    'creation_time' => $value->IMENTM,
+                ],
+            );
+        }
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -14,7 +46,9 @@ class ItemController extends Controller
      */
     public function index()
     {
-        //
+        $items = Item::where([['item_class', '=', 'S1'], ['status', '=', 'IM']])->paginate(10);
+
+        return view('items.index', ['items' => $items]);
     }
 
     /**
