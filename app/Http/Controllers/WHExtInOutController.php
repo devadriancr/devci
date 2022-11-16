@@ -5,13 +5,14 @@ namespace App\Http\Controllers;
 
 
 use Illuminate\Http\Request;
-use App\Models\WherehouseInOut;
+use App\Models\ShippingDetailInOut;
 use App\Models\ShippingInstruction;
 use App\Models\ShippingInOut;
 use Illuminate\Support\Facades\Auth;
 use App\Exports\ShippingExport;
 use App\Exports\ShippingExportDetail;
 use Maatwebsite\Excel\Facades\Excel;
+use App\Models\YI007;
 
 class WHExtInOutController extends Controller
 {
@@ -22,17 +23,16 @@ class WHExtInOutController extends Controller
      */
     public function index(Request $request)
     {
-        $id=$request->id;
-        $text='';
-        if($id==1)
-        {
-            $text='W10-L12';
-        }else{
-            $text='W61-L61';
+        $id = $request->id;
+        $text = '';
+        if ($id == 1) {
+            $text = 'W10-L12';
+        } else {
+            $text = 'W61-L61';
         }
         $error = 0;
         $scan =  WherehouseInOut::query()->select('serial', 'part_no', 'part_qty')->where('status', '0')->get();
-        return view('WhereHouse_In_Out.index', ['scan' => $scan, 'error' => $error,'id'=>$id,'texto'=>$text]);
+        return view('WhereHouse_In_Out.index', ['scan' => $scan, 'error' => $error, 'id' => $id, 'texto' => $text]);
     }
 
     /**
@@ -54,17 +54,20 @@ class WHExtInOutController extends Controller
     {
         $error = 0;
         $msgerror = '';
-        $id=$request->id;
-        $text='';
-        if($id==1)
-        {
-            $text='W10-L12';
-
-        }else{
-            $text='W61-L61';
-
+        $id = $request->id;
+        $text = '';
+        if ($id == 1) {
+            $text = 'W10-L12';
+            $flag = 'I';
+        } else {
+            $text = 'W61-L61';
+            $flag = 'O';
         }
         $QR = explode(',', $request->serial);
+        // if(count($QR))
+        // {
+
+        // }
         $serial = $QR[11] . $QR[13];
         $buscarShip = ShippingInstruction::query()
             ->select('serial', 'part_no', 'part_qty')
@@ -74,19 +77,27 @@ class WHExtInOutController extends Controller
             $msgerror = 'Serial no encontrado en Shipping Instruction';
         }
 
-        $buscar = WherehouseInOut::query()->select('serial', 'part_no', 'part_qty')->where('serial', '=', $serial)->get()->toarray();
-        $cont = count($buscar);
+        $cont =ShippingDetailInOut::query()->select('serial', 'part_no', 'part_qty', 'date_Scan', 'status', 'shippign')->where('serial', '=', $serial)->orderby('id', 'desc')->count();
 
         if ($cont > 0) {
-            $error = 2;
-            $msgerror = 'Serial repetido';
-        }
+            $cont = ShippingDetailInOut::query()->select('serial', 'part_no', 'part_qty', 'date_Scan', 'status', 'shippign')->where('serial', '=', $serial)->orderby('id', 'desc')->first()->toarray();
 
+            if ($cont['status'] == 0) {
+                $error = 2;
+                $msgerror = 'Serial repetido en este escaneo ';
+            } else {
+                $buscar = ShippingInOut::query()->select('id', 'transfer_flag', 'wharehouse')->where('id', '=', $cont['shippign'])->orderby('id', 'desc')->first();
+                if ($buscar['transfer_flag'] == $flag) {
+                    $error = 3;
+                    $msgerror = 'Serial con movimiento de almacen repetido ';
+                }
+            }
+        }
         if ($error == 0) {
             $infor = ShippingInstruction::query()
                 ->select('serial', 'part_no', 'part_qty')
                 ->where('serial', '=', $serial)->first();
-            WherehouseInOut::query()->insert(
+                ShippingDetailInOut::query()->insert(
                 [
                     'serial' => $infor->serial,
                     'part_no' => $infor->part_no,
@@ -98,28 +109,27 @@ class WHExtInOutController extends Controller
                 ]
             );
         }
-        $scan =  WherehouseInOut::query()->select('serial', 'part_no', 'part_qty', 'date_Scan', 'time_scan', 'status', 'shippign')
+        $scan =  ShippingDetailInOut::query()->select('serial', 'part_no', 'part_qty', 'date_Scan', 'time_scan', 'status', 'shippign')
             ->where('status', '0')->get();
 
-        return view('WhereHouse_In_Out.index', ['scan' => $scan, 'error' => $error, 'msgerror' => $msgerror,'id'=>$id,'texto'=>$text]);
+        return view('WhereHouse_In_Out.index', ['scan' => $scan, 'error' => $error, 'msgerror' => $msgerror, 'id' => $id, 'texto' => $text]);
     }
     public function shipping(Request $request)
     {
-        $id=$request->id;
+        $id = $request->id;
 
-        $text='';
-        if($id==1)
-        {
-            $text='W10-L12';
-            $flag='I';
-        }else{
-            $text='W61-L61';
-            $flag='O';
+        $text = '';
+        if ($id == 1) {
+            $text = 'W10-L12';
+            $flag = 'I';
+        } else {
+            $text = 'W61-L61';
+            $flag = 'O';
         }
 
         $error = 0;
         $msgerror = '';
-        $scan =  WherehouseInOut::query()->select('serial', 'part_no', 'part_qty', 'date_Scan', 'time_scan', 'status', 'shippign')
+        $scan =  ShippingDetailInOut::query()->select('serial', 'part_no', 'part_qty', 'date_Scan', 'time_scan', 'status', 'shippign')
             ->where('status', '0')->count();
         if ($scan > 0) {
             ShippingInOut::query()->insert(
@@ -127,31 +137,55 @@ class WHExtInOutController extends Controller
                     'usuario' => Auth::id(),
                     'fecha_shi' => now(),
                     'hora_shi' => date('H:i:s'),
-                    'transfer_flag'=> $flag,
-                    'Wharehouse'=>$text
+                    'transfer_flag' => $flag,
+                    'Wharehouse' => $text
                 ]
 
             );
-            $val = ShippingInOut::query()->select('id')->orderby('id', 'desc')->first();
-            WherehouseInOut::query()->where('status', '0')->update(['status' => '1', 'shippign' => $val->id]);
+            $val = ShippingInOut::query()->select('id','fecha_shi')->orderby('id', 'desc')->first();
+            ShippingDetailInOut::query()->where('status', '0')->update(['status' => '1', 'shippign' => $val->id]);
+            $reg =  ShippingDetailInOut::query()->select('serial', 'part_no', 'part_qty', 'date_scan', 'time_scan', 'status', 'shippign')
+                ->where('shippign', $val->id)->get();
+            // GUARDA INFOMRACION EN INFOR
+
+            foreach( $reg as $regs)
+            {
+                $ser=substr($regs->serial,5);
+                YI007::query()->insert(
+                    [
+                        'I7PROD'=>$regs->part_no,
+                        'I7SENO'=>$ser,
+                        'I7TFLG'=>$flag,
+                        'I7TDTE'=>date('Ymd', strtotime($regs->date_Scan)),
+                        'I7TTIM'=>date('Hms', strtotime($regs->time_scan)),
+                        'I7TQTY'=>$regs->part_qty,
+                        'I7CUSR'=>'miguel',
+                        'I7CCDT'=>date('Ymd', strtotime($val->fecha_shi)),
+                        'I7CCTM'=>date('Hms', strtotime($val->hora_shi)),
+
+
+                    ]
+                );
+
+            }
+
         } else {
             $error = 1;
             $msgerror = 'No hay escaneos pendientes';
         }
-        $scan =
-            $val = ShippingInOut::query()->select('shipping_in_outs.id','name','fecha_shi','hora_shi','transfer_flag','wharehouse')->join('users','users.id','=','usuario')->orderby('shipping_in_outs.id', 'desc')->get();
-        return view('WhereHouse_In_Out.shipping', ['scan' => $scan, 'error' => $error, 'msgerror' => $msgerror,'id'=>$id,'texto'=>$text]);
+            $scan = ShippingInOut::query()->select('shipping_in_outs.id', 'name', 'fecha_shi', 'hora_shi', 'transfer_flag', 'wharehouse')->join('users', 'users.id', '=', 'usuario')->orderby('shipping_in_outs.id', 'desc')->get();
+            return view('WhereHouse_In_Out.shipping', ['scan' => $scan, 'error' => $error, 'msgerror' => $msgerror, 'id' => $id, 'texto' => $text]);
     }
 
     public function export(Request $request)
     {
-        $id=$request->id;
-        return Excel::download(new ShippingExport($id ), 'Scan.xlsx');
+        $id = $request->id;
+        return Excel::download(new ShippingExport($id), 'Scan.xlsx');
     }
     public function exportDetail(Request $request)
     {
-        $id=$request->id;
-        return Excel::download(new ShippingExportDetail($id ), 'Scan.xlsx');
+        $id = $request->id;
+        return Excel::download(new ShippingExportDetail($id), 'Scan.xlsx');
     }
     public function saveshipping(Request $request)
     {

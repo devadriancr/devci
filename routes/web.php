@@ -2,11 +2,8 @@
 
 use App\Http\Controllers\ConsignmentInstructionController;
 use App\Http\Controllers\ContainerController;
-<<<<<<< HEAD
 use App\Http\Controllers\WHExtInOutController;
-=======
 use App\Http\Controllers\ItemClassController;
->>>>>>> 1b859211dd2d6edec0e81967467834df8dc91914
 use App\Http\Controllers\ShippingInstructionController;
 use App\Models\ItemClass;
 use Illuminate\Support\Facades\Route;
