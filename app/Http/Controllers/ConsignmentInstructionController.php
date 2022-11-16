@@ -144,6 +144,7 @@ class ConsignmentInstructionController extends Controller
                 ])->first();
             // SQL
             $item = Item::where('item', 'LIKE', '%' . $scanData->part_no . '%')->first();
+            $consignment = ConsignmentInstruction::where('supplier', '=', $scanData)->first();
             dd($item, $scanData);
             // INFOR
             $insert = YF006::query()->insert([
