@@ -15,6 +15,6 @@ class ItemTypeSeeder extends Seeder
      */
     public function run()
     {
-        ItemType::factory(10)->create();
+        // ItemType::factory(10)->create();
     }
 }

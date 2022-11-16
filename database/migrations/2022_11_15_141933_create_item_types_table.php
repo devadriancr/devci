@@ -15,9 +15,9 @@ return new class extends Migration
     {
         Schema::create('item_types', function (Blueprint $table) {
             $table->id();
-            $table->string('key');
-            $table->string('data');
-            $table->string('status');
+            $table->string('key')->unique();
+            $table->string('data')->nullable();
+            $table->string('status')->nullable();
             $table->timestamps();
         });
     }

@@ -14,7 +14,9 @@ class TransactionTypeController extends Controller
      */
     public function index()
     {
-        //
+        $transactions = TransactionType::paginate(10);
+
+         return view('transaction-type.index', ['transactions' => $transactions]);
     }
 
     /**
