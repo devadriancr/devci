@@ -21,6 +21,7 @@ class DatabaseSeeder extends Seeder
             ItemClassSeeder::class,
             ItemTypeSeeder::class,
             MeasurementUnitSeeder::class,
+            TransactionTypeSeeder::class,
         ]);
     }
 }

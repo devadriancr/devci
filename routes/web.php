@@ -4,8 +4,10 @@ use App\Http\Controllers\ConsignmentInstructionController;
 use App\Http\Controllers\ContainerController;
 use App\Http\Controllers\WHExtInOutController;
 use App\Http\Controllers\ItemClassController;
+use App\Http\Controllers\ItemController;
 use App\Http\Controllers\ShippingInstructionController;
-use App\Models\ItemClass;
+use App\Http\Controllers\TransactionTypeController;
+use App\Models\TransactionType;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -72,6 +74,17 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function () {
      */
     Route::resource('item-class', ItemClassController::class);
     Route::get('item-class-upload', [ItemClassController::class, 'upload']);
+
+    /**
+     * Routes Item
+     */
+    Route::resource('item', ItemController::class);
+    Route::get('item-upload', [ItemController::class, 'upload']);
+
+    /**
+     * Routes Transaction Types
+     */
+    Route::resource('transaction-type', TransactionTypeController::class);
 
 
 });

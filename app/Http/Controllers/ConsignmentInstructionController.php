@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\ConsignmentInstruction;
 use App\Models\Container;
 use App\Models\ShippingInstruction;
+use App\Models\TransactionType;
 use App\Models\YF006;
 use Carbon\Carbon;
 use Carbon\Doctrine\CarbonDoctrineType;
@@ -78,6 +79,10 @@ class ConsignmentInstructionController extends Controller
             'user_id' => Auth::id(),
         ]);
 
+        $transaction = TransactionType::where('code', '=', 'I')->first();
+
+        $consignment->transactions()->sync($transaction->id);
+
         return redirect()->back()->with('success', 'Registro Exitoso');
     }
 
@@ -136,21 +141,19 @@ class ConsignmentInstructionController extends Controller
                     ['part_no', '=', $data['part_no']],
                     ['part_qty', '=', $data['part_qty']],
                 ])->first();
+            // SQL
+            // dd($scanData);
+            // INFOR
             $insert = YF006::query()->insert([
-                // 'H3SINO' => ,
                 'H3CONO' => $data['container'],
                 'H3DDTE' => $data['date'],
                 'H3DTIM' => Carbon::parse($data['time'])->format('Hi'),
                 'H3PROD' => $data['part_no'],
                 'H3SUCD' => $data['supplier'],
-                // 'H3SPCD' => ,
                 'H3SENO' => $data['serial'],
                 'H3RQTY' => $data['part_qty'],
                 'H3RDTE' => Carbon::parse($scanData->created_at)->format('Ymd'),
-                'H3RTIM' => Carbon::parse($scanData->created_at)->format('Hi'),
-                // 'H3CUSR' => ,
-                // 'H3CCDT' => ,
-                // 'H3CCTM' => ,
+                'H3RTIM' => Carbon::parse($scanData->created_at)->format('His'),
             ]);
         }
 
@@ -158,10 +161,7 @@ class ConsignmentInstructionController extends Controller
         $query = "CALL LX834OU02.YPU180C";
         $result = odbc_exec($conn, $query);
 
-        $container = Container::where([
-                ['id', '=', $request->container_id]
-            ])
-            ->update(['status' => 0]);
+        $container = Container::where([['id', '=', $request->container_id]])->update(['status' => 0]);
 
         return redirect('container-ci');
     }
