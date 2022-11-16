@@ -29,4 +29,9 @@ class ConsignmentInstruction extends Model
     {
         return $this->belongsToMany('App\Models\TransactionType');
     }
+
+    public function items(): BelongsToMany
+    {
+        return $this->belongsToMany('App\Models\Items');
+    }
 }

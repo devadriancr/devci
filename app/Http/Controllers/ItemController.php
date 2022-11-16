@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\IIM;
 use App\Models\Item;
 use Illuminate\Http\Request;
-use PhpParser\Node\Stmt\Echo_;
 
 class ItemController extends Controller
 {
@@ -16,10 +15,12 @@ class ItemController extends Controller
             ->orderBy('IMENDT', 'DESC')
             ->get();
 
-        echo count($items) . "<br>";
+        // echo count($items) . "<br>";
 
         foreach ($items as $key => $value) {
-            echo "$key &nbsp &nbsp $value->IID &nbsp &nbsp $value->IPROD &nbsp &nbsp $value->IDESC &nbsp &nbsp $value->IOPB &nbsp &nbsp $value->IMIN &nbsp &nbsp $value->IITYP &nbsp &nbsp $value->ICLAS &nbsp &nbsp $value->IUMS <br>";
+
+            // echo "$key &nbsp &nbsp $value->IID &nbsp &nbsp $value->IPROD &nbsp &nbsp $value->IDESC &nbsp &nbsp $value->IOPB &nbsp &nbsp $value->IMIN &nbsp &nbsp $value->IITYP &nbsp &nbsp $value->ICLAS &nbsp &nbsp $value->IUMS <br>";
+
             Item::updateOrCreate(
                 [
                     'item' => $value->IPROD,
@@ -37,6 +38,8 @@ class ItemController extends Controller
                 ],
             );
         }
+
+        return redirect('item');
     }
 
     /**

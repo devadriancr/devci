@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\ConsignmentInstruction;
 use App\Models\Container;
+use App\Models\Item;
 use App\Models\ShippingInstruction;
 use App\Models\TransactionType;
 use App\Models\YF006;
@@ -101,10 +102,10 @@ class ConsignmentInstructionController extends Controller
             ->get();
 
         $shipments = ShippingInstruction::where([
-                ['container', '=', $container],
-                ['date', '=', $date],
-                ['time', '=', $time]
-            ])
+            ['container', '=', $container],
+            ['date', '=', $date],
+            ['time', '=', $time]
+        ])
             ->orderBy('serial', 'ASC')
             ->get();
 
@@ -142,7 +143,8 @@ class ConsignmentInstructionController extends Controller
                     ['part_qty', '=', $data['part_qty']],
                 ])->first();
             // SQL
-            // dd($scanData);
+            $item = Item::where('item', 'LIKE', '%' . $scanData->part_no . '%')->first();
+            dd($item, $scanData);
             // INFOR
             $insert = YF006::query()->insert([
                 'H3CONO' => $data['container'],
