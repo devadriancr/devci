@@ -29,10 +29,16 @@
                                 {{ $container->code }}
                             </td>
                             <td class="px-4 py-3 text-sm">
-                                {{ $container->date }}
+                                @php
+                                    $date = new DateTimeImmutable($container->date);
+                                    echo $date->format('d-m-Y');
+                                @endphp
                             </td>
                             <td class="px-4 py-3 text-sm">
-                                {{ $container->time }}
+                                @php
+                                    $date = new DateTimeImmutable($container->time);
+                                    echo $date->format('H:i:s');
+                                @endphp
                             </td>
                             <td class="px-4 py-3">
                                 <div class="flex items-center space-x-4 text-sm">

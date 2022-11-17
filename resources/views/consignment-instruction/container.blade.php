@@ -33,7 +33,7 @@
                     <select name="container" class="block w-full mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-select focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:focus:shadow-outline-gray">
                         <option></option>
                         @foreach ($containers as $container)
-                        <option value="{{ $container->id }}">{{ $container->code }} {{ $container->date }} {{ $container->time }}</option>
+                            <option value="{{ $container->id }}">{{ $container->code }} </option>
                         @endforeach
                     </select>
                 </label>

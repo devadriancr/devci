@@ -3,8 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Container;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+
+use function GuzzleHttp\Promise\all;
 
 class ContainerController extends Controller
 {
@@ -46,8 +49,8 @@ class ContainerController extends Controller
 
         $container = Container::create([
             'code' => $request->code,
-            'date' => $request->date,
-            'time' => $request->time,
+            'date' => Carbon::parse($request->date)->format('Ymd'),
+            'time' => Carbon::parse($request->time)->format('His'),
             'user_id' => Auth::id(),
         ]);
 
@@ -85,7 +88,16 @@ class ContainerController extends Controller
      */
     public function update(Request $request, Container $container)
     {
-        $container->fill($request->all());
+        $data = $request->except('date', 'time');
+
+        if (!empty($request->date)) {
+            $data['date'] = Carbon::parse($request->date)->format('Ymd');
+        }
+        if (!empty($request->time)) {
+            $data['time'] = Carbon::parse($request->time)->format('His');
+        }
+
+        $container->fill($data);
 
         if ($container->isDirty()) {
             $container->save();

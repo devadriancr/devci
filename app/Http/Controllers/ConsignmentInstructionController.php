@@ -9,18 +9,14 @@ use App\Models\ShippingInstruction;
 use App\Models\TransactionType;
 use App\Models\YF006;
 use Carbon\Carbon;
-use Carbon\Doctrine\CarbonDoctrineType;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use PhpOffice\PhpSpreadsheet\Calculation\TextData\Format;
-use PhpParser\Node\Expr\AssignOp\Concat;
-use Symfony\Component\Mailer\Transport\Dsn;
 
 class ConsignmentInstructionController extends Controller
 {
     public function container()
     {
-        $containers = Container::where([['date', '=', Carbon::now()->format('Y-m-d')], ['status', '=', 1]])->orderBy('date', 'ASC')->orderBy('time', 'ASC')->get();
+        $containers = Container::where([['date', '=', Carbon::now()->format('Ymd')], ['status', '=', 1]])->orderBy('date', 'ASC')->orderBy('time', 'ASC')->get();
 
         return view('consignment-instruction.container', ['containers' => $containers]);
     }
@@ -49,6 +45,7 @@ class ConsignmentInstructionController extends Controller
         $request->validate([
             'container' => ['required', 'numeric'],
         ]);
+
         $container = Container::find($request->container);
         $consignments = ConsignmentInstruction::where('container_id', '=', $request->container)->orderBy('created_at', 'DESC')->paginate(5);
 
@@ -90,7 +87,7 @@ class ConsignmentInstructionController extends Controller
     public function check(Request $request)
     {
         $container = $request->container_code;
-        $date = Carbon::parse($request->container_date)->format('Ymd');
+        $date = $request->container_date;
         $time = $request->container_time;
 
         $consignments = ConsignmentInstruction::join('containers', 'consignment_instructions.container_id', '=', 'containers.id')
@@ -135,17 +132,14 @@ class ConsignmentInstructionController extends Controller
     public function finish(Request $request)
     {
         foreach ($request->arrayData as $key => $data) {
-            $scanData = ConsignmentInstruction::query()
-                ->where([
-                    ['supplier', '=', $data['supplier']],
-                    ['serial', '=', $data['serial']],
-                    ['part_no', '=', $data['part_no']],
-                    ['part_qty', '=', $data['part_qty']],
-                ])->first();
+            $consignment = ConsignmentInstruction::query()->where('serial', '=', $data['serial'])->first();
+            $item = Item::query()->where('item', 'LIKE', '%' . $consignment->part_no . '%')->first();
+
             // SQL
-            $item = Item::where('item', 'LIKE', '%' . $scanData->part_no . '%')->first();
-            $consignment = ConsignmentInstruction::where('supplier', '=', $scanData)->first();
-            dd($item, $scanData);
+            $consignment->items()->sync([$item->id]);
+
+            dd($consignment);
+
             // INFOR
             $insert = YF006::query()->insert([
                 'H3CONO' => $data['container'],
@@ -155,8 +149,8 @@ class ConsignmentInstructionController extends Controller
                 'H3SUCD' => $data['supplier'],
                 'H3SENO' => $data['serial'],
                 'H3RQTY' => $data['part_qty'],
-                'H3RDTE' => Carbon::parse($scanData->created_at)->format('Ymd'),
-                'H3RTIM' => Carbon::parse($scanData->created_at)->format('His'),
+                'H3RDTE' => Carbon::parse($consignment->created_at)->format('Ymd'),
+                'H3RTIM' => Carbon::parse($consignment->created_at)->format('His'),
             ]);
         }
 

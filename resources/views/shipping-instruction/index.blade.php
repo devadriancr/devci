@@ -69,10 +69,16 @@
                                 {{ $shipping->part_qty }}
                             </td>
                             <td class="px-4 py-3 text-sm">
-                                {{ $shipping->date }}
+                                @php
+                                    $date = new DateTimeImmutable($shipping->date);
+                                    echo $date->format('d-m-Y');
+                                @endphp
                             </td>
                             <td class="px-4 py-3 text-sm">
-                                {{ $shipping->time }}
+                                @php
+                                    $time = new DateTimeImmutable($shipping->time);
+                                    echo $time->format('H:i:s');
+                                @endphp
                             </td>
                         </tr>
                         @endforeach

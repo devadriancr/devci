@@ -32,6 +32,6 @@ class ConsignmentInstruction extends Model
 
     public function items(): BelongsToMany
     {
-        return $this->belongsToMany('App\Models\Items');
+        return $this->belongsToMany('App\Models\Item');
     }
 }

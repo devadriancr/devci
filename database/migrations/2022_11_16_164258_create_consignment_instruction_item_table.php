@@ -17,7 +17,6 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('consignment_instruction_id');
             $table->unsignedBigInteger('item_id');
-            $table->double('quantity');
             $table->timestamps();
 
             $table->foreign('consignment_instruction_id')->references('id')->on('consignment_instructions')->onDelete('cascade');

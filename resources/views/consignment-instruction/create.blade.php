@@ -34,7 +34,11 @@
                     </div>
                     <div class="col-span-6 text-right">
                         <span>
-                            {{ $container->date }} {{ $container->time }}
+                            @php
+                                $date = date("d-m-Y", strtotime($container->date));
+                                $time = date("H:i:s", strtotime($container->time));
+                            @endphp
+                            {{ $date }} {{ $time }}
                         </span>
                     </div>
                 </div>
