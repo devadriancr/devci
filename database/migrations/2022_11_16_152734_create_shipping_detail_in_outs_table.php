@@ -13,16 +13,16 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('wherehouse_in_outs', function (Blueprint $table) {
-            $table->id();
-            $table->string('serial')->nullable();
-            $table->string('part_no')->nullable();
-            $table->integer('part_qty')->nullable();
+        Schema::create('shipping_detail_in_outs', function (Blueprint $table) {
+            $table->id()->unique()->nullable();
             $table->date('date_Scan')->nullable();
             $table->time('time_scan')->nullable();
             $table->boolean('status')->nullable();
-            $table->string('shippign');
+            $table->unsignedBigInteger('shipping_id')->nullable();
+            $table->unsignedBigInteger('consignment_id')->nullable();
             $table->timestamps();
+            $table->foreign('consignment_id')->references('id')->on('consignment_instructions');
+            $table->foreign('shipping_id')->references('id')->on('shipping_in_outs');
         });
     }
 
@@ -33,6 +33,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('wherehouse_in_outs');
+        Schema::dropIfExists('shipping_detail_in_outs');
     }
 };
