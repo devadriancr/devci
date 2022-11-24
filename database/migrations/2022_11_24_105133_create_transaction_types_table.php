@@ -13,11 +13,13 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('item_types', function (Blueprint $table) {
+        Schema::create('transaction_types', function (Blueprint $table) {
             $table->id();
-            $table->string('key')->unique();
-            $table->string('data')->nullable();
-            $table->string('status')->nullable();
+            $table->string('tid')->nullable();
+            $table->string('code');
+            $table->string('name');
+            $table->string('description')->nullable();
+            $table->string('status')->default(1);
             $table->timestamps();
         });
     }
@@ -29,6 +31,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('item_types');
+        Schema::dropIfExists('transaction_types');
     }
 };

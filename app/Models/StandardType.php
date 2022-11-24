@@ -6,16 +6,16 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class ItemClass extends Model
+class StandardType extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'iid', 'code', 'name', 'status',
+        'name', 'description', 'status',
     ];
 
-    public function items(): HasMany
+    public function standardPacks(): HasMany
     {
-        return $this->hasMany(Item::class);
+        return $this->hasMany(StandardPack::class);
     }
 }

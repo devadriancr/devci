@@ -13,11 +13,11 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('measurement_units', function (Blueprint $table) {
+        Schema::create('standard_types', function (Blueprint $table) {
             $table->id();
-            $table->string('unit')->unique();
+            $table->string('name');
             $table->string('description')->nullable();
-            $table->string('status')->nullable();
+            $table->boolean('status')->default(1);
             $table->timestamps();
         });
     }
@@ -29,6 +29,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('measurement_units');
+        Schema::dropIfExists('standard_types');
     }
 };

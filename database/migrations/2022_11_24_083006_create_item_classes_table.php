@@ -13,16 +13,13 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('containers', function (Blueprint $table) {
+        Schema::create('item_classes', function (Blueprint $table) {
             $table->id();
+            $table->string('iid')->nullable();
             $table->string('code');
-            $table->date('date');
-            $table->string('time');
+            $table->string('name');
             $table->boolean('status')->default(1);
-            $table->unsignedBigInteger('user_id')->nullable();
             $table->timestamps();
-
-            // $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
     }
 
@@ -33,6 +30,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('containers');
+        Schema::dropIfExists('item_classes');
     }
 };

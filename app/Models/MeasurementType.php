@@ -6,12 +6,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class ItemClass extends Model
+class MeasurementType extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'iid', 'code', 'name', 'status',
+        'code', 'name', 'description', 'status',
     ];
 
     public function items(): HasMany

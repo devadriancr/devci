@@ -13,9 +13,15 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('warehouses', function (Blueprint $table) {
+        Schema::create('standard_packs', function (Blueprint $table) {
             $table->id();
+            $table->string('name');
+            $table->double('quantity');
+            $table->boolean('status')->default(1);
+            $table->unsignedBigInteger('standard_type_id')->nullable();
             $table->timestamps();
+
+            $table->foreign('standard_type_id')->references('id')->on('standard_types')->onDelete('set null');
         });
     }
 
@@ -26,6 +32,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('warehouses');
+        Schema::dropIfExists('standard_packs');
     }
 };
