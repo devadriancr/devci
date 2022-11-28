@@ -72,6 +72,12 @@ class ContainerController extends Controller
      */
     public function update(Request $request, Container $container)
     {
+        $request->validate([
+            'code' => ['string', 'max:11', 'min:11'],
+            'arrival_date' => ['date_format:Y-m-d'],
+            'arrival_time' => ['date_format:H:i:s'],
+        ]);
+
         $container->fill($request->all());
 
         if ($container->isDirty()) {

@@ -1,14 +1,14 @@
-<x-app-layout title="Contendor">
+<x-app-layout title="Almacén">
     <div class="container grid px-6 mx-auto">
         <h2 class="mt-4 mb-2 text-2xl font-semibold text-gray-700 dark:text-gray-200">
-            Contenedor
+            Almacén
         </h2>
         <div class="flex justify-end pt-2 pb-4">
-            <a href="{{ route('container.create') }}" class="flex items-center justify-between px-4 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple">
+            <a href="{{ route('warehouse.create') }}" class="flex items-center justify-between px-4 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
                 </svg>
-                <span class="ml-4">Agregar Contenedor</span>
+                <span class="ml-4">Agregar Almacén</span>
             </a>
         </div>
         <div class="w-full overflow-hidden rounded-lg shadow-xs">
@@ -16,41 +16,41 @@
                 <table class="w-full whitespace-no-wrap">
                     <thead>
                         <tr class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b dark:border-gray-700 bg-gray-50 dark:text-gray-400 dark:bg-gray-800">
-                            <th class="px-4 py-3">Num. Contenedor</th>
-                            <th class="px-4 py-3">Fecha de Llegada</th>
-                            <th class="px-4 py-3">Hora de Llegada</th>
+                            <th class="px-4 py-3">Código</th>
+                            <th class="px-4 py-3">Nombre</th>
+                            <th class="px-4 py-3">Descripción</th>
                             <th class="px-4 py-3">Fecha de Creación</th>
-                            <th class="px-4 py-3">Fecha de Actualizacón</th>
+                            <th class="px-4 py-3">Fecha de Actualizacion</th>
                             <th class="px-4 py-3">Acciones</th>
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y dark:divide-gray-700 dark:bg-gray-800">
-                        @foreach ($containers as $container)
+                        @foreach ($warehouses as $warehouse)
                         <tr class="text-gray-700 dark:text-gray-400">
                             <td class="px-4 py-3 text-sm">
-                                {{ $container->code }}
+                                {{ $warehouse->code }}
                             </td>
                             <td class="px-4 py-3 text-sm">
-                                {{ $container->arrival_date }}
+                                {{ $warehouse->name }}
                             </td>
                             <td class="px-4 py-3 text-sm">
-                                {{ $container->arrival_time }}
+                                {{ $warehouse->description }}
                             </td>
                             <td class="px-4 py-3 text-sm">
-                                {{ $container->created_at }}
+                                {{ $warehouse->created_at }}
                             </td>
                             <td class="px-4 py-3 text-sm">
-                                {{ $container->updated_at }}
+                                {{ $warehouse->updated_at }}
                             </td>
                             <td class="px-4 py-3">
                                 <div class="flex items-center space-x-4 text-sm">
-                                    <a href="{{ route('container.edit', $container->id) }}" class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray" aria-label="Edit">
+                                    <a href="{{ route('warehouse.edit', $warehouse->id) }}" class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray" aria-label="Edit">
                                         <svg class="w-5 h-5" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20">
                                             <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z">
                                             </path>
                                         </svg>
                                     </a>
-                                    <form method="POST" action="{{ route('container.destroy', $container->id) }}">
+                                    <form method="POST" action="{{ route('warehouse.destroy', $warehouse->id) }}">
                                         @csrf
                                         @method('DELETE')
                                         <button class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray" aria-label="Delete">
@@ -68,14 +68,14 @@
             </div>
             <div class="grid px-4 py-3 text-xs font-semibold tracking-wide text-gray-500 uppercase border-t dark:border-gray-700 bg-gray-50 sm:grid-cols-9 dark:text-gray-400 dark:bg-gray-800">
                 <span class="flex items-center col-span-3">
-                    Mostrando {{ $containers->firstItem() }} - {{ $containers->lastItem() }} de {{ $containers->total()}}
+                    Mostrando {{ $warehouses->firstItem() }} - {{ $warehouses->lastItem() }} de {{ $warehouses->total()}}
                 </span>
                 <span class="col-span-2"></span>
                 <!-- Pagination -->
                 <span class="flex col-span-4 mt-2 sm:mt-auto sm:justify-end">
                     <nav aria-label="Table navigation">
                         <ul class="inline-flex items-center">
-                            {{ $containers->withQueryString()->links()}}
+                            {{ $warehouses->withQueryString()->links()}}
                         </ul>
                     </nav>
                 </span>

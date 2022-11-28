@@ -2,8 +2,6 @@
 
 namespace Database\Seeders;
 
-use App\Models\ItemClass;
-use App\Models\StandardType;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -15,7 +13,6 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        // User::factory(10)->create();
         $this->call([
             UsersSeeder::class,
             StandardTypeSeeder::class,
@@ -24,7 +21,8 @@ class DatabaseSeeder extends Seeder
             ItemTypeSeeder::class,
             ItemClassSeeder::class,
             ItemSeeder::class,
-            ContainerSeeder::class
+            ContainerSeeder::class,
+            WarehouseSeeder::class,
         ]);
     }
 }

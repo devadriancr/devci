@@ -7,6 +7,7 @@ use App\Http\Controllers\ItemClassController;
 use App\Http\Controllers\ItemController;
 use App\Http\Controllers\ShippingInstructionController;
 use App\Http\Controllers\TransactionTypeController;
+use App\Http\Controllers\WarehouseController;
 use App\Models\TransactionType;
 use Illuminate\Support\Facades\Route;
 
@@ -44,6 +45,11 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function () {
      * Routes Container
      */
     Route::resource('container', ContainerController::class);
+
+    /**
+     * Routes Warehouse
+     */
+    Route::resource('warehouse', WarehouseController::class);
 
      /**
      * Routes  In and Out Wherehouse extern
