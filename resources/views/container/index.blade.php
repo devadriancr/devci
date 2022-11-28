@@ -29,10 +29,10 @@
                                 {{ $container->code }}
                             </td>
                             <td class="px-4 py-3 text-sm">
-                                {{ $container->date }}
+                                {{ $container->arrival_date }}
                             </td>
                             <td class="px-4 py-3 text-sm">
-                                {{ $container->time }}
+                                {{ $container->arrival_time }}
                             </td>
                             <td class="px-4 py-3">
                                 <div class="flex items-center space-x-4 text-sm">

@@ -29,13 +29,13 @@
                 <div class="col-span-6">
                     <label class=" text-sm">
                         <span class="text-gray-700 dark:text-gray-400">Fecha</span>
-                        <input name="date" type="date" class="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input" value="{{ $container->date }}" />
+                        <input name="arrival_date" type="date" class="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input" value="{{ $container->date }}" />
                     </label>
                 </div>
                 <div class="col-span-6">
                     <label class=" text-sm">
                         <span class="text-gray-700 dark:text-gray-400">Hora</span>
-                        <input name="time" type="time" class="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input" value="{{ $container->time }}" />
+                        <input name="arrival_time" type="time" class="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input" value="{{ $container->time }}" />
                     </label>
                 </div>
                 <div class="col-span-12">

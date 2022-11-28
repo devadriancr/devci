@@ -16,8 +16,8 @@ return new class extends Migration
         Schema::create('containers', function (Blueprint $table) {
             $table->id();
             $table->string('code');
-            $table->string('arrival_date');
-            $table->string('arrival_time');
+            $table->date('arrival_date');
+            $table->time('arrival_time');
             $table->boolean('status')->default(1);
             $table->timestamps();
         });
