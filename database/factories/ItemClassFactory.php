@@ -17,9 +17,9 @@ class ItemClassFactory extends Factory
     public function definition()
     {
         return [
-            'code' => $this->faker->randomLetter() . $this->faker->randomLetter(),
-            'description' => $this->faker->sentence,
-            'status' => $this->faker->randomElement(['IM', 'IC', 'IZ']),
+            'iid' => $this->faker->randomElements(['IM', 'IC', 'IZ']),
+            'code' => $this->faker->word,
+            'name' => $this->faker->sentence
         ];
     }
 }

@@ -5,9 +5,9 @@ namespace Database\Factories;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\TransactionType>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\MeasurementType>
  */
-class TransactionTypeFactory extends Factory
+class MeasurementTypeFactory extends Factory
 {
     /**
      * Define the model's default state.
@@ -17,9 +17,8 @@ class TransactionTypeFactory extends Factory
     public function definition()
     {
         return [
-            'code' => $this->faker->randomLetter,
+            'code' => $this->faker->randomLetter . $this->faker->randomLetter,
             'name' => $this->faker->word,
-            'description' => $this->faker->sentence
         ];
     }
 }

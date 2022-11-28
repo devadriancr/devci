@@ -16,7 +16,6 @@ return new class extends Migration
         Schema::create('standard_packs', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->double('quantity');
             $table->boolean('status')->default(1);
             $table->unsignedBigInteger('standard_type_id')->nullable();
             $table->timestamps();

@@ -5,9 +5,9 @@ namespace Database\Factories;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\ItemType>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\StandardPack>
  */
-class ItemTypeFactory extends Factory
+class StandardPackFactory extends Factory
 {
     /**
      * Define the model's default state.
@@ -17,8 +17,7 @@ class ItemTypeFactory extends Factory
     public function definition()
     {
         return [
-            'code' => $this->faker->randomLetter,
-            'name' => $this->faker->word,
+            'name' => $this->faker->word
         ];
     }
 }
