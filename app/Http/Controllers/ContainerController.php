@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Container;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class ContainerController extends Controller
@@ -15,7 +14,7 @@ class ContainerController extends Controller
      */
     public function index()
     {
-        $containers = Container::paginate(10);
+        $containers = Container::where('status', '=', 1)->orderBy('arrival_date', 'DESC')->orderBy('arrival_time', 'DESC')->paginate(10);
 
         return view('container.index', ['containers' => $containers]);
     }
@@ -27,7 +26,7 @@ class ContainerController extends Controller
      */
     public function create()
     {
-        //
+        return view('container.create');
     }
 
     /**
@@ -38,18 +37,19 @@ class ContainerController extends Controller
      */
     public function store(Request $request)
     {
-        //
-    }
+        $request->validate([
+            'code' => ['required', 'string', 'max:11', 'min:11'],
+            'arrival_date' => ['required', 'date_format:Y-m-d'],
+            'arrival_time' => ['required', 'date_format:H:i'],
+        ]);
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
+        Container::create([
+            'code' => $request->code,
+            'arrival_date' => $request->arrival_date,
+            'arrival_time' => $request->arrival_time,
+        ]);
+
+        return redirect('container');
     }
 
     /**
@@ -58,9 +58,9 @@ class ContainerController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(Container $container)
     {
-        //
+        return view('container.edit', ['container' => $container]);
     }
 
     /**
@@ -70,9 +70,15 @@ class ContainerController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Container $container)
     {
-        //
+        $container->fill($request->all());
+
+        if ($container->isDirty()) {
+            $container->save();
+        }
+
+        return redirect()->back();
     }
 
     /**
@@ -81,8 +87,9 @@ class ContainerController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Container $container)
     {
-        //
+        $container->update(['status' => 0]);
+        return redirect()->back();
     }
 }
