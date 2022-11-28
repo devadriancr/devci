@@ -45,46 +45,33 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function () {
      */
     Route::resource('container', ContainerController::class);
 
-    /**
-     * Routes Consigment Instruction
-     */
-    Route::resource('consigment-instruction', ConsignmentInstructionController::class);
-    Route::get('container-ci', [ConsignmentInstructionController::class, 'container'])->name('consigment-instruction.container');
-    Route::post('check-ci', [ConsignmentInstructionController::class, 'check'])->name('consigment-instruction.check');
-    Route::post('finish-ci', [ConsignmentInstructionController::class, 'finish'])->name('consigment-instruction.finish');
-
-    /**
-     * Routes Shipping Instruction
-     */
-    Route::resource('container', ContainerController::class);
-
      /**
      * Routes  In and Out Wherehouse extern
      */
-    Route::resource('Scan-In_Out',WHExtInOutController::class);
-    Route::POST('Scan-In_Out', [WHExtInOutController::class, 'store'])->name('WHExtInOutController.store');
-    Route::POST('shipping',[WHExtInOutController::class, 'shipping'])->name('WHExtInOutController.shipping');
-    Route::POST('saveshipping',[WHExtInOutController::class, 'saveshipping'])->name('WHExtInOutController.saveshipping');
-    Route::get('export', [WHExtInOutController::class, 'export'])->name('WHExtInOutController.export');
-    Route::get('exportdetail', [WHExtInOutController::class, 'exportDetail'])->name('WHExtInOutController.exportDetail');
-    Route::resource('shipping-instruction', ShippingInstructionController::class);
+    // Route::resource('Scan-In_Out',WHExtInOutController::class);
+    // Route::POST('Scan-In_Out', [WHExtInOutController::class, 'store'])->name('WHExtInOutController.store');
+    // Route::POST('shipping',[WHExtInOutController::class, 'shipping'])->name('WHExtInOutController.shipping');
+    // Route::POST('saveshipping',[WHExtInOutController::class, 'saveshipping'])->name('WHExtInOutController.saveshipping');
+    // Route::get('export', [WHExtInOutController::class, 'export'])->name('WHExtInOutController.export');
+    // Route::get('exportdetail', [WHExtInOutController::class, 'exportDetail'])->name('WHExtInOutController.exportDetail');
+    // Route::resource('shipping-instruction', ShippingInstructionController::class);
 
     /**
      * Routes Item Class
      */
-    Route::resource('item-class', ItemClassController::class);
-    Route::get('item-class-upload', [ItemClassController::class, 'upload']);
+    // Route::resource('item-class', ItemClassController::class);
+    // Route::get('item-class-upload', [ItemClassController::class, 'upload']);
 
     /**
      * Routes Item
      */
-    Route::resource('item', ItemController::class);
-    Route::get('item-upload', [ItemController::class, 'upload']);
+    // Route::resource('item', ItemController::class);
+    // Route::get('item-upload', [ItemController::class, 'upload']);
 
     /**
      * Routes Transaction Types
      */
-    Route::resource('transaction-type', TransactionTypeController::class);
+    // Route::resource('transaction-type', TransactionTypeController::class);
 
 
 });
