@@ -24,4 +24,15 @@ class Location extends Model
     {
         return $this->hasMany(Inventory::class);
     }
+
+    // relacion de 1:N input
+    public function input(): HasMany
+    {
+        return $this->hasMany(Input::class);
+    }
+    // relacion de 1:N input
+    public function output(): HasMany
+    {
+        return $this->hasMany(Output::class);
+    }
 }
