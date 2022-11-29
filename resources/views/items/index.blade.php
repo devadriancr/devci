@@ -16,10 +16,10 @@
                             <th class="px-4 py-3">Record ID</th>
                             <th class="px-4 py-3">No. Parte</th>
                             <th class="px-4 py-3">Descripción</th>
-                            <th class="px-4 py-3">Cantidad Inicial</th>
-                            <th class="px-4 py-3">Tipo de Material</th>
-                            <th class="px-4 py-3">Clase de Material</th>
                             <th class="px-4 py-3">Unidad de Medida</th>
+                            <th class="px-4 py-3">Tipo de Item</th>
+                            <th class="px-4 py-3">Clase de Item</th>
+                            <th class="px-4 py-3">Standard Pack</th>
                             <!-- <th class="px-4 py-3">Fecha de Creación</th>
                             <th class="px-4 py-3">Hora de Creación</th> -->
                         </tr>
@@ -28,25 +28,25 @@
                         @foreach ($items as $item)
                             <tr class="text-gray-700 dark:text-gray-400">
                                 <td class="px-4 py-3 text-sm">
-                                    {{ $item->status }}
+                                    {{ $item->iid }}
                                 </td>
                                 <td class="px-4 py-3 text-sm">
-                                    {{ $item->item }}
+                                    {{ $item->item_number }}
                                 </td>
                                 <td class="px-4 py-3 text-sm">
-                                    {{ $item->description }}
+                                    {{ $item->item_description }}
                                 </td>
                                 <td class="px-4 py-3 text-sm">
-                                    {{ $item->opening_balance }}
+                                    {{ $item->measurement_type_id }}
                                 </td>
                                 <td class="px-4 py-3 text-sm">
-                                    {{ $item->item_type }}
+                                    {{ $item->item_type_id }}
                                 </td>
                                 <td class="px-4 py-3 text-sm">
-                                    {{ $item->item_class }}
+                                    {{ $item->item_class_id }}
                                 </td>
                                 <td class="px-4 py-3 text-sm">
-                                    {{ $item->measurement_unit }}
+                                    {{ $item->standard_pack_id }}
                                 </td>
                                 <!-- <td class="px-4 py-3 text-sm">
                                     {{ $item->creation_date }}

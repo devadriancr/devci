@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ContainerController;
+use App\Http\Controllers\ItemController;
 use App\Http\Controllers\LocationController;
 use App\Http\Controllers\TransactionTypeController;
 use App\Http\Controllers\WarehouseController;
@@ -55,6 +56,13 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function () {
      * Routes Transaction Type
      */
     Route::resource('transaction-type', TransactionTypeController::class);
+
+
+    /**
+     *
+     */
+    Route::resource('item', ItemController::class);
+    Route::get('item-upload', [ItemController::class, 'upload']);
 
      /**
      * Routes  In and Out Wherehouse extern
