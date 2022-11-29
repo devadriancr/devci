@@ -17,24 +17,19 @@ return new class extends Migration
             $table->id();
             $table->string('supplier');
             $table->string('serial');
-            $table->unsignedBigInteger('item_id')->unique()->nullable();
+            $table->unsignedBigInteger('item_id')->nullable();
             $table->double('item_quantity');
-            $table->unsignedBigInteger('container_id')->unique()->nullable();
-            $table->unsignedBigInteger('transaction_type_id')->unique()->nullable();
-            $table->unsignedBigInteger('location_id')->unique()->nullable();
-            $table->unsignedBigInteger('travel_id')->unique()->nullable();
+            $table->unsignedBigInteger('container_id')->nullable();
+            $table->unsignedBigInteger('transaction_type_id')->nullable();
+            $table->unsignedBigInteger('location_id')->nullable();
+            $table->unsignedBigInteger('travel_id')->nullable();
             $table->timestamps();
-            //  ------------------------------------------------------------------------------
-            // llave items
+
             $table->foreign('item_id')->references('id')->on('items')->onDelete('set null');
-            // llave container
             $table->foreign('container_id')->references('id')->on('containers')->onDelete('set null');
-            // llave transaction type
             $table->foreign('transaction_type_id')->references('id')->on('transaction_types')->onDelete('set null');
-            // llave a locations
             $table->foreign('location_id')->references('id')->on('locations')->onDelete('set null');
-             // llave a travel
-             $table->foreign('travel_id')->references('id')->on('travel')->onDelete('set null');
+            $table->foreign('travel_id')->references('id')->on('travel')->onDelete('set null');
         });
     }
 

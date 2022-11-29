@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::create('transaction_types', function (Blueprint $table) {
             $table->id();
             $table->string('tid')->nullable();
-            $table->string('code');
+            $table->string('code')->unique();
             $table->string('name');
             $table->string('description')->nullable();
             $table->string('status')->default(1);

@@ -1,15 +1,9 @@
 <?php
 
-use App\Http\Controllers\ConsignmentInstructionController;
 use App\Http\Controllers\ContainerController;
-use App\Http\Controllers\WHExtInOutController;
-use App\Http\Controllers\ItemClassController;
-use App\Http\Controllers\ItemController;
 use App\Http\Controllers\LocationController;
-use App\Http\Controllers\ShippingInstructionController;
 use App\Http\Controllers\TransactionTypeController;
 use App\Http\Controllers\WarehouseController;
-use App\Models\TransactionType;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -56,6 +50,11 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function () {
      * Routes Location
      */
     Route::resource('location', LocationController::class);
+
+    /**
+     * Routes Transaction Type
+     */
+    Route::resource('transaction-type', TransactionTypeController::class);
 
      /**
      * Routes  In and Out Wherehouse extern

@@ -13,15 +13,14 @@ class TransactionType extends Model
     protected $fillable = [
         'tid', 'code', 'name', 'description', 'status',
     ];
-// relacion 1:n de outputs
-public function output():HasMany
-{
-    return $this->hasMany(Output::class);
-}
-// relacion 1:n de intputs
-public function intput():HasMany
-{
-    return $this->hasMany(Input::class);
-}
 
+    public function outputs(): HasMany
+    {
+        return $this->hasMany(Output::class);
+    }
+
+    public function intputs(): HasMany
+    {
+        return $this->hasMany(Input::class);
+    }
 }
