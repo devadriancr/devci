@@ -5,6 +5,7 @@ use App\Http\Controllers\ContainerController;
 use App\Http\Controllers\WHExtInOutController;
 use App\Http\Controllers\ItemClassController;
 use App\Http\Controllers\ItemController;
+use App\Http\Controllers\LocationController;
 use App\Http\Controllers\ShippingInstructionController;
 use App\Http\Controllers\TransactionTypeController;
 use App\Http\Controllers\WarehouseController;
@@ -50,6 +51,11 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function () {
      * Routes Warehouse
      */
     Route::resource('warehouse', WarehouseController::class);
+
+    /**
+     * Routes Location
+     */
+    Route::resource('location', LocationController::class);
 
      /**
      * Routes  In and Out Wherehouse extern

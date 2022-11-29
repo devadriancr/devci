@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Location;
 use App\Models\Warehouse;
 use Illuminate\Http\Request;
 
-class WarehouseController extends Controller
+class LocationController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -14,9 +15,9 @@ class WarehouseController extends Controller
      */
     public function index()
     {
-        $warehouses = Warehouse::orderBy('code', 'ASC')->paginate(10);
+        $locations = Location::orderBy('code', 'ASC')->paginate(10);
 
-        return view('warehouse.index', ['warehouses' => $warehouses]);
+        return view('location.index', ['locations' => $locations]);
     }
 
     /**
@@ -26,7 +27,9 @@ class WarehouseController extends Controller
      */
     public function create()
     {
-        return view('warehouse.create');
+        $warehouses = Warehouse::orderBy('code', 'ASC')->get();
+
+        return view('location.create', ['warehouses' => $warehouses]);
     }
 
     /**
@@ -38,28 +41,30 @@ class WarehouseController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'code' => ['required', 'string', 'max:3', 'unique:warehouses,code'],
+            'code' => ['required', 'string', 'unique:locations'],
             'name' => ['required', 'string'],
             'description' => ['string', 'nullable'],
+            'warehouse_id' => ['required', 'numeric'],
         ]);
 
-        Warehouse::create([
-            'lid' => 'WM',
+        Location::create([
+            'wid' => 'WL',
             'code' => $request->code,
             'name' => $request->name,
-            'description' => $request->description
+            'description' => $request->description,
+            'warehouse_id' => $request->warehouse_id,
         ]);
 
-        return redirect('warehouse');
+        return redirect('location');
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Warehouse  $warehouse
+     * @param  \App\Models\Location  $location
      * @return \Illuminate\Http\Response
      */
-    public function show(Warehouse $warehouse)
+    public function show(Location $location)
     {
         //
     }
@@ -67,32 +72,36 @@ class WarehouseController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\Warehouse  $warehouse
+     * @param  \App\Models\Location  $location
      * @return \Illuminate\Http\Response
      */
-    public function edit(Warehouse $warehouse)
+    public function edit(Location $location)
     {
-        return view('warehouse.edit', ['warehouse' => $warehouse]);
+        $warehouses = Warehouse::orderBy('code', 'ASC')->get();
+
+        return view('location.edit', ['location' => $location, 'warehouses' => $warehouses]);
     }
 
     /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Warehouse  $warehouse
+     * @param  \App\Models\Location  $location
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Warehouse $warehouse)
+    public function update(Request $request, Location $location)
     {
         $request->validate([
+            'code' => ['string', 'unique:locations'],
             'name' => ['string'],
             'description' => ['string', 'nullable'],
+            'warehouse_id' => ['numeric'],
         ]);
 
-        $warehouse->fill($request->all());
+        $location->fill($request->all());
 
-        if ($warehouse->isDirty()) {
-            $warehouse->save();
+        if ($location->isDirty()) {
+            $location->save();
         }
 
         return redirect()->back();
@@ -101,12 +110,12 @@ class WarehouseController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Warehouse  $warehouse
+     * @param  \App\Models\Location  $location
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Warehouse $warehouse)
+    public function destroy(Location $location)
     {
-        $warehouse->delete();
+        $location->delete();
         return redirect()->back();
     }
 }
