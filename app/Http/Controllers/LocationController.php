@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Location;
+use App\Models\Warehouse;
 use Illuminate\Http\Request;
 
 class LocationController extends Controller
@@ -15,6 +16,8 @@ class LocationController extends Controller
     public function index()
     {
         $locations = Location::orderBy('code', 'ASC')->paginate(10);
+
+        return view('location.index', ['locations' => $locations]);
     }
 
     /**
@@ -24,7 +27,9 @@ class LocationController extends Controller
      */
     public function create()
     {
-        //
+        $warehouses = Warehouse::orderBy('code', 'ASC')->get();
+
+        return view('location.create', ['warehouses' => $warehouses]);
     }
 
     /**
@@ -35,7 +40,22 @@ class LocationController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'code' => ['required', 'string', 'unique:locations'],
+            'name' => ['required', 'string'],
+            'description' => ['string', 'nullable'],
+            'warehouse_id' => ['required', 'numeric'],
+        ]);
+
+        Location::create([
+            'wid' => 'WL',
+            'code' => $request->code,
+            'name' => $request->name,
+            'description' => $request->description,
+            'warehouse_id' => $request->warehouse_id,
+        ]);
+
+        return redirect('location');
     }
 
     /**
@@ -57,7 +77,9 @@ class LocationController extends Controller
      */
     public function edit(Location $location)
     {
-        //
+        $warehouses = Warehouse::orderBy('code', 'ASC')->get();
+
+        return view('location.edit', ['location' => $location, 'warehouses' => $warehouses]);
     }
 
     /**
@@ -69,7 +91,20 @@ class LocationController extends Controller
      */
     public function update(Request $request, Location $location)
     {
-        //
+        $request->validate([
+            'code' => ['string', 'unique:locations'],
+            'name' => ['string'],
+            'description' => ['string', 'nullable'],
+            'warehouse_id' => ['numeric'],
+        ]);
+
+        $location->fill($request->all());
+
+        if ($location->isDirty()) {
+            $location->save();
+        }
+
+        return redirect()->back();
     }
 
     /**
@@ -80,6 +115,7 @@ class LocationController extends Controller
      */
     public function destroy(Location $location)
     {
-        //
+        $location->delete();
+        return redirect()->back();
     }
 }
