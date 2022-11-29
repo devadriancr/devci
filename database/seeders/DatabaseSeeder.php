@@ -24,6 +24,7 @@ class DatabaseSeeder extends Seeder
             ContainerSeeder::class,
             WarehouseSeeder::class,
             LocationSeeder::class,
+            TransactionTypeSeeder::class,
         ]);
     }
 }

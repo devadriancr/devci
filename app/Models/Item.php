@@ -48,12 +48,12 @@ class Item extends Model
     {
         return $this->hasMany(Inventory::class);
     }
-    // 1:N outputs
+
     public function output(): HasMany
     {
         return $this->hasMany(Output::class);
     }
-     // 1:N inputs
+
      public function input(): HasMany
      {
          return $this->hasMany(Input::class);
