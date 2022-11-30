@@ -15,10 +15,10 @@ class ItemClassSeeder extends Seeder
      */
     public function run()
     {
-        ItemClass::create(['iid' => 'IC', 'code' => '1', 'name' => 'Phantom']);
+        ItemClass::create(['iid' => 'IC', 'code' => '01', 'name' => 'Phantom']);
+        ItemClass::create(['iid' => 'IC', 'code' => 'F1', 'name' => 'Completion']);
         ItemClass::create(['iid' => 'IC', 'code' => 'G0', 'name' => 'Supply Yes payments(delivery)']);
         ItemClass::create(['iid' => 'IC', 'code' => 'G1', 'name' => 'Supply Yes payments']);
-        ItemClass::create(['iid' => 'IC', 'code' => 'F1', 'name' => 'Completion']);
         ItemClass::create(['iid' => 'IZ', 'code' => 'M0', 'name' => 'Press(Manufactured delivery)']);
         ItemClass::create(['iid' => 'IC', 'code' => 'M1', 'name' => 'Press(Manufactured)']);
         ItemClass::create(['iid' => 'IC', 'code' => 'M2', 'name' => 'Sub Assy(Manufactured)']);

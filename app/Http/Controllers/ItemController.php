@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\IIM;
 use App\Models\Item;
+use App\Models\ItemClass;
+use App\Models\ItemType;
+use App\Models\MeasurementType;
 use Illuminate\Http\Request;
 
 class ItemController extends Controller
@@ -15,10 +18,15 @@ class ItemController extends Controller
             ->orderBy('IMENDT', 'ASC')
             ->get();
 
-        echo count($items) . "<br>";
+        // echo count($items) . "<br>";
 
         foreach ($items as $key => $value) {
             // echo "$key &nbsp &nbsp $value->IID &nbsp &nbsp $value->IPROD &nbsp &nbsp $value->IDESC &nbsp &nbsp $value->IOPB &nbsp &nbsp $value->IMIN &nbsp &nbsp $value->IITYP &nbsp &nbsp $value->ICLAS &nbsp &nbsp $value->IUMS <br>";
+
+            $itemType = ItemType::where('code', '=', $value->IITYP)->first();
+            $itemClass = ItemClass::where('code', '=', $value->ICLAS)->first();
+            $measurementType = MeasurementType::where('code', '=', $value->IUMS)->first();
+
             Item::updateOrCreate(
                 [
                     'item_number' => $value->IPROD,
@@ -26,10 +34,9 @@ class ItemController extends Controller
                 [
                     'iid' => $value->IID,
                     'item_description' => preg_replace('([^A-Za-z0-9])', '', $value->IDESC),
-                    //         'item_type_id' => $value->IITYP,
-                    //         'item_class_id' => $value->ICLAS,
-                    //         'measurement_type_id' => $value->IUMS,
-
+                    'item_type_id' => $itemType->id,
+                    'item_class_id' => $itemClass->id,
+                    'measurement_type_id' => $measurementType->id,
                 ],
             );
         }

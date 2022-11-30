@@ -16,5 +16,6 @@ class MeasurementTypeSeeder extends Seeder
     public function run()
     {
         MeasurementType::factory(1)->create(['name' => 'Pieza', 'code' => 'EA']);
+        MeasurementType::factory(1)->create(['name' => 'Kilogramos', 'code' => 'KG']);
     }
 }

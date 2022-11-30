@@ -2,11 +2,33 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ITE;
 use App\Models\TransactionType;
 use Illuminate\Http\Request;
 
 class TransactionTypeController extends Controller
 {
+    public function upload()
+    {
+        $transactions = ITE::query()
+            ->select('TID', 'TTYPE', 'TDESC')
+            ->orderBy('TTYPE', 'ASC')
+            ->get();
+
+        foreach ($transactions as $key => $transaction) {
+            TransactionType::updateOrCreate(
+                [
+                    'code' => $transaction->TTYPE,
+                ],
+                [
+                    'tid' => $transaction->TID,
+                    'name' => $transaction->TDESC,
+                ],
+            );
+        }
+        return redirect('transaction-type');
+    }
+
     /**
      * Display a listing of the resource.
      *

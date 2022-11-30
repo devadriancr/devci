@@ -46,25 +46,28 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function () {
      * Routes Warehouse
      */
     Route::resource('warehouse', WarehouseController::class);
+    Route::get('warehouse-upload', [WarehouseController::class, 'upload'])->name('warehouse.upload');
 
     /**
      * Routes Location
      */
     Route::resource('location', LocationController::class);
+    Route::get('location-upload', [LocationController::class, 'upload'])->name('location.upload');
+
 
     /**
      * Routes Transaction Type
      */
     Route::resource('transaction-type', TransactionTypeController::class);
-
+    Route::get('transaction-type-upload', [TransactionTypeController::class, 'upload'])->name('transaction-type.upload');
 
     /**
      *
      */
     Route::resource('item', ItemController::class);
-    Route::get('item-upload', [ItemController::class, 'upload']);
+    Route::get('item-upload', [ItemController::class, 'upload'])->name('item.upload');
 
-     /**
+    /**
      * Routes  In and Out Wherehouse extern
      */
     // Route::resource('Scan-In_Out',WHExtInOutController::class);
@@ -94,4 +97,3 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function () {
 
 
 });
-
