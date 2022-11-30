@@ -2,11 +2,33 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\IWM;
 use App\Models\Warehouse;
 use Illuminate\Http\Request;
 
 class WarehouseController extends Controller
 {
+    public function upload()
+    {
+        $warehouses = IWM::query()
+            ->select('LID', 'LWHS', 'LDESC')
+            ->orderBy('LWHS', 'ASC')
+            ->get();
+
+        foreach ($warehouses as $key => $value) {
+            Warehouse::updateOrCreate(
+                [
+                    'code' => $value->LWHS,
+                ],
+                [
+                    'lid' => $value->LID,
+                    'name' => $value->LDESC,
+                ],
+            );
+        }
+
+        return redirect('warehouse');
+    }
     /**
      * Display a listing of the resource.
      *

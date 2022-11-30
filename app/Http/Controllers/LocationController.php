@@ -2,12 +2,38 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ILM;
 use App\Models\Location;
 use App\Models\Warehouse;
 use Illuminate\Http\Request;
 
 class LocationController extends Controller
 {
+    public function upload()
+    {
+        $locations = ILM::query()
+            ->select('WID', 'WWHS', 'WLOC', 'WDESC')
+            ->orderBy('WLOC', 'ASC')
+            ->get();
+
+        foreach ($locations as $key => $location) {
+            $warehouse = Warehouse::where('code', '=', $location->WWHS)->first();
+
+            Location::updateOrCreate(
+                [
+                    'code' => $location->WLOC,
+                ],
+                [
+                    'warehouse_id' => $warehouse->id,
+                    'wid' => $location->WID,
+                    'name' => $location->WDESC,
+                ],
+            );
+        }
+
+        return redirect('location');
+    }
+
     /**
      * Display a listing of the resource.
      *

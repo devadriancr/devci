@@ -15,8 +15,8 @@ class WarehouseSeeder extends Seeder
      */
     public function run()
     {
-        Warehouse::create(['lid' => 'WM', 'code' => 'W10', 'name' => 'YKM WareHouse']);
-        Warehouse::create(['lid' => 'WM', 'code' => 'W40', 'name' => 'Supplier']);
-        Warehouse::create(['lid' => 'WM', 'code' => 'W60', 'name' => 'Consignado']);
+        // Warehouse::create(['lid' => 'WM', 'code' => 'W10', 'name' => 'YKM WareHouse']);
+        // Warehouse::create(['lid' => 'WM', 'code' => 'W40', 'name' => 'Supplier']);
+        // Warehouse::create(['lid' => 'WM', 'code' => 'W60', 'name' => 'Consignado']);
     }
 }

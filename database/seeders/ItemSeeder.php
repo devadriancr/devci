@@ -17,6 +17,6 @@ class ItemSeeder extends Seeder
      */
     public function run()
     {
-        Item::create(['iid' => 'IM', 'item_number' => 'BFE528814', 'item_description' => '', 'measurement_type_id' => 1, 'item_type_id' => 5, 'item_class_id' => 13, 'standard_pack_id' => 1]);
+        // Item::create(['iid' => 'IM', 'item_number' => 'BFE528814', 'item_description' => '', 'measurement_type_id' => 1, 'item_type_id' => 5, 'item_class_id' => 13, 'standard_pack_id' => 1]);
     }
 }
