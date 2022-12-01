@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ContainerController;
+use App\Http\Controllers\InputController;
 use App\Http\Controllers\ItemClassController;
 use App\Http\Controllers\ItemController;
 use App\Http\Controllers\ItemTypeController;
@@ -87,35 +88,11 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function () {
      */
     Route::resource('container', ContainerController::class);
 
-
-
     /**
-     * Routes  In and Out Wherehouse extern
+     * Routes Consignment Instructions
      */
-    // Route::resource('Scan-In_Out',WHExtInOutController::class);
-    // Route::POST('Scan-In_Out', [WHExtInOutController::class, 'store'])->name('WHExtInOutController.store');
-    // Route::POST('shipping',[WHExtInOutController::class, 'shipping'])->name('WHExtInOutController.shipping');
-    // Route::POST('saveshipping',[WHExtInOutController::class, 'saveshipping'])->name('WHExtInOutController.saveshipping');
-    // Route::get('export', [WHExtInOutController::class, 'export'])->name('WHExtInOutController.export');
-    // Route::get('exportdetail', [WHExtInOutController::class, 'exportDetail'])->name('WHExtInOutController.exportDetail');
-    // Route::resource('shipping-instruction', ShippingInstructionController::class);
-
-    /**
-     * Routes Item Class
-     */
-    // Route::resource('item-class', ItemClassController::class);
-    // Route::get('item-class-upload', [ItemClassController::class, 'upload']);
-
-    /**
-     * Routes Item
-     */
-    // Route::resource('item', ItemController::class);
-    // Route::get('item-upload', [ItemController::class, 'upload']);
-
-    /**
-     * Routes Transaction Types
-     */
-    // Route::resource('transaction-type', TransactionTypeController::class);
-
-
+    Route::get('consignment-instruction-container', [InputController::class, 'consignment_container'])->name('consignment-instruction.container');
+    Route::get('consignment-instruction-create', [InputController::class, 'consignment_create'])->name('consignment-instruction.create');
+    Route::get('consignment-instruction-store', [InputController::class, 'consignment_store'])->name('consigment-instruction.store');
+    Route::get('consignment-instruction-check', [InputController::class, 'consignment_check'])->name('consigment-instruction.check');
 });

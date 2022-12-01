@@ -20,7 +20,7 @@ class ContainerFactory extends Factory
         return [
             'code' => $this->faker->randomLetter . $this->faker->randomLetter . $this->faker->randomDigit .  $this->faker->randomDigit . $this->faker->randomLetter . $this->faker->randomLetter,
             'arrival_date' => Carbon::now()->format('Ymd'),
-            'arrival_time' => Carbon::now()->addHour()->format('His'),
+            'arrival_time' => Carbon::now()->format('His'),
         ];
     }
 }

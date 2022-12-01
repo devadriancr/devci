@@ -1,7 +1,7 @@
-<x-app-layout title="Escaneo CI">
+<x-app-layout title="Consigna">
     <div class="container grid px-6 mx-auto">
         <h2 class="mt-4 mb-2 text-2xl font-semibold text-gray-700 dark:text-gray-200">
-            Escaneo CI
+            Consigna
         </h2>
         <div class="flex flew-row justify-end">
             <form method="POST" action="{{ route('consigment-instruction.check') }}">
@@ -14,7 +14,7 @@
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
                     </svg>
-                    <span class="ml-2">Validar Escaneo</span>
+                    <span class="ml-2">Validar</span>
                 </button>
             </form>
         </div>
@@ -34,7 +34,7 @@
                     </div>
                     <div class="col-span-6 text-right">
                         <span>
-                            {{ $container->date }} {{ $container->time }}
+                            {{ $container->arrival_date }} {{ $container->arrival_time }}
                         </span>
                     </div>
                 </div>
@@ -72,57 +72,6 @@
             @endif
         </div>
 
-        <div class="w-full overflow-hidden rounded-lg shadow-xs">
-            <div class="w-full overflow-x-auto">
-                <table class="w-full whitespace-no-wrap">
-                    <thead>
-                        <tr class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b dark:border-gray-700 bg-gray-50 dark:text-gray-400 dark:bg-gray-800">
-                            <th class="px-4 py-3">Proveedor</th>
-                            <th class="px-4 py-3">Serial</th>
-                            <th class="px-4 py-3">No Parte</th>
-                            <th class="px-4 py-3">Cantidad</th>
-                            <th class="px-4 py-3">Contenedor</th>
-                            <th class="px-4 py-3">Fecha de Registro</th>
-                        </tr>
-                    </thead>
-                    <tbody class="bg-white uppercase divide-y dark:divide-gray-700 dark:bg-gray-800">
-                        @foreach ($consignments as $consignment)
-                        <tr class="text-gray-700 dark:text-gray-400">
-                            <td class="px-4 py-3 text-sm">
-                                {{ $consignment->supplier }}
-                            </td>
-                            <td class="px-4 py-3 text-sm">
-                                {{ $consignment->serial }}
-                            </td>
-                            <td class="px-4 py-3 text-sm">
-                                {{ $consignment->part_no }}
-                            </td>
-                            <td class="px-4 py-3 text-sm">
-                                {{ $consignment->part_qty }}
-                            </td>
-                            <td class="px-4 py-3 text-sm">
-                                {{ $consignment->container->code }}
-                            </td>
-                            <td class="px-4 py-3 text-sm">
-                                {{ $consignment->created_at }}
-                            </td>
-                        </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
-            <div class="grid px-4 py-3 text-xs font-semibold tracking-wide text-gray-500 uppercase border-t dark:border-gray-700 bg-gray-50 sm:grid-cols-9 dark:text-gray-400 dark:bg-gray-800">
-                <span class="flex items-center col-span-3">
-                    Mostrando {{ $consignments->firstItem() }} - {{ $consignments->lastItem() }} de {{ $consignments->total()}}
-                </span>
-                <span class="col-span-2"></span>
-                <!-- Pagination -->
-                <span class="flex col-span-4 mt-2 sm:mt-auto sm:justify-end">
-                    <nav aria-label="Table navigation">
-                        {{ $consignments->withQueryString()->links()}}
-                    </nav>
-                </span>
-            </div>
-        </div>
+
     </div>
 </x-app-layout>
