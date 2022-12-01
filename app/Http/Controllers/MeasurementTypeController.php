@@ -14,7 +14,7 @@ class MeasurementTypeController extends Controller
      */
     public function index()
     {
-        $measurementTypes = MeasurementType::orderBy('code', 'ASC')->paginate(10);
+        $measurementTypes = MeasurementType::orderBy('code', 'DESC')->paginate(10);
 
         return view('measurement-type.index', ['measurements' => $measurementTypes]);
     }
@@ -37,7 +37,19 @@ class MeasurementTypeController extends Controller
      */
     public function store(Request $request)
     {
-        dd($request->all());
+        $request->validate([
+            'code' => ['required', 'string', 'unique:measurement_types'],
+            'name' => ['required', 'string'],
+            'description' => ['string', 'nullable'],
+        ]);
+
+        MeasurementType::create([
+            'code' => $request->code,
+            'name' => $request->name,
+            'description' => $request->description
+        ]);
+
+        return redirect('measurement-type');
     }
 
     /**
@@ -71,7 +83,18 @@ class MeasurementTypeController extends Controller
      */
     public function update(Request $request, MeasurementType $measurementType)
     {
-        dd($request->all());
+        $request->validate([
+            'name' => ['string'],
+            'description' => ['string', 'nullable'],
+        ]);
+
+        $measurementType->fill($request->all());
+
+        if ($measurementType->isDirty()) {
+            $measurementType->save();
+        }
+
+        return redirect()->back();
     }
 
     /**
