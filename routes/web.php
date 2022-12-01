@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ContainerController;
+use App\Http\Controllers\ItemClassController;
 use App\Http\Controllers\ItemController;
 use App\Http\Controllers\ItemTypeController;
 use App\Http\Controllers\LocationController;
@@ -20,9 +21,9 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+// Route::get('/', function () {
+//     return view('welcome');
+// });
 
 // Route::middleware(['auth:sanctum', 'verified'])->get('/dashboard', function () {
 //     return view('dashboard');
@@ -30,6 +31,7 @@ Route::get('/', function () {
 
 
 Route::group(['middleware' => ['auth:sanctum', 'verified']], function () {
+    Route::view('/', 'dashboard');
     Route::view('dashboard', 'dashboard')->name('dashboard');
     Route::view('forms', 'forms')->name('forms');
     Route::view('cards', 'cards')->name('cards');
@@ -40,9 +42,20 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function () {
     Route::view('calendar', 'calendar')->name('calendar');
 
     /**
-     * Routes Containers
+     * Route Measurement Types
      */
-    Route::resource('container', ContainerController::class);
+    Route::resource('measurement-type', MeasurementTypeController::class);
+
+    /**
+     * Routes Item Types
+     */
+    Route::resource('item-type', ItemTypeController::class);
+
+    /**
+     * Routes Item Classes
+     */
+    Route::resource('item-class', ItemClassController::class);
+    Route::get('item-class-upload', [ItemClassController::class, 'upload'])->name('item-class.upload');
 
     /**
      * Routes Warehouses
@@ -70,14 +83,11 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function () {
     Route::get('item-upload', [ItemController::class, 'upload'])->name('item.upload');
 
     /**
-     * Route Measurement Types
+     * Routes Containers
      */
-    Route::resource('measurement-type', MeasurementTypeController::class);
+    Route::resource('container', ContainerController::class);
 
-    /**
-     * Routes Item Types
-     */
-    Route::resource('item-type', ItemTypeController::class);
+
 
     /**
      * Routes  In and Out Wherehouse extern

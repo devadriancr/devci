@@ -2,33 +2,34 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\IWM;
-use App\Models\Warehouse;
+use App\Models\IIC;
+use App\Models\ItemClass;
 use Illuminate\Http\Request;
 
-class WarehouseController extends Controller
+class ItemClassController extends Controller
 {
     public function upload()
     {
-        $warehouses = IWM::query()
-            ->select('LID', 'LWHS', 'LDESC')
-            ->orderBy('LWHS', 'ASC')
+        $classes = IIC::query()
+            ->select('IID', 'ICLAS', 'ICDES')
+            ->orderBy('ICLAS', 'ASC')
             ->get();
 
-        foreach ($warehouses as $key => $value) {
-            Warehouse::updateOrCreate(
+        foreach ($classes as $key => $class) {
+            ItemClass::updateOrCreate(
                 [
-                    'code' => $value->LWHS,
+                    'code' => $class->ICLAS,
                 ],
                 [
-                    'lid' => $value->LID,
-                    'name' => $value->LDESC,
+                    'iid' => $class->IID,
+                    'name' =>  $class->ICDES,
                 ],
             );
         }
 
-        return redirect('warehouse');
+        return redirect('item-class');
     }
+
     /**
      * Display a listing of the resource.
      *
@@ -36,9 +37,9 @@ class WarehouseController extends Controller
      */
     public function index()
     {
-        $warehouses = Warehouse::orderBy('code', 'ASC')->paginate(10);
+        $itemClasses = ItemClass::orderBy('code', 'ASC')->paginate(10);
 
-        return view('warehouse.index', ['warehouses' => $warehouses]);
+        return view('item-class.index', ['itemClasess' => $itemClasses]);
     }
 
     /**
@@ -48,7 +49,7 @@ class WarehouseController extends Controller
      */
     public function create()
     {
-        return view('warehouse.create');
+        return view('item-class.create');
     }
 
     /**
@@ -60,28 +61,26 @@ class WarehouseController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'code' => ['required', 'string', 'max:3', 'unique:warehouses'],
+            'code' => ['required', 'string', 'unique:item_types'],
             'name' => ['required', 'string'],
-            'description' => ['string', 'nullable'],
         ]);
 
-        Warehouse::create([
-            'lid' => 'WM',
+        ItemClass::create([
+            'iid' => 'IC',
             'code' => $request->code,
             'name' => $request->name,
-            'description' => $request->description
         ]);
 
-        return redirect('warehouse');
+        return redirect('item-class');
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Warehouse  $warehouse
+     * @param  \App\Models\ItemClass  $itemClass
      * @return \Illuminate\Http\Response
      */
-    public function show(Warehouse $warehouse)
+    public function show(ItemClass $itemClass)
     {
         //
     }
@@ -89,33 +88,32 @@ class WarehouseController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\Warehouse  $warehouse
+     * @param  \App\Models\ItemClass  $itemClass
      * @return \Illuminate\Http\Response
      */
-    public function edit(Warehouse $warehouse)
+    public function edit(ItemClass $itemClass)
     {
-        return view('warehouse.edit', ['warehouse' => $warehouse]);
+        return view('item-class.edit', ['itemClass' => $itemClass]);
     }
 
     /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Warehouse  $warehouse
+     * @param  \App\Models\ItemClass  $itemClass
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Warehouse $warehouse)
+    public function update(Request $request, ItemClass $itemClass)
     {
         $request->validate([
             'code' => ['string'],
             'name' => ['string'],
-            'description' => ['string', 'nullable'],
         ]);
 
-        $warehouse->fill($request->all());
+        $itemClass->fill($request->all());
 
-        if ($warehouse->isDirty()) {
-            $warehouse->save();
+        if ($itemClass->isDirty()) {
+            $itemClass->save();
         }
 
         return redirect()->back();
@@ -124,12 +122,12 @@ class WarehouseController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Warehouse  $warehouse
+     * @param  \App\Models\ItemClass  $itemClass
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Warehouse $warehouse)
+    public function destroy(ItemClass $itemClass)
     {
-        $warehouse->delete();
+        $itemClass->delete();
         return redirect()->back();
     }
 }

@@ -43,7 +43,6 @@ class ItemTypeController extends Controller
         ]);
 
         ItemType::create([
-            'lid' => 'WM',
             'code' => $request->code,
             'name' => $request->name,
         ]);
@@ -83,7 +82,7 @@ class ItemTypeController extends Controller
     public function update(Request $request, ItemType $itemType)
     {
         $request->validate([
-            'code' => ['string', 'unique:item_types'],
+            'code' => ['string'],
             'name' => ['string'],
         ]);
 

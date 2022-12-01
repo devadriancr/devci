@@ -84,6 +84,7 @@ class MeasurementTypeController extends Controller
     public function update(Request $request, MeasurementType $measurementType)
     {
         $request->validate([
+            'code' => ['string'],
             'name' => ['string'],
             'description' => ['string', 'nullable'],
         ]);

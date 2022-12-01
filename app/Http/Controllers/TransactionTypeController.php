@@ -106,7 +106,7 @@ class TransactionTypeController extends Controller
     public function update(Request $request, TransactionType $transactionType)
     {
         $request->validate([
-            'code' => ['string', 'unique:transaction_types'],
+            'code' => ['string'],
             'name' => ['string'],
             'description' => ['string', 'nullable'],
         ]);

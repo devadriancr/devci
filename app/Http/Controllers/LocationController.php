@@ -118,7 +118,7 @@ class LocationController extends Controller
     public function update(Request $request, Location $location)
     {
         $request->validate([
-            'code' => ['string', 'unique:locations'],
+            'code' => ['string'],
             'name' => ['string'],
             'description' => ['string', 'nullable'],
             'warehouse_id' => ['numeric'],
