@@ -23,7 +23,8 @@ return new class extends Migration
             $table->unsignedBigInteger('user_id')->nullable();
             $table->timestamps();
 
-            $table->foreign('container_id')->references('id')->on('containers');
+            $table->foreign('container_id')->references('id')->on('containers')->onDelete('set null');
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('set null');
         });
     }
 

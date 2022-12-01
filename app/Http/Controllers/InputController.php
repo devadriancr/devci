@@ -2,19 +2,21 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ConsignmentInstruction;
 use App\Models\Container;
 use App\Models\Input;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class InputController extends Controller
 {
     public function consignment_container()
     {
         $containers = Container::where([
-                ['status', '=', 1],
-                ['arrival_date', '=', Carbon::now()]
-            ])
+            ['status', '=', 1],
+            ['arrival_date', '=', Carbon::now()]
+        ])
             ->orderBy('arrival_date', 'ASC')
             ->orderBy('arrival_time', 'ASC')
             ->paginate(10);
@@ -25,14 +27,33 @@ class InputController extends Controller
     public function consignment_create(Request $request)
     {
         $container = Container::findOrFail($request->container);
+        $consignments = ConsignmentInstruction::where('container_id', '=', $request->container)->orderBy('created_at', 'DESC')->paginate(5);
 
-        return view('consignment-instruction.create', ['container' => $container]);
+        return view('consignment-instruction.create', ['container' => $container, 'consignments' => $consignments]);
     }
 
     public function consignment_store(Request $request)
     {
+        $request->validate([
+            'code_qr' => ['required', 'string'],
+        ]);
 
+        $dataRequest = $request->code_qr;
+
+        list($a, $b, $c, $d, $e, $f, $g, $h, $i, $j, $part_qty, $supplier, $m, $serial, $o, $p, $q, $r, $s, $t, $u, $v, $w, $x, $y, $z, $part_no) = explode(',', $dataRequest);
+
+        $consignment = ConsignmentInstruction::create([
+            'supplier' => $supplier,
+            'serial' => $serial,
+            'part_qty' => $part_qty,
+            'part_no' => $part_no,
+            'container_id' => $request->container_id,
+            'user_id' => Auth::id(),
+        ]);
+
+        return redirect()->back()->with('success', 'Registro Exitoso');
     }
+
 
     public function consignment_check(Request $request)
     {
