@@ -3,6 +3,7 @@
 use App\Http\Controllers\ContainerController;
 use App\Http\Controllers\ItemController;
 use App\Http\Controllers\LocationController;
+use App\Http\Controllers\MeasurementTypeController;
 use App\Http\Controllers\TransactionTypeController;
 use App\Http\Controllers\WarehouseController;
 use Illuminate\Support\Facades\Route;
@@ -38,34 +39,39 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function () {
     Route::view('calendar', 'calendar')->name('calendar');
 
     /**
-     * Routes Container
+     * Routes Containers
      */
     Route::resource('container', ContainerController::class);
 
     /**
-     * Routes Warehouse
+     * Routes Warehouses
      */
     Route::resource('warehouse', WarehouseController::class);
     Route::get('warehouse-upload', [WarehouseController::class, 'upload'])->name('warehouse.upload');
 
     /**
-     * Routes Location
+     * Routes Locations
      */
     Route::resource('location', LocationController::class);
     Route::get('location-upload', [LocationController::class, 'upload'])->name('location.upload');
 
 
     /**
-     * Routes Transaction Type
+     * Routes Transaction Types
      */
     Route::resource('transaction-type', TransactionTypeController::class);
     Route::get('transaction-type-upload', [TransactionTypeController::class, 'upload'])->name('transaction-type.upload');
 
     /**
-     *
+     * Routes Items
      */
     Route::resource('item', ItemController::class);
     Route::get('item-upload', [ItemController::class, 'upload'])->name('item.upload');
+
+    /**
+     * Route Measurement Types
+     */
+    Route::resource('measurement-type', MeasurementTypeController::class);
 
     /**
      * Routes  In and Out Wherehouse extern
