@@ -36,28 +36,33 @@ class InputController extends Controller
     {
         $request->validate([
             'code_qr' => ['required', 'string'],
+            'container_id' => ['required', 'numeric'],
         ]);
 
         $dataRequest = $request->code_qr;
 
         list($a, $b, $c, $d, $e, $f, $g, $h, $i, $j, $part_qty, $supplier, $m, $serial, $o, $p, $q, $r, $s, $t, $u, $v, $w, $x, $y, $z, $part_no) = explode(',', $dataRequest);
 
-        $consignment = ConsignmentInstruction::create([
-            'supplier' => $supplier,
-            'serial' => $serial,
-            'part_qty' => $part_qty,
-            'part_no' => $part_no,
-            'container_id' => $request->container_id,
-            'user_id' => Auth::id(),
-        ]);
+        ConsignmentInstruction::updateOrCreate(
+            [
+                'serial' => $serial,
+            ],
+            [
+                'supplier' => $supplier,
+                'part_qty' => $part_qty,
+                'part_no' => $part_no,
+                'container_id' => $request->container_id,
+                'user_id' => Auth::id(),
+            ]
+        );
 
         return redirect()->back()->with('success', 'Registro Exitoso');
     }
 
 
-    public function consignment_check(Request $request)
+    public function consignment_finish(Request $request)
     {
-        dd($request->all());
+
     }
 
     /**
