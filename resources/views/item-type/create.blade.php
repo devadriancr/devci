@@ -1,8 +1,13 @@
-<x-app-layout title="Tipo de Medición">
+<x-app-layout title="Tipo de Item">
     <div class="container grid px-6 mx-auto">
         <h2 class="my-6 text-2xl font-semibold text-gray-700 dark:text-gray-200">
-            Editar Tipo de Medición
+            Registro de Tipo de Item
         </h2>
+
+        <!-- General elements -->
+        <!-- <h4 class="mb-4 text-lg font-semibold text-gray-600 dark:text-gray-300">
+            Elements
+        </h4> -->
 
         @if ($errors->any())
         <div class="mb-4">
@@ -17,25 +22,18 @@
         @endif
 
         <div class="px-4 py-3 mb-8 bg-white rounded-lg shadow-md dark:bg-gray-800">
-            <form class="grid grid-cols-12 gap-2" method="POST" action="{{ route('measurement-type.update', $measurement->id) }}">
+            <form class="grid grid-cols-12 gap-2" method="POST" action="{{ route('item-type.store') }}">
                 @csrf
-                @method('PUT')
                 <div class="col-span-3">
                     <label class="block text-sm">
                         <span class="text-gray-700 dark:text-gray-400">Código</span>
-                        <input name="code" class="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input" placeholder="A1B2C3D4XXX" value="{{ $measurement->code }}" />
+                        <input name="code" class="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input" placeholder="X" />
                     </label>
                 </div>
                 <div class="col-span-9">
-                    <label class=" text-sm">
+                    <label class="block text-sm">
                         <span class="text-gray-700 dark:text-gray-400">Nombre</span>
-                        <input name="name" class="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input" value="{{ $measurement->name }}" />
-                    </label>
-                </div>
-                <div class="col-span-12">
-                    <label class=" text-sm">
-                        <span class="text-gray-700 dark:text-gray-400">Descripción</span>
-                        <input name="description" class="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input" value="{{ $measurement->description }}" />
+                        <input name="name" class="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input" placeholder="ABCDF" />
                     </label>
                 </div>
                 <div class="col-span-12">

@@ -1,7 +1,7 @@
 <x-app-layout title="Almacén">
     <div class="container grid px-6 mx-auto">
         <h2 class="my-6 text-2xl font-semibold text-gray-700 dark:text-gray-200">
-            Editar Almacén
+            Editar Tipo de Transacción
         </h2>
 
         @if ($errors->any())
@@ -23,7 +23,7 @@
                 <div class="col-span-3">
                     <label class="block text-sm">
                         <span class="text-gray-700 dark:text-gray-400">Código</span>
-                        <input name="code" class="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input" placeholder="A1B2C3D4XXX" value="{{ $transaction->code }}" disabled />
+                        <input name="code" class="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input" placeholder="A1B2C3D4XXX" value="{{ $transaction->code }}" />
                     </label>
                 </div>
                 <div class="col-span-9">

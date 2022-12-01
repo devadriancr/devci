@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ContainerController;
 use App\Http\Controllers\ItemController;
+use App\Http\Controllers\ItemTypeController;
 use App\Http\Controllers\LocationController;
 use App\Http\Controllers\MeasurementTypeController;
 use App\Http\Controllers\TransactionTypeController;
@@ -72,6 +73,11 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function () {
      * Route Measurement Types
      */
     Route::resource('measurement-type', MeasurementTypeController::class);
+
+    /**
+     * Routes Item Types
+     */
+    Route::resource('item-type', ItemTypeController::class);
 
     /**
      * Routes  In and Out Wherehouse extern

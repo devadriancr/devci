@@ -60,7 +60,7 @@ class WarehouseController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'code' => ['required', 'string', 'max:3', 'unique:warehouses,code'],
+            'code' => ['required', 'string', 'max:3', 'unique:warehouses'],
             'name' => ['required', 'string'],
             'description' => ['string', 'nullable'],
         ]);
