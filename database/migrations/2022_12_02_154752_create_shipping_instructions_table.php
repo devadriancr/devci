@@ -20,8 +20,8 @@ return new class extends Migration
             $table->string('serial')->nullable();
             $table->string('part_no')->nullable();
             $table->integer('part_qty')->nullable();
-            $table->string('arrival_date')->nullable();
-            $table->string('arrival_time')->nullable();
+            $table->date('arrival_date')->nullable();
+            $table->time('arrival_time')->nullable();
             $table->unsignedBigInteger('user_id')->nullable();
             $table->timestamps();
 

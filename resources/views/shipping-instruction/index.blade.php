@@ -69,10 +69,10 @@
                                 {{ $shipping->part_qty }}
                             </td>
                             <td class="px-4 py-3 text-sm">
-                                {{ $shipping->date }}
+                                {{ $shipping->arrival_date }}
                             </td>
                             <td class="px-4 py-3 text-sm">
-                                {{ $shipping->time }}
+                                {{ $shipping->arrival_time }}
                             </td>
                         </tr>
                         @endforeach

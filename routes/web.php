@@ -7,6 +7,7 @@ use App\Http\Controllers\ItemController;
 use App\Http\Controllers\ItemTypeController;
 use App\Http\Controllers\LocationController;
 use App\Http\Controllers\MeasurementTypeController;
+use App\Http\Controllers\ShippingInstructionController;
 use App\Http\Controllers\TransactionTypeController;
 use App\Http\Controllers\WarehouseController;
 use Illuminate\Support\Facades\Route;
@@ -95,4 +96,9 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function () {
     Route::get('consignment-instruction-create', [InputController::class, 'consignment_create'])->name('consignment-instruction.create');
     Route::post('consignment-instruction-store', [InputController::class, 'consignment_store'])->name('consigment-instruction.store');
     Route::post('consignment-instruction-finish', [InputController::class, 'consignment_finish'])->name('consigment-instruction.finish');
+
+    /**
+     *
+     */
+    Route::resource('shipping-instruction', ShippingInstructionController::class);
 });
