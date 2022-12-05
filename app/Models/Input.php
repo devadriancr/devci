@@ -96,5 +96,33 @@ class Input extends Model
             'H3RDTE' => Carbon::parse($input->created_at)->format('Ymd'),
             'H3RTIM' => Carbon::parse($input->created_at)->format('His')
         ]);
+
+        $itemInventory = Inventory::where([
+            ['item_id', '=', $item],
+            ['location_id', '=', $location]
+        ])->first();
+
+        if ($itemInventory != null) {
+            $suma = $quantity + $itemInventory->quantity;
+            Inventory::updateOrCreate(
+                [
+                    'item_id' => $item,
+                    'location_id' => $location,
+                ],
+                [
+                    'quantity' => $suma
+                ]
+            );
+        } else {
+            Inventory::updateOrCreate(
+                [
+                    'item_id' => $item,
+                    'location_id' => $location,
+                ],
+                [
+                    'quantity' => $quantity
+                ]
+            );
+        }
     }
 }

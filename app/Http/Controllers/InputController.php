@@ -193,7 +193,7 @@ class InputController extends Controller
         $query = "CALL LX834OU02.YPU180C";
         $result = odbc_exec($conn, $query);
 
-
+        return redirect('consignment-instruction');
     }
 
     /**
