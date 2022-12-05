@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Role;
 
 class UserController extends Controller
@@ -41,7 +42,19 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        dd($request->all());
+        $request->validate([
+            'name' => ['required', 'string'],
+            'user_infor' => ['required', 'string', 'max:7', 'min:7'],
+            'email' => ['required', 'email'],
+            'password' => ['required', 'string', 'min:8'],
+            'role_id' => ['required', 'numeric'],
+        ]);
+
+        $data = $request->only(['name', 'user_infor', 'email', 'password']);
+        $data['password'] = bcrypt($data['password']);
+        $user = User::create($data);
+        $user->roles()->sync($request->role_id);
+        return redirect('user')->with('success', 'Usuario creado con éxito');
     }
 
     /**
@@ -63,7 +76,9 @@ class UserController extends Controller
      */
     public function edit(User $user)
     {
-        //
+        $roles = Role::all();
+
+        return view('user.edit', ['user' => $user, 'roles' => $roles]);
     }
 
     /**
@@ -75,7 +90,23 @@ class UserController extends Controller
      */
     public function update(Request $request, User $user)
     {
-        //
+        $data = $request->except('password', 'role_id');
+
+        if (!empty($request->password)) {
+            $data['password'] = Hash::make($request->password);
+        }
+
+        $user->fill($data);
+
+        if ($user->isDirty()) {
+            $user->save();
+        }
+
+        if (!empty($request->role_id)) {
+            $user->roles()->sync($request->role_id);
+        }
+
+        return redirect()->back()->with('status', 'Usuario actualizado con éxito');
     }
 
     /**
@@ -86,6 +117,7 @@ class UserController extends Controller
      */
     public function destroy(User $user)
     {
-        //
+        $user->delete();
+        return redirect()->back();
     }
 }
