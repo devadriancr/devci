@@ -7,6 +7,7 @@ use App\Http\Controllers\ItemController;
 use App\Http\Controllers\ItemTypeController;
 use App\Http\Controllers\LocationController;
 use App\Http\Controllers\MeasurementTypeController;
+use App\Http\Controllers\RoleController;
 use App\Http\Controllers\ShippingInstructionController;
 use App\Http\Controllers\TransactionTypeController;
 use App\Http\Controllers\UserController;
@@ -43,6 +44,11 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function () {
     Route::view('modals', 'modals')->name('modals');
     Route::view('tables', 'tables')->name('tables');
     Route::view('calendar', 'calendar')->name('calendar');
+
+    /**
+     * Routes Roles
+     */
+    Route::resource('role', RoleController::class);
 
     /**
      * Routes Users

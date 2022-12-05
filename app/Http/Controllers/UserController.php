@@ -53,7 +53,9 @@ class UserController extends Controller
         $data = $request->only(['name', 'user_infor', 'email', 'password']);
         $data['password'] = bcrypt($data['password']);
         $user = User::create($data);
+
         $user->roles()->sync($request->role_id);
+
         return redirect('user')->with('success', 'Usuario creado con éxito');
     }
 
