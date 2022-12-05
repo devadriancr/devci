@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class YF006 extends Model
+class YH003 extends Model
 {
     use HasFactory;
 
@@ -27,6 +27,5 @@ class YF006 extends Model
         'H3CUSR',
         'H3CCDT',
         'H3CCTM',
-
     ];
 }

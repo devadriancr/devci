@@ -2,9 +2,11 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Auth;
 
 class Input extends Model
 {
@@ -44,5 +46,55 @@ class Input extends Model
     public function travel(): BelongsTo
     {
         return $this->belongsTo(Travel::class);
+    }
+
+    /**
+     *
+     * @property string $supplier
+     * @property string $serial
+     * @property int $item
+     * @property int $quantity
+     * @property int $container
+     * @property int $transaction
+     * @property int $location
+     */
+    public static function storeInputConsignment(
+        string $supplier,
+        string $serial,
+        int $item,
+        int $quantity,
+        int $container,
+        int $transaction,
+        int $location,
+    ) {
+        $input = Input::updateOrCreate(
+            [
+                'serial' => $serial,
+            ],
+            [
+                'supplier' => $supplier,
+                'item_id' => $item,
+                'item_quantity' => $quantity,
+                'container_id' => $container,
+                'transaction_type_id' => $transaction,
+                'location_id' => $location,
+            ]
+        );
+
+        $container = Container::where('id', '=', $container)->firstOrFail();
+        $part_no = Item::where('id', '=', $item)->firstOrFail();
+
+        YH003::query()->insert([
+            'H3CONO' => $container->code ?? '',
+            'H3DDTE' => Carbon::parse($container->arrival_date)->format('Ymd') ?? '',
+            'H3DTIM' => Carbon::parse($container->arrival_time)->format('His') ?? '',
+            'H3PROD' => $part_no->item_number,
+            'H3SUCD' => $supplier,
+            'H3SENO' => $serial,
+            'H3RQTY' => $quantity,
+            'H3CUSR' => Auth::user()->user_infor ?? '',
+            'H3RDTE' => Carbon::parse($input->created_at)->format('Ymd'),
+            'H3RTIM' => Carbon::parse($input->created_at)->format('His')
+        ]);
     }
 }

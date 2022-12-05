@@ -15,6 +15,9 @@ return new class extends Migration
     {
         Schema::create('inventories', function (Blueprint $table) {
             $table->id();
+            $table->double('opening_balance');
+            $table->double('minimum');
+            $table->double('maximum');
             $table->double('quantity');
             $table->unsignedBigInteger('item_id')->unique()->nullable();
             $table->unsignedBigInteger('location_id')->unique()->nullable();

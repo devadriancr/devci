@@ -5,7 +5,11 @@ namespace App\Http\Controllers;
 use App\Models\ConsignmentInstruction;
 use App\Models\Container;
 use App\Models\Input;
+use App\Models\Item;
+use App\Models\Location;
 use App\Models\ShippingInstruction;
+use App\Models\TransactionType;
+use App\Models\YF006;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -169,19 +173,27 @@ class InputController extends Controller
             ])
             ->get();
 
-        // foreach ($consignments as $key => $consignment) {
-        //     $insert = YF006::query()->insert([
-        //         'H3CONO' => $data['container'],
-        //         'H3DDTE' => $data['date'],
-        //         'H3DTIM' => Carbon::parse($data['time'])->format('Hi'),
-        //         'H3PROD' => $data['part_no'],
-        //         'H3SUCD' => $data['supplier'],
-        //         'H3SENO' => $data['serial'],
-        //         'H3RQTY' => $data['part_qty'],
-        //         'H3RDTE' => Carbon::parse($scanData->created_at)->format('Ymd'),
-        //         'H3RTIM' => Carbon::parse($scanData->created_at)->format('His'),
-        //     ]);
-        // }
+        foreach ($consignments as $key => $consignment) {
+            $item = Item::where('item_number', 'LIKE', '%' . $consignment->part_no . '%')->firstOrFail();
+            $transaccion = TransactionType::where('code', '=', 'U3')->firstOrFail();
+            $location = Location::where('code', 'LIKE', '%L60%')->firstOrFail();
+
+            Input::storeInputConsignment(
+                $consignment->supplier,
+                $consignment->serial,
+                $item->id,
+                $consignment->part_qty,
+                $consignment->container_id,
+                $transaccion->id,
+                $location->id,
+            );
+        }
+
+        $conn = odbc_connect("Driver={Client Access ODBC Driver (32-bit)};System=192.168.200.7;", "LXSECOFR;", "LXSECOFR;");
+        $query = "CALL LX834OU02.YPU180C";
+        $result = odbc_exec($conn, $query);
+
+
     }
 
     /**
