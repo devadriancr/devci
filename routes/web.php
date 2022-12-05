@@ -108,6 +108,7 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function () {
     Route::get('consignment-instruction-container', [InputController::class, 'consignment_container'])->name('consignment-instruction.container');
     Route::get('consignment-instruction-create', [InputController::class, 'consignment_create'])->name('consignment-instruction.create');
     Route::post('consignment-instruction-store', [InputController::class, 'consignment_store'])->name('consigment-instruction.store');
+    Route::post('consignment-instruction-check', [InputController::class, 'consignment_check'])->name('consigment-instruction.check');
     Route::post('consignment-instruction-finish', [InputController::class, 'consignment_finish'])->name('consigment-instruction.finish');
 
     /**
