@@ -9,6 +9,7 @@ use App\Http\Controllers\LocationController;
 use App\Http\Controllers\MeasurementTypeController;
 use App\Http\Controllers\ShippingInstructionController;
 use App\Http\Controllers\TransactionTypeController;
+use App\Http\Controllers\UserController;
 use App\Http\Controllers\WarehouseController;
 use Illuminate\Support\Facades\Route;
 
@@ -42,6 +43,12 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function () {
     Route::view('modals', 'modals')->name('modals');
     Route::view('tables', 'tables')->name('tables');
     Route::view('calendar', 'calendar')->name('calendar');
+
+    /**
+     * Routes Users
+     */
+    Route::resource('user', UserController::class);
+
 
     /**
      * Route Measurement Types
