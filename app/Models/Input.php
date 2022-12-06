@@ -33,9 +33,9 @@ class Input extends Model
         return $this->belongsTo(Container::class);
     }
 
-    public function transactiontype(): BelongsTo
+    public function transaction(): BelongsTo
     {
-        return $this->belongsTo(Transactiontype::class);
+        return $this->belongsTo(Transactiontype::class, 'transaction_type_id');
     }
 
     public function location(): BelongsTo
@@ -102,27 +102,18 @@ class Input extends Model
             ['location_id', '=', $location]
         ])->first();
 
-        if ($itemInventory != null) {
-            $suma = $quantity + $itemInventory->quantity;
-            Inventory::updateOrCreate(
-                [
-                    'item_id' => $item,
-                    'location_id' => $location,
-                ],
-                [
-                    'quantity' => $suma
-                ]
-            );
-        } else {
-            Inventory::updateOrCreate(
-                [
-                    'item_id' => $item,
-                    'location_id' => $location,
-                ],
-                [
-                    'quantity' => $quantity
-                ]
-            );
-        }
+        $itemQuantity = $itemInventory->quantity ?? 0;
+
+        $sum = 0;
+        $sum = $quantity + $itemQuantity;
+        Inventory::updateOrCreate(
+            [
+                'item_id' => $item,
+                'location_id' => $location,
+            ],
+            [
+                'quantity' => $sum
+            ]
+        );
     }
 }

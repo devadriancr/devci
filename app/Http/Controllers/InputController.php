@@ -100,16 +100,6 @@ class InputController extends Controller
         $arrayNotFound = [];
         foreach ($shipments as $key => $shipping) {
             if (self::search($array_consignment, $shipping->serial) == false) {
-                //     array_push($arrayFound, [
-                //         'container' => $shipping->container,
-                //         'invoice' => $shipping->invoice,
-                //         'serial' => $shipping->serial,
-                //         'part_no' => $shipping->part_no,
-                //         'part_qty' => $shipping->part_qty,
-                //         'arrival_date' => $shipping->arrival_date,
-                //         'arrival_time' => $shipping->arrival_time,
-                //     ]);
-                // } else {
                 array_push($arrayNotFound, [
                     'container' => $shipping->container,
                     'invoice' => $shipping->invoice,
@@ -193,7 +183,9 @@ class InputController extends Controller
         $query = "CALL LX834OU02.YPU180C";
         $result = odbc_exec($conn, $query);
 
-        return redirect('consignment-instruction');
+        $c = Container::where('id', $id)->update(['status' => false]);
+
+        return redirect('consignment-instruction-container');
     }
 
     /**
@@ -203,7 +195,9 @@ class InputController extends Controller
      */
     public function index()
     {
-        //
+        $inputs = Input::orderBy('id', 'DESC')->paginate(10);
+
+        return view('input.index', ['inputs' => $inputs]);
     }
 
     /**

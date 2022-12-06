@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ContainerController;
 use App\Http\Controllers\InputController;
+use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\ItemClassController;
 use App\Http\Controllers\ItemController;
 use App\Http\Controllers\ItemTypeController;
@@ -103,6 +104,11 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function () {
     Route::resource('container', ContainerController::class);
 
     /**
+     * Routes Shipping Instructions
+     */
+    Route::resource('shipping-instruction', ShippingInstructionController::class);
+
+    /**
      * Routes Consignment Instructions
      */
     Route::get('consignment-instruction-container', [InputController::class, 'consignment_container'])->name('consignment-instruction.container');
@@ -112,7 +118,13 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function () {
     Route::post('consignment-instruction-finish', [InputController::class, 'consignment_finish'])->name('consigment-instruction.finish');
 
     /**
-     *
+     * Route Inventory
      */
-    Route::resource('shipping-instruction', ShippingInstructionController::class);
+    Route::resource('inventory', InventoryController::class);
+
+    /**
+     * Route Input
+     */
+    Route::resource('input', InputController::class);
+
 });
