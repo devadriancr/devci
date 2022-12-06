@@ -54,8 +54,12 @@ class Item extends Model
         return $this->hasMany(Output::class);
     }
 
-     public function inputs(): HasMany
+     public function input(): HasMany
      {
          return $this->hasMany(Input::class);
+     }
+     public function order(): HasMany
+     {
+         return $this->hasMany(Order::class);
      }
 }

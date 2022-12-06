@@ -17,11 +17,11 @@ return new class extends Migration
             $table->id();
             $table->string('supplier');
             $table->string('serial');
-            $table->unsignedBigInteger('item_id')->unique()->nullable();
+            $table->unsignedBigInteger('item_id')->nullable();
             $table->double('item_quantity');
-            $table->unsignedBigInteger('transaction_type_id')->unique()->nullable();
-            $table->unsignedBigInteger('location_id')->unique()->nullable();
-            $table->unsignedBigInteger('travel_id')->unique()->nullable();
+            $table->unsignedBigInteger('transaction_type_id')->nullable();
+            $table->unsignedBigInteger('location_id')->nullable();
+            $table->unsignedBigInteger('travel_id')->nullable();
             $table->timestamps();
             //  ------------------------------------------------------------------------------
             // llave items

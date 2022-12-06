@@ -15,13 +15,17 @@ return new class extends Migration
     {
         Schema::create('travel', function (Blueprint $table) {
             $table->id();
-            $table->string('carta_porte');
-            $table->string('unit_number');
-            $table->string('name');
-            $table->string('car_plates');
-            $table->string('car_operator');
-            $table->string('arrival_date');
-            $table->string('departure_date');
+            $table->string('carta_porte')->unique();;
+            $table->string('invoice_number')->unique();;
+            $table->string('name')->nullable();
+            $table->string('car_plates')->nullable();
+            $table->string('car_operator')->nullable();
+            $table->string('arrival_date')->nullable();
+            $table->string('departure_date')->nullable();
+            $table->boolean('finish')->nullable();
+            $table->unsignedBigInteger('location_id')->nullable();
+            // llave a locations
+            $table->foreign('location_id')->references('id')->on('locations')->onDelete('set null');
             $table->timestamps();
         });
     }
