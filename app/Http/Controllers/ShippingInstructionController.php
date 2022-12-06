@@ -16,7 +16,7 @@ class ShippingInstructionController extends Controller
      */
     public function index()
     {
-        $shippings = ShippingInstruction::orderBy('id', 'DESC')->paginate(10);
+        $shippings = ShippingInstruction::where('status', '=', 1)->orderBy('id', 'DESC')->paginate(10);
 
         return view('shipping-instruction.index', ['shippings' => $shippings]);
     }

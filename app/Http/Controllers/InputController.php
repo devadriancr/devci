@@ -85,7 +85,8 @@ class InputController extends Controller
             ->where([
                 ['container', '=', $container],
                 ['arrival_date', '=', $date],
-                ['arrival_time', '=', $time]
+                ['arrival_time', '=', $time],
+                ['status', '=', true]
             ])
             ->orderBy('serial', 'ASC')
             ->get();
@@ -183,7 +184,7 @@ class InputController extends Controller
         $query = "CALL LX834OU02.YPU180C";
         $result = odbc_exec($conn, $query);
 
-        $c = Container::where('id', $id)->update(['status' => false]);
+         Container::where('id', $id)->update(['status' => false]);
 
         return redirect('consignment-instruction-container');
     }

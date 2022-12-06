@@ -67,11 +67,23 @@ class Input extends Model
         int $transaction,
         int $location,
     ) {
-        $input = Input::updateOrCreate(
+        $info_cont = Container::where('id', '=', $container)->firstOrFail();
+        $part_no = Item::where('id', '=', $item)->firstOrFail();
+
+        $shipment = ShippingInstruction::query()
+            ->where(
+                [
+                    ['serial', 'LIKE', '%' . $serial . '%'],
+                    ['container', '=', $info_cont->code],
+                    ['arrival_date', '=', $info_cont->arrival_date],
+                    ['arrival_time', '=', $info_cont->arrival_time]
+                ]
+            )
+        ->update(['status' => false]);
+
+        $input = Input::create(
             [
                 'serial' => $serial,
-            ],
-            [
                 'supplier' => $supplier,
                 'item_id' => $item,
                 'item_quantity' => $quantity,
@@ -81,13 +93,10 @@ class Input extends Model
             ]
         );
 
-        $container = Container::where('id', '=', $container)->firstOrFail();
-        $part_no = Item::where('id', '=', $item)->firstOrFail();
-
         YH003::query()->insert([
-            'H3CONO' => $container->code ?? '',
-            'H3DDTE' => Carbon::parse($container->arrival_date)->format('Ymd') ?? '',
-            'H3DTIM' => Carbon::parse($container->arrival_time)->format('His') ?? '',
+            'H3CONO' => $info_cont->code ?? '',
+            'H3DDTE' => Carbon::parse($info_cont->arrival_date)->format('Ymd') ?? '',
+            'H3DTIM' => Carbon::parse($info_cont->arrival_time)->format('His') ?? '',
             'H3PROD' => $part_no->item_number,
             'H3SUCD' => $supplier,
             'H3SENO' => $serial,

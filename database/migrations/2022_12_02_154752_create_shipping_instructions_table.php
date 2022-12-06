@@ -23,6 +23,7 @@ return new class extends Migration
             $table->date('arrival_date')->nullable();
             $table->time('arrival_time')->nullable();
             $table->unsignedBigInteger('user_id')->nullable();
+            $table->boolean('status')->default(1);
             $table->timestamps();
 
             $table->foreign('user_id')->references('id')->on('users');
