@@ -27,9 +27,6 @@
                             <th class="px-4 py-3">Unidad de Medida</th>
                             <th class="px-4 py-3">Tipo de Item</th>
                             <th class="px-4 py-3">Clase de Item</th>
-                            <th class="px-4 py-3">Standard Pack</th>
-                            <!-- <th class="px-4 py-3">Fecha de Creación</th>
-                            <th class="px-4 py-3">Hora de Creación</th> -->
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y dark:divide-gray-700 dark:bg-gray-800">
@@ -53,15 +50,6 @@
                             <td class="px-4 py-3 text-sm">
                                 {{ $item->itemClass->name ?? '' }}
                             </td>
-                            <td class="px-4 py-3 text-sm">
-                                {{ $item->standard_pack_id ?? '' }}
-                            </td>
-                            <!-- <td class="px-4 py-3 text-sm">
-                                    {{ $item->creation_date }}
-                                </td>
-                                <td class="px-4 py-3 text-sm">
-                                    {{ $item->creation_time }}
-                                </td> -->
                         </tr>
                         @endforeach
                     </tbody>

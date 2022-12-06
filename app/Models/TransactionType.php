@@ -19,7 +19,7 @@ class TransactionType extends Model
         return $this->hasMany(Output::class);
     }
 
-    public function intputs(): HasMany
+    public function inputs(): HasMany
     {
         return $this->hasMany(Input::class);
     }

@@ -13,8 +13,8 @@ class Container extends Model
     protected $fillable = [
         'code', 'arrival_date', 'arrival_time', 'status',
     ];
-     // relacion 1:n de intputs
-     public function intput():HasMany
+
+     public function intputs():HasMany
      {
          return $this->hasMany(Input::class);
      }
