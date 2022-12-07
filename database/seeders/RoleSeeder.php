@@ -29,6 +29,16 @@ class RoleSeeder extends Seeder
         /**
          *
          */
+        Permission::create(['name' => 'user.index'])->syncRoles([$admin]);
+
+        /**
+         *
+         */
+        Permission::create(['name' => 'role.index'])->syncRoles([$admin]);
+
+        /**
+         *
+         */
         Permission::create(['name' => 'measurement-type.index'])->syncRoles([$admin]);
 
         /**
@@ -75,5 +85,15 @@ class RoleSeeder extends Seeder
          *
          */
         Permission::create(['name' => 'shipping-instruction.index'])->syncRoles([$admin, $office]);
+
+        /**
+         *
+         */
+        Permission::create(['name' => 'inventory.index'])->syncRoles([$admin, $office]);
+
+        /**
+         *
+         */
+        Permission::create(['name' => 'input.index'])->syncRoles([$admin, $office]);
     }
 }

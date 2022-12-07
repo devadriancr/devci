@@ -110,19 +110,13 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function () {
      */
     Route::resource('shipping-instruction', ShippingInstructionController::class);
 
-
-
-
-
-
-
-
     /**
      * Routes Travel
      */
     Route::resource('Travel', TravelController::class);
     Route::post('travel-store', [TravelController::class, 'store'])->name('travel.store');
     Route::post('travel-update', [TravelController::class, 'update'])->name('travel.update');
+
     /**
      * Routes output
      */

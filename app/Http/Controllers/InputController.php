@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\ConsignmentInstructionExport;
 use App\Models\ConsignmentInstruction;
 use App\Models\Container;
 use App\Models\Input;
@@ -9,10 +10,10 @@ use App\Models\Item;
 use App\Models\Location;
 use App\Models\ShippingInstruction;
 use App\Models\TransactionType;
-use App\Models\YF006;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Maatwebsite\Excel\Facades\Excel;
 
 class InputController extends Controller
 {
@@ -164,6 +165,11 @@ class InputController extends Controller
             ])
             ->get();
 
+        if (!empty($consignments)) {
+            Excel::download(new ConsignmentInstructionExport($consignments), 'users.xlsx');
+            dd($consignments);
+        }
+
         foreach ($consignments as $key => $consignment) {
             $item = Item::where('item_number', 'LIKE', '%' . $consignment->part_no . '%')->firstOrFail();
             $transaccion = TransactionType::where('code', '=', 'U3')->firstOrFail();
@@ -184,7 +190,7 @@ class InputController extends Controller
         $query = "CALL LX834OU02.YPU180C";
         $result = odbc_exec($conn, $query);
 
-         Container::where('id', $id)->update(['status' => false]);
+        Container::where('id', $id)->update(['status' => false]);
 
         return redirect('consignment-instruction-container');
     }
