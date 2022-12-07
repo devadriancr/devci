@@ -4,8 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Models\Travel;
 use App\Models\Location;
+use App\Export\ShippingExport;
+use App\Exports\ShippingExport as ExportsShippingExport;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
+
+
+
 
 class TravelController extends Controller
 {
@@ -115,4 +121,8 @@ class TravelController extends Controller
     {
         //
     }
+    public function export(Request $request)
+{
+    return Excel::download(new ExportsShippingExport($request->travel_id), 'report'.$request->travel_id.'.xlsx');
+}
 }

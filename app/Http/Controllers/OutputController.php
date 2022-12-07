@@ -7,9 +7,12 @@ use App\Models\item;
 use App\Models\input;
 use App\Models\transactiontype;
 use App\Models\travel;
+use App\Models\Inventory;
 use App\Models\Location;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
+
+use function PHPUnit\Framework\assertNotFalse;
 
 class OutputController extends Controller
 {
@@ -44,6 +47,14 @@ class OutputController extends Controller
             }
         }
         if ($error == 0) {
+            $serial_exist = input::where('serial', $cadena[13],)->where('travel_id', null)->first();
+            if ($serial_exist == null) {
+                $error = 5;
+                $message = 'Serial no encontrado en shipping';
+            }
+        }
+
+        if ($error == 0) {
             $Transaction_type = transactiontype::where('code', 'like', '%T %')->first();
 
             if ($location->code == 'L61       ') {
@@ -52,45 +63,49 @@ class OutputController extends Controller
                 $serial_exist = input::where('serial', $cadena[13])->where('travel_id', $request->travel_id)->first();
             }
             if ($serial_exist != false) {
-
                 $error = 3;
                 $message = 'serial ya fue  escaneado';
             }
         }
         if ($error == 0) {
-            $ultimaEnt = input::where('serial', $cadena[13])->where('travel_id','!=', $request->travel_id)->orderby('id','desc')->first();
-            $ultimaSal = output::where('serial', $cadena[13])->where('travel_id', '!=',$request->travel_id)->orderby('id','desc')->first();
-
-            if ($ultimaEnt != null && $ultimaSal != null) {
+            $ultimaEnt = input::where([['serial', $cadena[13]],['travel_id', '!=', $request->travel_id]])->orwhere('travel_id', '=', null)->exists();
+            $ultimaSal = output::where('serial', $cadena[13])->where('travel_id', '!=', $request->travel_id)->orderby('id', 'desc')->exists();
+        
+            if ($ultimaEnt != false && $ultimaSal != false) {
+                $ultimaEnt = input::where('serial', $cadena[13])->orderby('id', 'desc')->first();
+                $ultimaSal = output::where('serial', $cadena[13])->orderby('id', 'desc')->first();
+            
                 if ($ultimaEnt->created_at > $ultimaSal->created_at) {
                     $ulm = $ultimaEnt;
                 } else {
                     $ulm = $ultimaSal;
                 }
-            } else {
-                if ($ultimaEnt == null && $ultimaSal == null)
-                {
-                }else
-                {
-                    if ($ultimaEnt != false) {
-                        $ulm = $ultimaEnt;
-
-                    }
-                     if ($ultimaSal != false) {
-                        $ulm = $ultimaSal;
-
-                    }
-
+                if ($ulm->location_id == $request->location_id) {
+                    $error = 4;
+                    $message = 'serial ya existente en el almacen actual 1';
                 }
+            } else {
 
+                $ultimaEnt = input::where([['serial', $cadena[13]],['travel_id', '!=', $request->travel_id]])->orwhere('travel_id', '=', null)->exists();
+                $ultimaSal = output::where('serial', $cadena[13])->where('travel_id', '!=', $request->travel_id)->orderby('id', 'desc')->exists();
+            
 
+                if ($ultimaEnt == false && $ultimaSal == false) {
+                } else {
+                    if ($ultimaEnt != false) {
+                        $ultimaEnt = input::where('serial', $cadena[13])->orderby('id', 'desc')->first();
+                        $ulm = $ultimaEnt;
+                    }
+                    if ($ultimaSal != false) {
+                        $ultimaSal = output::where('serial', $cadena[13])->orderby('id', 'desc')->first();
+                        $ulm = $ultimaSal;
+                    }
+                    if ($ulm->location_id == $request->location_id) {
+                        $error = 4;
+                        $message = 'serial ya existente en el almacen actual';
+                    }
+                }
             }
-
-            if ($ulm->location_id == $request->location_id) {
-                $error = 4;
-                $message = 'serial ya existente en el almacen actual';
-            }
-
         }
 
         if ($error == 0) {
@@ -104,8 +119,6 @@ class OutputController extends Controller
                     'travel_id' => $request->travel_id,
                     'location_id' => $request->location_id
                 ]);
-
-
             } else {
                 input::create([
                     'supplier' =>  $cadena[11],
@@ -120,11 +133,6 @@ class OutputController extends Controller
 
             $message = 'serial capturado exitosamente';
         }
-
-
-
-
-
         $travels = travel::find($request->travel_id);
         if ($location->code == 'L61       ') {
             $scan  = output::with('item')->where('travel_id', $request->travel_id)->simplePaginate(10);
@@ -134,7 +142,6 @@ class OutputController extends Controller
         $locations = location::find($request->location_id);
         return view('Output.index', ['travels' => $travels, 'scan' => $scan, 'msg' => $message, 'location_id' => $locations]);
     }
-
 
 
     /**
@@ -187,13 +194,63 @@ class OutputController extends Controller
      */
     public function update(Request $request, Output $output)
     {
+        $travel = Travel::find($request->travel_id);
+        if ($travel->location->code == 'L61       ') {
+            $scan  = output::with('item')->where('travel_id', $request->travel_id)->get();
+            $operador = '-';
+            $loc_ant = 'L60       ';
+        } else {
+            $scan  = input::with('item')->where('travel_id', $request->travel_id)->get();
+            $operador = '+';
+            $loc_ant = 'L61       ';
+        }
+        $loc_ant_id=location::where('code',$loc_ant )->first();
+        foreach ($scan as $scans) {
+
+            self::inventario($scans->item_id, $scans->location_id, $operador, $scans->item_quantity, $loc_ant_id->id);
+        }
+
         Travel::updateOrCreate(
             ['id' => $request->travel_id],
             ['finish' => 1]
 
         );
 
+
         return redirect()->action([TravelController::class, 'index']);
+    }
+
+
+    public function inventario($item, $loc, $op, $cantidad, $loc_ant)
+    {
+        $operacion = Inventory::where('location_id', $loc)->where('item_id', $item)->first();
+        $operacion_ant = Inventory::where('location_id', $loc_ant)->where('item_id', $item)->first();
+
+        if (is_null($operacion)) {
+            $inv = 0;
+        } else {
+            $inv = $operacion->quantity;
+        }
+        if (is_null($operacion_ant) ) {
+            $inv_ant = 0;
+        } else {
+            $inv_ant = $operacion_ant->quantity;
+        }
+
+            $total = $inv + $cantidad;
+            $totalant = $inv_ant - $cantidad;
+
+        $mov = Inventory::updateOrCreate(
+            ['location_id' => $loc, 'item_id' => $item],
+            ['quantity' => $total]
+
+        );
+
+        $mov = Inventory::updateOrCreate(
+            ['location_id' => $loc_ant, 'item_id' => $item],
+            ['quantity' => $totalant]
+
+        );
     }
 
     /**

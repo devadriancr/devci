@@ -123,6 +123,7 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function () {
     Route::resource('Travel', TravelController::class);
     Route::post('travel-store', [TravelController::class, 'store'])->name('travel.store');
     Route::post('travel-update', [TravelController::class, 'update'])->name('travel.update');
+    Route::POST('travel-export', [TravelController::class, 'export'])->name('travel.export');
     /**
      * Routes output
      */
@@ -130,6 +131,7 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function () {
     Route::POST('output-store', [OutputController::class, 'store'])->name('output.store');
     Route::POST('output-create', [OutputController::class, 'create'])->name('output.create');
     Route::POST('output-update', [OutputController::class, 'update'])->name('output.update');
+
 
     /**
      * Routes Consignment Instructions
