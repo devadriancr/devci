@@ -165,11 +165,6 @@ class InputController extends Controller
             ])
             ->get();
 
-        if (!empty($consignments)) {
-            Excel::download(new ConsignmentInstructionExport($consignments), 'users.xlsx');
-            dd($consignments);
-        }
-
         foreach ($consignments as $key => $consignment) {
             $item = Item::where('item_number', 'LIKE', '%' . $consignment->part_no . '%')->firstOrFail();
             $transaccion = TransactionType::where('code', '=', 'U3')->firstOrFail();

@@ -79,7 +79,7 @@ class Input extends Model
                     ['arrival_time', '=', $info_cont->arrival_time]
                 ]
             )
-        ->update(['status' => false]);
+            ->update(['status' => false]);
 
         $input = Input::create(
             [
@@ -115,6 +115,7 @@ class Input extends Model
 
         $sum = 0;
         $sum = $quantity + $itemQuantity;
+
         Inventory::updateOrCreate(
             [
                 'item_id' => $item,

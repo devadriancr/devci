@@ -138,10 +138,10 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function () {
      * Route Inventory
      */
     Route::resource('inventory', InventoryController::class);
+    Route::get('inventory-upload', [InventoryController::class, 'upload'])->name('inventory.upload');
 
     /**
      * Route Input
      */
     Route::resource('input', InputController::class);
-
 });

@@ -16,5 +16,7 @@ class UsersSeeder extends Seeder
     public function run()
     {
         User::create(['name' => 'Usuario Administrador', 'email' => 'admin@admin.com', 'email_verified_at' => now(), 'password' => bcrypt('admin'), 'remember_token' => Str::random(10)])->assignRole('Administrador');
+        User::create(['name' => 'Usuario Oficina', 'email' => 'user@office.com', 'email_verified_at' => now(), 'password' => bcrypt('user'), 'remember_token' => Str::random(10)])->assignRole('Oficina');
+        User::create(['name' => 'Usuario Almacén', 'email' => 'user@warehouse.com', 'email_verified_at' => now(), 'password' => bcrypt('user'), 'remember_token' => Str::random(10)])->assignRole('Almacén');
     }
 }
