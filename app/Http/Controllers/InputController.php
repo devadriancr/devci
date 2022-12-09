@@ -13,7 +13,6 @@ use App\Models\TransactionType;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Maatwebsite\Excel\Facades\Excel;
 
 class InputController extends Controller
 {
@@ -49,20 +48,32 @@ class InputController extends Controller
 
         list($a, $b, $c, $d, $e, $f, $g, $h, $i, $j, $part_qty, $supplier, $m, $serial, $o, $p, $q, $r, $s, $t, $u, $v, $w, $x, $y, $z, $part_no) = explode(',', $dataRequest);
 
-        ConsignmentInstruction::updateOrCreate(
-            [
-                'serial' => $serial,
-            ],
-            [
-                'supplier' => $supplier,
-                'part_qty' => $part_qty,
-                'part_no' => $part_no,
-                'container_id' => $request->container_id,
-                'user_id' => Auth::id(),
-            ]
-        );
+        $data = ConsignmentInstruction::query()
+            ->where(
+                [
+                    ['serial', '=', $serial],
+                ]
+            )
+            ->first();
 
-        return redirect()->back()->with('success', 'Registro Exitoso');
+        if ($data === null) {
+            ConsignmentInstruction::updateOrCreate(
+                [
+                    'serial' => $serial,
+                ],
+                [
+                    'supplier' => $supplier,
+                    'part_qty' => $part_qty,
+                    'part_no' => $part_no,
+                    'container_id' => $request->container_id,
+                    'user_id' => Auth::id(),
+                ]
+            );
+
+            return redirect()->back()->with('success', 'Registro Exitoso');
+        } else {
+            return redirect()->back()->with('warning', 'Registro Duplicado');
+        }
     }
 
     public function consignment_check(Request $request)
@@ -80,6 +91,8 @@ class InputController extends Controller
                 ['containers.arrival_time', '=', $time],
                 ['containers.status', '=', true]
             ])
+            ->orderBy('supplier', 'ASC')
+            ->orderBy('serial', 'ASC')
             ->get();
 
         $shipments = ShippingInstruction::query()
@@ -98,10 +111,10 @@ class InputController extends Controller
             array_push($array_consignment, $serial);
         }
 
-        $arrayFound = [];
         $arrayNotFound = [];
         foreach ($shipments as $key => $shipping) {
-            if (self::search($array_consignment, $shipping->serial) == false) {
+            if (self::search($array_consignment, $shipping->serial) === false) {
+                // echo $key . " " . $shipping->serial . " No Existe </br>";
                 array_push($arrayNotFound, [
                     'container' => $shipping->container,
                     'invoice' => $shipping->invoice,
@@ -163,6 +176,8 @@ class InputController extends Controller
                 ['containers.arrival_time', '=', $time],
                 ['containers.status', '=', true]
             ])
+            ->orderBy('supplier', 'ASC')
+            ->orderBy('serial', 'ASC')
             ->get();
 
         foreach ($consignments as $key => $consignment) {

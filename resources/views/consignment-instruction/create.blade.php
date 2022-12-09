@@ -41,7 +41,7 @@
 
                 <label class="block text-sm">
                     <span class="text-gray-700 dark:text-gray-400">Serial</span>
-                    <input name="code_qr" class="block w-full my-2 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input" placeholder="S6030XXX1234XX" autofocus autocomplete="off"/>
+                    <input name="code_qr" id="code_qr" class="block w-full my-2 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input" autofocus autocomplete="off" />
                 </label>
 
                 <div class="flex justify-end mt-2 gap-2">
@@ -62,6 +62,18 @@
                     <li>{{ $error }}</li>
                     @endforeach
                 </ul>
+            </div>
+            @endif
+
+            @if (session('success'))
+            <div class="mb-4 font-medium text-green-600">
+                {{ session('success') }}
+            </div>
+            @endif
+
+            @if (session('warning'))
+            <div class="mb-4 font-medium text-yellow-600">
+                {{ session('warning') }}
             </div>
             @endif
 
@@ -120,4 +132,9 @@
             </div>
         </div>
     </div>
+    <script>
+        window.onload = function() {
+            document.getElementById("code_qr").focus();
+        };
+    </script>
 </x-app-layout>

@@ -17,7 +17,7 @@ class ContainerSeeder extends Seeder
     public function run()
     {
         Container::factory(1)->create([
-            'code' => 'BEAU5258356',
+            'code' => 'TRLU7458775',
             'arrival_date' => Carbon::now()->format('Ymd'),
             'arrival_time' => Carbon::parse('12:00:00')->format('His')
         ]);

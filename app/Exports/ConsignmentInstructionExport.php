@@ -23,11 +23,11 @@ class ConsignmentInstructionExport implements FromCollection, WithHeadings, Shou
     public function headings(): array
     {
         return [
+            'Contenedor',
             'Proveedor',
             'Serial',
-            'Cantidad',
             'No Parte',
-            'Contenedor',
+            'Cantidad',
             'Fecha de Lllegada',
             'Hora de Llegada',
         ];

@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\IIM;
+use App\Models\ILI;
 use App\Models\Inventory;
+use App\Models\Item;
 use App\Models\Location;
 use App\Models\Warehouse;
 use Illuminate\Http\Request;
@@ -12,24 +14,36 @@ class InventoryController extends Controller
 {
     public function upload()
     {
-        $opening_balances = IIM::query()
-            ->select(['IPROD', 'IDESC', 'IOPB', 'ILOC', 'IWHS'])
-            ->where([
-                ['ICLAS', '=', 'S1'],
-                ['IID', '=', 'IM']
-            ])
-            ->orderBy('IPROD', 'DESC')
+        $inventories = ILI::query()
+            ->select(['LPROD', 'LWHS', 'LLOC', 'LOPB'])
+            ->orderBy('LPROD', 'DESC')
             ->get();
 
-        foreach ($opening_balances as $key => $opening_balance) {
-            $warehouse = Warehouse::query()->where('code', '=', $opening_balance->IWHS);
-            $location = Location::query()->where('code', '=', $opening_balance->ILOC);
+        foreach ($inventories as $key => $inventory) {
+            $item = Item::where('item_number', '=', $inventory->LPROD)->first();
+            $location = Location::where('code', '=', $inventory->LLOC)->first();
 
-            echo "$key &nbsp &nbsp - &nbsp &nbsp $opening_balance->IPROD &nbsp &nbsp - &nbsp &nbsp $opening_balance->IDESC
-            &nbsp &nbsp - &nbsp &nbsp $opening_balance->IOPB &nbsp &nbsp - &nbsp &nbsp $opening_balance->ILOC &nbsp &nbsp - &nbsp &nbsp $opening_balance->IWHS </br>";
+            // $lprod = $inventory->LPROD;
+            // $lwhs = $inventory->LWHS;
+            // $lloc = $inventory->LLOC;
+            // $lopb = $inventory->LOPB;
+            // echo " $key &nbsp; &nbsp; &nbsp; | $lprod &nbsp; &nbsp; &nbsp; | &nbsp; &nbsp; &nbsp;
+            // $lwhs &nbsp; &nbsp; &nbsp; | &nbsp; &nbsp; &nbsp;
+            // $lloc &nbsp; &nbsp; &nbsp; | &nbsp; &nbsp; &nbsp;
+            // $lopb &nbsp; &nbsp; &nbsp; | &nbsp; &nbsp; &nbsp; </br>";
+
+            Inventory::updateOrCreate(
+                [
+                    'item_id' => $item->id ?? null,
+                    'location_id' => $location->id ?? null,
+                ],
+                [
+                    'opening_balance' => $inventory->LOPB ?? ''
+                ],
+            );
         }
 
-        dd("Fin");
+        return redirect('inventory');
     }
 
     /**
