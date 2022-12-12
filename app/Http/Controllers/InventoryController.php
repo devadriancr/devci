@@ -20,27 +20,25 @@ class InventoryController extends Controller
             ->get();
 
         foreach ($inventories as $key => $inventory) {
-            $item = Item::where('item_number', '=', $inventory->LPROD)->first();
-            $location = Location::where('code', '=', $inventory->LLOC)->first();
+            $item = Item::where('item_number', $inventory->LPROD)->first();
+            $location = Location::where('code', $inventory->LLOC)->first();
 
-            // $lprod = $inventory->LPROD;
-            // $lwhs = $inventory->LWHS;
-            // $lloc = $inventory->LLOC;
-            // $lopb = $inventory->LOPB;
-            // echo " $key &nbsp; &nbsp; &nbsp; | $lprod &nbsp; &nbsp; &nbsp; | &nbsp; &nbsp; &nbsp;
-            // $lwhs &nbsp; &nbsp; &nbsp; | &nbsp; &nbsp; &nbsp;
-            // $lloc &nbsp; &nbsp; &nbsp; | &nbsp; &nbsp; &nbsp;
-            // $lopb &nbsp; &nbsp; &nbsp; | &nbsp; &nbsp; &nbsp; </br>";
-
-            Inventory::updateOrCreate(
-                [
-                    'item_id' => $item->id ?? null,
-                    'location_id' => $location->id ?? null,
-                ],
-                [
-                    'opening_balance' => $inventory->LOPB ?? ''
-                ],
-            );
+            if ($item != null) {
+                if ($location != null) {
+                    Inventory::updateOrCreate(
+                        [
+                            'item_id' => $item->id,
+                            'location_id' => $location->id,
+                        ],
+                        [
+                            'opening_balance' => 0,
+                            'minimum' => 0,
+                            'maximum' => 0,
+                            'quantity' => $inventory->LOPB,
+                        ],
+                    );
+                }
+            }
         }
 
         return redirect('inventory');
@@ -53,7 +51,7 @@ class InventoryController extends Controller
      */
     public function index()
     {
-        $inventories = Inventory::orderBy('item_id', 'ASC')->paginate(10);
+        $inventories = Inventory::orderBy('item_id', 'DESC')->paginate(10);
 
         return view('inventory.index', ['inventories' => $inventories]);
     }

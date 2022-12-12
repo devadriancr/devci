@@ -13,6 +13,7 @@ use App\Models\TransactionType;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Maatwebsite\Excel\Facades\Excel;
 
 class InputController extends Controller
 {
@@ -161,6 +162,112 @@ class InputController extends Controller
         return false;
     }
 
+    public function reportFount(Request $request)
+    {
+        $id = $request->container_id;
+        $container = $request->container_code;
+        $date = $request->container_date;
+        $time = $request->container_time;
+
+        $consignments = ConsignmentInstruction::query()
+            ->join('containers', 'consignment_instructions.container_id', '=', 'containers.id')
+            ->where([
+                ['containers.code', '=', $container],
+                ['containers.arrival_date', '=', $date],
+                ['containers.arrival_time', '=', $time],
+                ['containers.status', '=', true]
+            ])
+            ->orderBy('supplier', 'ASC')
+            ->orderBy('serial', 'ASC')
+            ->get();
+
+        $shipments = ShippingInstruction::query()
+            ->where([
+                ['container', '=', $container],
+                ['arrival_date', '=', $date],
+                ['arrival_time', '=', $time],
+                ['status', '=', true]
+            ])
+            ->orderBy('serial', 'ASC')
+            ->get();
+
+        $array_consignment = [];
+        foreach ($consignments as $key => $consignment) {
+            $serial = $consignment->supplier . $consignment->serial;
+            array_push($array_consignment, $serial);
+        }
+
+        $arrayFound = [];
+        foreach ($shipments as $key => $shipping) {
+            if (self::search($array_consignment, $shipping->serial) === true) {
+                array_push($arrayFound, [
+                    'container' => $shipping->container,
+                    'invoice' => $shipping->invoice,
+                    'serial' => $shipping->serial,
+                    'part_no' => $shipping->part_no,
+                    'part_qty' => $shipping->part_qty,
+                    'arrival_date' => $shipping->arrival_date,
+                    'arrival_time' => $shipping->arrival_time,
+                ]);
+            }
+        }
+
+        return Excel::download(new ConsignmentInstructionExport($arrayFound), 'Found.xlsx');
+    }
+
+    public function reportNotFount(Request $request)
+    {
+        $id = $request->container_id;
+        $container = $request->container_code;
+        $date = $request->container_date;
+        $time = $request->container_time;
+
+        $consignments = ConsignmentInstruction::query()
+            ->join('containers', 'consignment_instructions.container_id', '=', 'containers.id')
+            ->where([
+                ['containers.code', '=', $container],
+                ['containers.arrival_date', '=', $date],
+                ['containers.arrival_time', '=', $time],
+                ['containers.status', '=', true]
+            ])
+            ->orderBy('supplier', 'ASC')
+            ->orderBy('serial', 'ASC')
+            ->get();
+
+        $shipments = ShippingInstruction::query()
+            ->where([
+                ['container', '=', $container],
+                ['arrival_date', '=', $date],
+                ['arrival_time', '=', $time],
+                ['status', '=', true]
+            ])
+            ->orderBy('serial', 'ASC')
+            ->get();
+
+        $array_consignment = [];
+        foreach ($consignments as $key => $consignment) {
+            $serial = $consignment->supplier . $consignment->serial;
+            array_push($array_consignment, $serial);
+        }
+
+        $arrayNotFound = [];
+        foreach ($shipments as $key => $shipping) {
+            if (self::search($array_consignment, $shipping->serial) === false) {
+                array_push($arrayNotFound, [
+                    'container' => $shipping->container,
+                    'invoice' => $shipping->invoice,
+                    'serial' => $shipping->serial,
+                    'part_no' => $shipping->part_no,
+                    'part_qty' => $shipping->part_qty,
+                    'arrival_date' => $shipping->arrival_date,
+                    'arrival_time' => $shipping->arrival_time,
+                ]);
+            }
+        }
+
+        return Excel::download(new ConsignmentInstructionExport($arrayNotFound), 'NotFound.xlsx');
+    }
+
     public function consignment_finish(Request $request)
     {
         $id = $request->container_id;
@@ -201,6 +308,14 @@ class InputController extends Controller
         $result = odbc_exec($conn, $query);
 
         Container::where('id', $id)->update(['status' => false]);
+        ShippingInstruction::query()
+            ->where([
+                ['container', '=', $container],
+                ['arrival_date', '=', $date],
+                ['arrival_time', '=', $time],
+                ['status', '=', true]
+            ])
+            ->update(['status' => false]);
 
         return redirect('consignment-instruction-container');
     }

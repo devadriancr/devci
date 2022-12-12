@@ -76,7 +76,6 @@
                 {{ session('warning') }}
             </div>
             @endif
-
         </div>
 
         <div class="w-full overflow-hidden rounded-lg shadow-xs">
@@ -133,8 +132,12 @@
         </div>
     </div>
     <script>
-        window.onload = function() {
-            document.getElementById("code_qr").focus();
-        };
+        // window.onload = function() {
+        //     document.getElementById("code_qr").focus();
+        // };
+
+        // function setFocusToTextBox() {
+        //     document.getElementById("serial").focus();
+        // }
     </script>
 </x-app-layout>

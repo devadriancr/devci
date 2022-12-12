@@ -70,16 +70,16 @@ class Input extends Model
         $info_cont = Container::where('id', '=', $container)->firstOrFail();
         $part_no = Item::where('id', '=', $item)->firstOrFail();
 
-        $shipment = ShippingInstruction::query()
-            ->where(
-                [
-                    ['serial', 'LIKE', '%' . $serial . '%'],
-                    ['container', '=', $info_cont->code],
-                    ['arrival_date', '=', $info_cont->arrival_date],
-                    ['arrival_time', '=', $info_cont->arrival_time]
-                ]
-            )
-            ->update(['status' => false]);
+        // $shipment = ShippingInstruction::query()
+        //     ->where(
+        //         [
+        //             ['serial', 'LIKE', '%' . $serial . '%'],
+        //             ['container', '=', $info_cont->code],
+        //             ['arrival_date', '=', $info_cont->arrival_date],
+        //             ['arrival_time', '=', $info_cont->arrival_time]
+        //         ]
+        //     )
+        //     ->update(['status' => false]);
 
         $input = Input::create(
             [

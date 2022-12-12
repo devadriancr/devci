@@ -24,7 +24,7 @@ class ConsignmentInstructionExport implements FromCollection, WithHeadings, Shou
     {
         return [
             'Contenedor',
-            'Proveedor',
+            'Factura',
             'Serial',
             'No Parte',
             'Cantidad',
