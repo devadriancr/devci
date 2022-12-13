@@ -120,7 +120,7 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function () {
     /**
      * Routes output
      */
-
+    Route::get('output', [OutputController::class, 'index'])->name('output.index');
     Route::POST('output-store', [OutputController::class, 'store'])->name('output.store');
     Route::POST('output-create', [OutputController::class, 'create'])->name('output.create');
     Route::POST('output-update', [OutputController::class, 'update'])->name('output.update');

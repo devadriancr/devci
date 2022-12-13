@@ -5,6 +5,7 @@ namespace App\Exports;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithHeadings;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
 class ConsignmentInstructionExport implements FromCollection, WithHeadings, ShouldAutoSize
 {
@@ -23,13 +24,19 @@ class ConsignmentInstructionExport implements FromCollection, WithHeadings, Shou
     public function headings(): array
     {
         return [
-            'Contenedor',
-            'Factura',
-            'Serial',
-            'No Parte',
-            'Cantidad',
-            'Fecha de Lllegada',
-            'Hora de Llegada',
+            'CONTENEDOR',
+            'FACTURA',
+            'SERIAL',
+            'NO PARTE',
+            'CANTIDAD',
+            'FECHA DE LLEGADA',
+            'HORA DE LLEGADA',
+        ];
+    }
+    public function styles(Worksheet $sheet)
+    {
+        return [
+            1    => ['font' => ['bold' => true]],
         ];
     }
 }
