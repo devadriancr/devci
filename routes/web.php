@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ConsignmentInstructionController;
 use App\Http\Controllers\ContainerController;
 use App\Http\Controllers\InputController;
 use App\Http\Controllers\InventoryController;
@@ -99,6 +100,7 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function () {
      */
     Route::resource('item', ItemController::class);
     Route::get('item-upload', [ItemController::class, 'upload'])->name('item.upload');
+    Route::get('item-safety-stock', [ItemController::class, 'safetyStock'])->name('item.safety-stock');
 
     /**
      * Routes Containers
@@ -128,13 +130,13 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function () {
     /**
      * Routes Consignment Instructions
      */
-    Route::get('consignment-instruction-container', [InputController::class, 'consignment_container'])->name('consignment-instruction.container');
-    Route::get('consignment-instruction-create', [InputController::class, 'consignment_create'])->name('consignment-instruction.create');
-    Route::post('consignment-instruction-store', [InputController::class, 'consignment_store'])->name('consigment-instruction.store');
-    Route::post('consignment-instruction-check', [InputController::class, 'consignment_check'])->name('consigment-instruction.check');
-    Route::post('consignment-instruction-report-not-found', [InputController::class, 'reportNotFount'])->name('consigment-instruction.not-found');
-    Route::post('consignment-instruction-report-found', [InputController::class, 'reportFount'])->name('consigment-instruction.found');
-    Route::post('consignment-instruction-finish', [InputController::class, 'consignment_finish'])->name('consigment-instruction.finish');
+    Route::get('consignment-instruction-container', [ConsignmentInstructionController::class, 'consignment_container'])->name('consignment-instruction.container');
+    Route::get('consignment-instruction-create', [ConsignmentInstructionController::class, 'consignment_create'])->name('consignment-instruction.create');
+    Route::post('consignment-instruction-store', [ConsignmentInstructionController::class, 'consignment_store'])->name('consigment-instruction.store');
+    Route::post('consignment-instruction-check', [ConsignmentInstructionController::class, 'consignment_check'])->name('consigment-instruction.check');
+    Route::post('consignment-instruction-report-not-found', [ConsignmentInstructionController::class, 'reportNotFount'])->name('consigment-instruction.not-found');
+    Route::post('consignment-instruction-report-found', [ConsignmentInstructionController::class, 'reportFount'])->name('consigment-instruction.found');
+    Route::post('consignment-instruction-finish', [ConsignmentInstructionController::class, 'consignment_finish'])->name('consigment-instruction.finish');
 
     /**
      * Route Inventory

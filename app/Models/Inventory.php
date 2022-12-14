@@ -11,9 +11,7 @@ class Inventory extends Model
     use HasFactory;
 
     protected $fillable = [
-        'opening_balance',
-        'minimum',
-        'maximum',
+        'safety_stock',
         'quantity',
         'item_id',
         'location_id',

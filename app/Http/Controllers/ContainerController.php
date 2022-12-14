@@ -43,11 +43,8 @@ class ContainerController extends Controller
             'arrival_time' => ['required', 'date_format:H:i'],
         ]);
 
-        Container::create([
-            'code' => $request->code,
-            'arrival_date' => $request->arrival_date,
-            'arrival_time' => $request->arrival_time,
-        ]);
+
+        Container::storeContainer($request->code, $request->arrival_date, $request->arrival_time);
 
         return redirect('container');
     }

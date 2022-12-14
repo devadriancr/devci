@@ -2,12 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\IIM;
 use App\Models\ILI;
 use App\Models\Inventory;
 use App\Models\Item;
 use App\Models\Location;
-use App\Models\Warehouse;
 use Illuminate\Http\Request;
 
 class InventoryController extends Controller
@@ -23,22 +21,15 @@ class InventoryController extends Controller
             $item = Item::where('item_number', $inventory->LPROD)->first();
             $location = Location::where('code', $inventory->LLOC)->first();
 
-            if ($item != null) {
-                if ($location != null) {
-                    Inventory::updateOrCreate(
-                        [
-                            'item_id' => $item->id,
-                            'location_id' => $location->id,
-                        ],
-                        [
-                            'opening_balance' => 0,
-                            'minimum' => 0,
-                            'maximum' => 0,
-                            'quantity' => $inventory->LOPB,
-                        ],
-                    );
-                }
-            }
+            Inventory::updateOrCreate(
+                [
+                    'item_id' => $item->id ?? null,
+                    'location_id' => $location->id ?? null,
+                ],
+                [
+                    'quantity' => $inventory->LOPB,
+                ],
+            );
         }
 
         return redirect('inventory');

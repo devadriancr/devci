@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('iid')->nullable();
             $table->string('item_number');
             $table->string('item_description')->nullable();
+            $table->double('safety_stock')->default(0)->nullable();
             $table->unsignedBigInteger('measurement_type_id')->nullable();
             $table->unsignedBigInteger('item_type_id')->nullable();
             $table->unsignedBigInteger('item_class_id')->nullable();

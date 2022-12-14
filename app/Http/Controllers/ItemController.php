@@ -7,6 +7,7 @@ use App\Models\Item;
 use App\Models\ItemClass;
 use App\Models\ItemType;
 use App\Models\MeasurementType;
+use App\Models\YH005;
 use Illuminate\Http\Request;
 
 class ItemController extends Controller
@@ -42,6 +43,24 @@ class ItemController extends Controller
         }
 
         return redirect('item');
+    }
+
+    public function safetyStock()
+    {
+        $class = ItemClass::query()->where('code', 'S1')->first();
+        $items = Item::query()->where('item_class_id', $class->id)->get();
+
+        foreach ($items as $i => $item) {
+            $stock = YH005::where('H5CPRO', 'like', '%' . $item->item_number . '%')->sum('H5UQTY');
+            if ($stock != 0) {
+                Item::updateOrCreate(
+                    ['item_number' => $item->item_number],
+                    ['safety_stock' => $stock]
+                );
+            }
+        }
+
+        dd("Fin");
     }
 
     /**
