@@ -12,6 +12,9 @@ use Illuminate\Http\Request;
 
 class ItemController extends Controller
 {
+    /**
+     *
+     */
     public function upload()
     {
         $items = IIM::query()
@@ -45,22 +48,21 @@ class ItemController extends Controller
         return redirect('item');
     }
 
+    /**
+     *
+     */
     public function safetyStock()
     {
-        $class = ItemClass::query()->where('code', 'S1')->first();
-        $items = Item::query()->where('item_class_id', $class->id)->get();
+        $items = YH005::groupBy('H5CPRO')->selectRaw('H5CPRO, SUM(H5UQTY) AS TOTAL')->get();
 
-        foreach ($items as $i => $item) {
-            $stock = YH005::where('H5CPRO', 'like', '%' . $item->item_number . '%')->sum('H5UQTY');
-            if ($stock != 0) {
-                Item::updateOrCreate(
-                    ['item_number' => $item->item_number],
-                    ['safety_stock' => $stock]
-                );
-            }
+        foreach ($items as $key => $item) {
+            $status = Item::updateOrCreate(
+                ['item_number' => $item->H5CPRO],
+                ['safety_stock' => $item->TOTAL]
+            );
         }
 
-        dd("Fin");
+        return redirect('item');
     }
 
     /**
@@ -68,9 +70,10 @@ class ItemController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $items = Item::orderBy('item_number', 'ASC')->paginate(10);
+        $class = ItemClass::where('code', 'LIKE', '%S1%')->first();
+        $items = Item::where('item_class_id', $class->id)->orderBy('updated_at', 'DESC')->paginate(10);
 
         return view('items.index', ['items' => $items]);
     }

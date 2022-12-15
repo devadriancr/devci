@@ -42,7 +42,7 @@ class ConsignmentInstructionController extends Controller
     public function consignment_store(Request $request)
     {
         $request->validate([
-            'code_qr' => ['required', 'string'],
+            'code_qr' => ['required', 'string', 'min:161', 'max:161'],
             'container_id' => ['required', 'numeric'],
         ]);
 
@@ -115,7 +115,7 @@ class ConsignmentInstructionController extends Controller
 
         $arrayNotFound = [];
         foreach ($shipments as $key => $shipping) {
-            if (self::search($array_consignment, $shipping->serial) === false) {
+            if (self::search($array_consignment, 0, count($array_consignment) - 1, $shipping->serial) === false) {
                 // echo $key . " " . $shipping->serial . " No Existe </br>";
                 array_push($arrayNotFound, [
                     'container' => $shipping->container,
@@ -139,28 +139,43 @@ class ConsignmentInstructionController extends Controller
         ]);
     }
 
-    public function search(array $arr, $x)
+    public function search(array $arr, $start, $end, $x)
     {
-        if (count($arr) === 0) return false;
+        // if (count($arr) === 0) return false;
 
-        $low = 0;
-        $high = count($arr) - 1;
+        // $low = 0;
+        // $high = count($arr) - 1;
 
-        while ($low <= $high) {
-            $mid = floor(($low + $high) / 2);
+        // while ($low <= $high) {
+        //     $mid = floor(($low + $high) / 2);
 
-            if ($arr[$mid] == $x) {
-                return true;
-            }
+        //     if ($arr[$mid] == $x) {
+        //         return true;
+        //     }
 
-            if ($x < $arr[$mid]) {
-                $high = $mid - 1;
-            } else {
-                $low = $mid + 1;
-            }
+        //     if ($x < $arr[$mid]) {
+        //         $high = $mid - 1;
+        //     } else {
+        //         $low = $mid + 1;
+        //     }
+        // }
+
+        // return false;
+
+        if ($end < $start)
+            return false;
+
+        $mid = floor(($end + $start) / 2);
+        if ($arr[$mid] == $x)
+            return true;
+
+        elseif ($arr[$mid] > $x) {
+
+            return self::search($arr, $start, $mid - 1, $x);
+        } else {
+
+            return self::search($arr, $mid + 1, $end, $x);
         }
-
-        return false;
     }
 
     public function reportFount(Request $request)
@@ -200,7 +215,7 @@ class ConsignmentInstructionController extends Controller
 
         $arrayFound = [];
         foreach ($shipments as $key => $shipping) {
-            if (self::search($array_consignment, $shipping->serial) === true) {
+            if (self::search($array_consignment, 0, count($array_consignment) - 1, $shipping->serial) === true) {
                 array_push($arrayFound, [
                     'container' => $shipping->container,
                     'invoice' => $shipping->invoice,
@@ -253,7 +268,7 @@ class ConsignmentInstructionController extends Controller
 
         $arrayNotFound = [];
         foreach ($shipments as $key => $shipping) {
-            if (self::search($array_consignment, $shipping->serial) === false) {
+            if (self::search($array_consignment, 0, count($array_consignment) - 1, $shipping->serial) === false) {
                 array_push($arrayNotFound, [
                     'container' => $shipping->container,
                     'invoice' => $shipping->invoice,

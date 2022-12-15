@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\ILI;
 use App\Models\Inventory;
 use App\Models\Item;
+use App\Models\ItemClass;
 use App\Models\Location;
 use Illuminate\Http\Request;
 
@@ -27,7 +28,7 @@ class InventoryController extends Controller
                     'location_id' => $location->id ?? null,
                 ],
                 [
-                    'quantity' => $inventory->LOPB,
+                    'opening_balance' => $inventory->LOPB,
                 ],
             );
         }
@@ -42,7 +43,12 @@ class InventoryController extends Controller
      */
     public function index()
     {
-        $inventories = Inventory::orderBy('item_id', 'DESC')->paginate(10);
+        $inventories = Inventory::query()
+            ->join('items', 'inventories.item_id', '=', 'items.id')
+            ->join('item_classes', 'items.item_class_id', '=', 'item_classes.id')
+            ->where('item_classes.code', 'LIKE', '%S1%')
+            ->orderBy('items.item_number', 'DESC')
+            ->paginate(10);
 
         return view('inventory.index', ['inventories' => $inventories]);
     }

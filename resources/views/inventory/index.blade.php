@@ -1,7 +1,7 @@
 <x-app-layout title="Inventario">
     <div class="container grid px-6 mx-auto">
         <h2 class="mt-4 mb-2 text-2xl font-semibold text-gray-700 dark:text-gray-200">
-            Inevntario
+            Inventario
         </h2>
         <div class="flex justify-end pt-2 pb-4 gap-2">
             <a href="{{ route('inventory.upload') }}" class="flex items-center justify-between px-4 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple">
@@ -25,9 +25,8 @@
                             <th class="px-4 py-3">Item</th>
                             <th class="px-4 py-3">Almacén</th>
                             <th class="px-4 py-3">Locación</th>
+                            <th class="px-4 py-3">Stock de Seguridad</th>
                             <th class="px-4 py-3">Cantidad</th>
-                            <th class="px-4 py-3">Fecha de Creación</th>
-                            <th class="px-4 py-3">Fecha de Actualizacion</th>
                             <!-- <th class="px-4 py-3">Acciones</th> -->
                         </tr>
                     </thead>
@@ -43,26 +42,31 @@
                             <td class="px-4 py-3 text-sm">
                                 {{ $inventory->location->code }}
                             </td>
-                            <td class="px-4 py-3 text-sm text-center">
+                            <td class="px-4 py-3 text-sm">
+                                @if ( $inventory->item->safety_stock > 0)
+                                <span class="px-2 py-1 font-semibold leading-tight text-green-700 bg-green-100 rounded-full dark:bg-green-700 dark:text-green-100">
+                                    {{ $inventory->item->safety_stock  ?? '' }}
+                                </span>
+                                @else
+                                <span class="px-2 py-1 font-semibold leading-tight text-orange-700 bg-orange-100 rounded-full dark:text-white dark:bg-orange-600">
+                                    {{ $inventory->item->safety_stock  ?? '' }}
+                                </span>
+                                @endif
+                            </td>
+                            <td class="px-4 py-3 text-sm">
                                 @php
-                                    $sum = $inventory->quantity + $inventory->opening_balance
+                                $sum = $inventory->quantity + $inventory->opening_balance
                                 @endphp
                                 @if ($sum > 0)
-                                    <span class="px-2 py-1 font-semibold leading-tight text-green-700 bg-green-100 rounded-full dark:bg-green-700 dark:text-green-100">
-                                        &nbsp; {{ $sum }} &nbsp;
-                                    </span>
+                                <span class="px-2 py-1 font-semibold leading-tight text-green-700 bg-green-100 rounded-full dark:bg-green-700 dark:text-green-100">
+                                    &nbsp; {{ $sum }} &nbsp;
+                                </span>
                                 @else
-                                    <span class="px-2 py-1 font-semibold leading-tight text-red-700 bg-red-100 rounded-full dark:text-red-100 dark:bg-red-700">
-                                        &nbsp; {{ $sum }} &nbsp;
-                                    </span>
+                                <span class="px-2 py-1 font-semibold leading-tight text-red-700 bg-red-100 rounded-full dark:text-red-100 dark:bg-red-700">
+                                    &nbsp; {{ $sum }} &nbsp;
+                                </span>
                                 @endif
 
-                            </td>
-                            <td class="px-4 py-3 text-sm">
-                                {{ $inventory->created_at }}
-                            </td>
-                            <td class="px-4 py-3 text-sm">
-                                {{ $inventory->updated_at }}
                             </td>
                             <!-- <td class="px-4 py-3">
                                 <div class="flex items-center space-x-4 text-sm">
