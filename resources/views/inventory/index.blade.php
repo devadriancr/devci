@@ -25,7 +25,6 @@
                             <th class="px-4 py-3">Item</th>
                             <th class="px-4 py-3">Almacén</th>
                             <th class="px-4 py-3">Locación</th>
-                            <th class="px-4 py-3">Stock de Seguridad</th>
                             <th class="px-4 py-3">Cantidad</th>
                             <!-- <th class="px-4 py-3">Acciones</th> -->
                         </tr>
@@ -42,17 +41,7 @@
                             <td class="px-4 py-3 text-sm">
                                 {{ $inventory->location->code }}
                             </td>
-                            <td class="px-4 py-3 text-sm">
-                                @if ( $inventory->item->safety_stock > 0)
-                                <span class="px-2 py-1 font-semibold leading-tight text-green-700 bg-green-100 rounded-full dark:bg-green-700 dark:text-green-100">
-                                    {{ $inventory->item->safety_stock  ?? '' }}
-                                </span>
-                                @else
-                                <span class="px-2 py-1 font-semibold leading-tight text-orange-700 bg-orange-100 rounded-full dark:text-white dark:bg-orange-600">
-                                    {{ $inventory->item->safety_stock  ?? '' }}
-                                </span>
-                                @endif
-                            </td>
+
                             <td class="px-4 py-3 text-sm">
                                 @php
                                 $sum = $inventory->quantity + $inventory->opening_balance

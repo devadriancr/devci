@@ -3,10 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\ILI;
+use App\Models\Input;
 use App\Models\Inventory;
 use App\Models\Item;
-use App\Models\ItemClass;
 use App\Models\Location;
+use App\Models\output;
+use App\Models\TransactionType;
 use Illuminate\Http\Request;
 
 class InventoryController extends Controller
@@ -21,6 +23,36 @@ class InventoryController extends Controller
         foreach ($inventories as $key => $inventory) {
             $item = Item::where('item_number', $inventory->LPROD)->first();
             $location = Location::where('code', $inventory->LLOC)->first();
+            // $data = Inventory::where([['item_id', $item->id], ['location_id', $location->id]])->first();
+            // $result = 0;
+
+            // if ($data === null) {
+            //     echo "Entro";
+            // }
+
+            // if ($data !== null && $item !== null && $location !== null) {
+            //     if ($inventory->LOPB > $data->opening_balance) {
+            //         $transaction = TransactionType::where('code', '=', 'O ')->first();
+            //         $result = $inventory->LOPB - $data->opening_balance;
+            //         output::create(
+            //             [
+            //                 'item_id' => $item->id,
+            //                 'item_quantity' => $result,
+            //                 'transaction_type_id' => $transaction->id,
+            //             ]
+            //         );
+            //     } else {
+            //         $transaction = TransactionType::where('code', 'LIKE', 'O ')->get();
+            //         $result = $data->opening_balance - $inventory->LOPB;
+            //         Input::create(
+            //             [
+            //                 'item_id' => $item->id,
+            //                 'item_quantity' => $result,
+            //                 'transaction_type_id' => $transaction->id,
+            //             ]
+            //         );
+            //     }
+            // }
 
             Inventory::updateOrCreate(
                 [
