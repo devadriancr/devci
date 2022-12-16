@@ -20,6 +20,9 @@ class OutputController extends Controller
      */
     public function index()
     {
+        $outputs = Output::orderBy('id', 'DESC')->paginate(10);
+
+        return view('output.output', ['outputs' => $outputs]);
     }
 
     /**
@@ -58,8 +61,8 @@ class OutputController extends Controller
             }
         }
         if ($error == 0) {
-            $ultimaEnt = input::where('serial', $cadena[13])->where('travel_id','!=', $request->travel_id)->orderby('id','desc')->first();
-            $ultimaSal = output::where('serial', $cadena[13])->where('travel_id', '!=',$request->travel_id)->orderby('id','desc')->first();
+            $ultimaEnt = input::where('serial', $cadena[13])->where('travel_id', '!=', $request->travel_id)->orderby('id', 'desc')->first();
+            $ultimaSal = output::where('serial', $cadena[13])->where('travel_id', '!=', $request->travel_id)->orderby('id', 'desc')->first();
 
             if ($ultimaEnt != null && $ultimaSal != null) {
                 if ($ultimaEnt->created_at > $ultimaSal->created_at) {
@@ -68,29 +71,21 @@ class OutputController extends Controller
                     $ulm = $ultimaSal;
                 }
             } else {
-                if ($ultimaEnt == null && $ultimaSal == null)
-                {
-                }else
-                {
+                if ($ultimaEnt == null && $ultimaSal == null) {
+                } else {
                     if ($ultimaEnt != false) {
                         $ulm = $ultimaEnt;
-
                     }
-                     if ($ultimaSal != false) {
+                    if ($ultimaSal != false) {
                         $ulm = $ultimaSal;
-
                     }
-
                 }
-
-
             }
 
             if ($ulm->location_id == $request->location_id) {
                 $error = 4;
                 $message = 'serial ya existente en el almacen actual';
             }
-
         }
 
         if ($error == 0) {
@@ -104,8 +99,6 @@ class OutputController extends Controller
                     'travel_id' => $request->travel_id,
                     'location_id' => $request->location_id
                 ]);
-
-
             } else {
                 input::create([
                     'supplier' =>  $cadena[11],

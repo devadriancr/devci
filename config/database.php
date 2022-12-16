@@ -94,6 +94,15 @@ return [
         /**
          *
          */
+        'odbc-lx834f01' => [
+            'driver' => 'odbc',
+            'dsn' => "Driver={Client Access ODBC Driver (32-bit)};System=192.168.200.7;",
+            'database' => "LX834F01",
+            'host' => "192.168.200.7",
+            'username' => "LXSECOFR",
+            'password' => "LXSECOFR"
+        ],
+
         'odbc-lx834f02' => [
             'driver' => 'odbc',
             'dsn' => "Driver={Client Access ODBC Driver (32-bit)};System=192.168.200.7;",
@@ -106,6 +115,15 @@ return [
         /**
          *
          */
+         'odbc-lx834fu01' => [
+            'driver' => 'odbc',
+            'dsn' => "Driver={Client Access ODBC Driver (32-bit)};System=192.168.200.7;",
+            'database' => "LX834FU01",
+            'host' => "192.168.200.7",
+            'username' => "LXSECOFR",
+            'password' => "LXSECOFR"
+        ],
+
         'odbc-lx834fu02' => [
             'driver' => 'odbc',
             'dsn' => "Driver={Client Access ODBC Driver (32-bit)};System=192.168.200.7;",

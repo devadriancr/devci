@@ -19,4 +19,13 @@ class Container extends Model
          return $this->hasMany(Input::class);
      }
 
+     public static function storeContainer(string $container, string $arrival_date, string $arrival_time)
+     {
+        Container::create([
+            'code' => $container,
+            'arrival_date' => $arrival_date,
+            'arrival_time' => $arrival_time,
+        ]);
+     }
+
 }

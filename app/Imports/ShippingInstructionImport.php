@@ -3,6 +3,7 @@
 namespace App\Imports;
 
 use App\Models\ShippingInstruction;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithBatchInserts;
@@ -18,16 +19,18 @@ class ShippingInstructionImport implements ToModel, WithHeadingRow, WithBatchIns
      */
     public function model(array $row)
     {
-        return new ShippingInstruction([
-            'container' => $row['ct_no'],
-            'invoice' => $row['invoice_no'],
-            'serial' => $row['module_no'],
-            'part_no' => $row['parts_no'],
-            'part_qty' => $row['parts_qty'],
-            'arrival_date' => $row['delivery_date'],
-            'arrival_time' => $row['time'],
-            'user_id' => Auth::id()
-        ]);
+        if ($row['delivery_date'] != '#N/D') {
+            return new ShippingInstruction([
+                'container' => $row['ct_no'],
+                'invoice' => $row['invoice_no'],
+                'serial' => $row['module_no'],
+                'part_no' => $row['parts_no'],
+                'part_qty' => $row['parts_qty'],
+                'arrival_date' => $row['delivery_date'],
+                'arrival_time' => $row['time'],
+                'user_id' => Auth::id()
+            ]);
+        }
     }
 
     public function batchSize(): int

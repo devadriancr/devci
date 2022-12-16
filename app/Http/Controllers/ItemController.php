@@ -7,10 +7,14 @@ use App\Models\Item;
 use App\Models\ItemClass;
 use App\Models\ItemType;
 use App\Models\MeasurementType;
+use App\Models\YH005;
 use Illuminate\Http\Request;
 
 class ItemController extends Controller
 {
+    /**
+     *
+     */
     public function upload()
     {
         $items = IIM::query()
@@ -45,13 +49,31 @@ class ItemController extends Controller
     }
 
     /**
+     *
+     */
+    public function safetyStock()
+    {
+        $items = YH005::groupBy('H5CPRO')->selectRaw('H5CPRO, SUM(H5UQTY) AS TOTAL')->get();
+
+        foreach ($items as $key => $item) {
+            $status = Item::updateOrCreate(
+                ['item_number' => $item->H5CPRO],
+                ['safety_stock' => $item->TOTAL]
+            );
+        }
+
+        return redirect('item');
+    }
+
+    /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $items = Item::orderBy('item_number', 'ASC')->paginate(10);
+        $class = ItemClass::where('code', 'LIKE', '%S1%')->first();
+        $items = Item::where('item_class_id', $class->id)->orderBy('updated_at', 'DESC')->paginate(10);
 
         return view('items.index', ['items' => $items]);
     }

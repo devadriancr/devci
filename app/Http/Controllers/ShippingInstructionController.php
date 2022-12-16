@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Imports\ShippingInstructionImport;
+use App\Models\Container;
 use App\Models\ShippingInstruction;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
@@ -46,6 +47,16 @@ class ShippingInstructionController extends Controller
         $file = $request->file('import_file');
 
         Excel::import(new ShippingInstructionImport, $file);
+
+        $containers = ShippingInstruction::query()
+            ->select('container', 'arrival_date', 'arrival_time')
+            ->where('status', true)
+            ->distinct()
+            ->get();
+
+        foreach ($containers as $key => $container) {
+            Container::storeContainer($container->container, $container->arrival_date, $container->arrival_time);
+        }
 
         return redirect()->back()->with('success', 'Documento Importado Exitosamente');
     }

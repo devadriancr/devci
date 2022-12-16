@@ -15,11 +15,11 @@ return new class extends Migration
     {
         Schema::create('outputs', function (Blueprint $table) {
             $table->id();
-            $table->string('supplier');
-            $table->string('serial');
-            $table->unsignedBigInteger('item_id')->nullable();
+            $table->string('supplier')->nullable();;
+            $table->string('serial')->nullable();
+            $table->unsignedBigInteger('item_id');
             $table->double('item_quantity');
-            $table->unsignedBigInteger('transaction_type_id')->nullable();
+            $table->unsignedBigInteger('transaction_type_id');
             $table->unsignedBigInteger('location_id')->nullable();
             $table->unsignedBigInteger('travel_id')->nullable();
             $table->timestamps();

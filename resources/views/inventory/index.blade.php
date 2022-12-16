@@ -1,14 +1,14 @@
 <x-app-layout title="Inventario">
     <div class="container grid px-6 mx-auto">
         <h2 class="mt-4 mb-2 text-2xl font-semibold text-gray-700 dark:text-gray-200">
-            Inevntario
+            Inventario
         </h2>
         <div class="flex justify-end pt-2 pb-4 gap-2">
             <a href="{{ route('inventory.upload') }}" class="flex items-center justify-between px-4 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-            </svg>
-            <span class="ml-4">Cargar Cantidades</span>
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                </svg>
+                <span class="ml-4">Cargar Cantidades</span>
             </a>
             {{-- <a href="{{ route('inventory.create') }}" class="flex items-center justify-between px-4 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -26,9 +26,7 @@
                             <th class="px-4 py-3">Almacén</th>
                             <th class="px-4 py-3">Locación</th>
                             <th class="px-4 py-3">Cantidad</th>
-                            <th class="px-4 py-3">Fecha de Creación</th>
-                            <th class="px-4 py-3">Fecha de Actualizacion</th>
-                            <th class="px-4 py-3">Acciones</th>
+                            <!-- <th class="px-4 py-3">Acciones</th> -->
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y dark:divide-gray-700 dark:bg-gray-800">
@@ -43,16 +41,23 @@
                             <td class="px-4 py-3 text-sm">
                                 {{ $inventory->location->code }}
                             </td>
+
                             <td class="px-4 py-3 text-sm">
-                                {{ $inventory->quantity + $inventory->opening_balance }}
+                                @php
+                                $sum = $inventory->quantity + $inventory->opening_balance
+                                @endphp
+                                @if ($sum > 0)
+                                <span class="px-2 py-1 font-semibold leading-tight text-green-700 bg-green-100 rounded-full dark:bg-green-700 dark:text-green-100">
+                                    &nbsp; {{ $sum }} &nbsp;
+                                </span>
+                                @else
+                                <span class="px-2 py-1 font-semibold leading-tight text-red-700 bg-red-100 rounded-full dark:text-red-100 dark:bg-red-700">
+                                    &nbsp; {{ $sum }} &nbsp;
+                                </span>
+                                @endif
+
                             </td>
-                            <td class="px-4 py-3 text-sm">
-                                {{ $inventory->created_at }}
-                            </td>
-                            <td class="px-4 py-3 text-sm">
-                                {{ $inventory->updated_at }}
-                            </td>
-                            <td class="px-4 py-3">
+                            <!-- <td class="px-4 py-3">
                                 <div class="flex items-center space-x-4 text-sm">
                                     <a href="{{ route('warehouse.edit', $inventory->id) }}" class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray" aria-label="Edit">
                                         <svg class="w-5 h-5" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20">
@@ -70,7 +75,7 @@
                                         </button>
                                     </form>
                                 </div>
-                            </td>
+                            </td> -->
                         </tr>
                         @endforeach
                     </tbody>

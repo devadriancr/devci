@@ -95,5 +95,11 @@ class RoleSeeder extends Seeder
          *
          */
         Permission::create(['name' => 'input.index'])->syncRoles([$admin, $office]);
+
+
+        /**
+         *
+         */
+        Permission::create(['name' => 'output.index'])->syncRoles([$admin, $office]);
     }
 }
