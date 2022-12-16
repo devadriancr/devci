@@ -13,58 +13,78 @@ use Illuminate\Http\Request;
 
 class InventoryController extends Controller
 {
+    /**
+     *
+     */
     public function upload()
     {
-        $inventories = ILI::query()
+        $$inventories = ILI::query()
             ->select(['LPROD', 'LWHS', 'LLOC', 'LOPB'])
-            ->orderBy('LPROD', 'DESC')
+            ->orderBy('LOPB', 'ASC')
             ->get();
 
         foreach ($inventories as $key => $inventory) {
             $item = Item::where('item_number', $inventory->LPROD)->first();
             $location = Location::where('code', $inventory->LLOC)->first();
-            // $data = Inventory::where([['item_id', $item->id], ['location_id', $location->id]])->first();
-            // $result = 0;
 
-            // if ($data === null) {
-            //     echo "Entro";
-            // }
+            if ($item != null && $location != null) {
 
-            // if ($data !== null && $item !== null && $location !== null) {
-            //     if ($inventory->LOPB > $data->opening_balance) {
-            //         $transaction = TransactionType::where('code', '=', 'O ')->first();
-            //         $result = $inventory->LOPB - $data->opening_balance;
-            //         output::create(
-            //             [
-            //                 'item_id' => $item->id,
-            //                 'item_quantity' => $result,
-            //                 'transaction_type_id' => $transaction->id,
-            //             ]
-            //         );
-            //     } else {
-            //         $transaction = TransactionType::where('code', 'LIKE', 'O ')->get();
-            //         $result = $data->opening_balance - $inventory->LOPB;
-            //         Input::create(
-            //             [
-            //                 'item_id' => $item->id,
-            //                 'item_quantity' => $result,
-            //                 'transaction_type_id' => $transaction->id,
-            //             ]
-            //         );
-            //     }
-            // }
+                $data = Inventory::where([['item_id', $item->id], ['location_id', $location->id]])->first();
 
-            Inventory::updateOrCreate(
-                [
-                    'item_id' => $item->id ?? null,
-                    'location_id' => $location->id ?? null,
-                ],
-                [
-                    'opening_balance' => $inventory->LOPB,
-                ],
-            );
+                if ($data !== null) {
+                    if ($inventory->LOPB > $data->opening_balance) {
+                        $transaction = TransactionType::where('code', 'LIKE', 'O ')->first();
+                        $result = $inventory->LOPB - $data->opening_balance;
+
+                        // echo "- $key Num: $inventory->LPROD *** Infor: $inventory->LOPB *** SQL:  $data->opening_balance *** Res: $result <br>";
+
+                        Input::create(
+                            [
+                                'item_id' => $item->id,
+                                'item_quantity' => $result,
+                                'transaction_type_id' => $transaction->id,
+                            ]
+                        );
+
+                        $data->update(
+                            [
+                                'opening_balance' => $inventory->LOPB,
+                                'quantity' => 0,
+                            ]
+                        );
+                    } elseif ($data->opening_balance > $inventory->LOPB) {
+                        $transaction = TransactionType::where('code', 'LIKE', 'O ')->first();
+                        $result = $data->opening_balance - $inventory->LOPB;
+
+                        // echo "+ $key Num: $inventory->LPROD *** Infor: $inventory->LOPB *** SQL:  $data->opening_balance *** Res: $result <br>";
+
+                        output::create(
+                            [
+                                'item_id' => $item->id,
+                                'item_quantity' => $result,
+                                'transaction_type_id' => $transaction->id,
+                            ]
+                        );
+
+                        $data->update(
+                            [
+                                'opening_balance' => $inventory->LOPB,
+                                'quantity' => 0,
+                            ]
+                        );
+                    }
+                } else {
+                    $data = Inventory::create(
+                        [
+                            'item_id' => $item->id,
+                            'location_id' => $location->id,
+                            'opening_balance' => $inventory->LOPB,
+                            'quantity' => 0,
+                        ]
+                    );
+                }
+            }
         }
-
         return redirect('inventory');
     }
 
