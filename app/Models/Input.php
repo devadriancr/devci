@@ -19,6 +19,7 @@ class Input extends Model
         'item_quantity',
         'container_id',
         'transaction_type_id',
+        'delivery_production_id',
         'location_id',
         'travel_id',
     ];
@@ -47,7 +48,10 @@ class Input extends Model
     {
         return $this->belongsTo(Travel::class);
     }
-
+    public function deliveryproduction(): BelongsTo
+    {
+        return $this->belongsTo(delveryproduction::class);
+    }
     /**
      *
      * @property string $supplier

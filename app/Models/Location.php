@@ -40,4 +40,9 @@ class Location extends Model
     {
         return $this->hasMany(Travel::class);
     }
+     // relacion de 1:N delivery
+     public function deliveryproduction(): HasMany
+     {
+         return $this->hasMany(deliveryproduction::class);
+     }
 }

@@ -32,4 +32,8 @@ class output extends Model
         return $this->belongsTo(Location::class);
     }
 
+    public function deliveryproduction(): BelongsTo
+    {
+        return $this->belongsTo(delveryproduction::class);
+    }
 }

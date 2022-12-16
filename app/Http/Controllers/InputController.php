@@ -184,7 +184,7 @@ class InputController extends Controller
         $query = "CALL LX834OU02.YPU180C";
         $result = odbc_exec($conn, $query);
 
-         Container::where('id', $id)->update(['status' => false]);
+        Container::where('id', $id)->update(['status' => false]);
 
         return redirect('consignment-instruction-container');
     }
