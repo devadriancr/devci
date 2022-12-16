@@ -3,39 +3,26 @@
         <div class="max-w-sm w-full lg:max-w-full mt-5 lg:flex border border-blue-500 border-opacity-100 rounded-lg  bg-white">
 
             <div class="bg-blue-500 bg-opacity-75  py-8">
-                <div class="text-gray-900 font-bold text-xl p-2 text-white">Información de viaje</div>
+                <div class="text-gray-900 font-bold text-xl p-2 text-white">Información de entrega</div>
             </div>
             <div class="flex items-center bg-white">
                 <div class="text-base m-5">
-                    <p class="font-semibold">ID de Viaje: </p>
-                    <p class="font-normal">{{ $travels->id }}<br></p>
+                    <p class="font-semibold">No de entrega: </p>
+                    <p class="font-normal">{{ $entrega->id }}<br></p>
                 </div>
-                <div class="text-basem-5 bg-white">
-                    <p class="font-semibold"> Carta porte:</p>
-                    <p class="font-normal">{{ $travels->carta_porte }} <br></p>
-
-
-                </div>
-                <div class="text-base m-5 bg-white">
-                    <p class="font-semibold">Factura: </p>
-                    <p class="font-normal">{{ $travels->invoice_number }}<br></p>
-
-                </div>
-                <div class="text-base m-5 border-blue-500 border-opacity-75">
-
-                    <p class="font-semibold"> Locacion: </p>
-                    <p class="font-normal">{{ $travels->location->name }}</p>
+            </div>
+            <div class="flex items-center bg-white">
+                <div class="text-base m-5">
+                    <p class="font-semibold">No de nomina: </p>
+                    <p class="font-normal">{{ $entrega->control_number}}<br></p>
                 </div>
 
             </div>
         </div>
-
     </div>
-
-
-    <form method="POST" action={{ route('output.update') }}>
+    <form method="POST" action={{ route('Delivery.store') }}>
         @csrf
-        <input name="travel_id" value={{ $travels->id }} hidden>
+        <input name="travel_id" value={{ $entrega->id }} hidden>
         <div class="flex justify-end mt-2 gap-2">
             <button
                 class="flex items-center justify-between px-4 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple">
@@ -49,18 +36,17 @@
         </div>
     </form>
     <div class="px-4 py-3 my-2 bg-white rounded-lg shadow-md dark:bg-gray-800">
-        <form method="POST" action={{ route('output.create') }}>
+        <form method="POST" action={{ route('Delivery.update') }}>
             <h4 class="my-2 text-center text-lg font-semibold text-gray-600 dark:text-gray-300">
             </h4>
             @csrf
-            <input name="travel_id" value={{ $travels->id }} hidden>
-            <input name="location_id" value={{ $travels->location->id }} hidden>
+            <input name="delivery_id" value={{ $entrega->id }} hidden>
+            <input name="location_id" value={{ $entrega->location_id }} hidden>
             <label class="block text-sm">
                 <span class="text-gray-700 dark:text-gray-400">Serial</span>
                 <input name="serial" id="serial"
                     class="block w-full my-2 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input"
                     autofocus='enable'>
-
                 @if (isset($error))
                     @if ($error != 0)
                         <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative"
@@ -111,9 +97,10 @@
                         <th class="px-4 py-3">Numero de Parte</th>
                         <th class="px-4 py-3">Cantidad </th>
                         <th class="px-4 py-3">Proveedor </th>
-
+                        <th class="px-4 py-3">Eliminar</th>
                     </tr>
                 </thead>
+                @if($scan==null)
                 <tbody class="bg-white divide-y dark:divide-gray-700 dark:bg-gray-800">
                     @foreach ($scan as $consignment)
                         <tr class="text-gray-700 dark:text-gray-400">
@@ -131,10 +118,10 @@
                             </td>
                             <td class="px-4 py-3">
                                 <div class="flex items-center space-x-4 text-sm">
-                                    <form method="POST" action="{{ route('output.destroy') }}">
+                                    <form method="POST" action="{{ route('Delivery.destroy') }}">
                                         @csrf
                                         <input name="serial_id" value={{ $consignment->id}} hidden>
-                                        <input name="travel_id" value={{ $travels->id }} hidden>
+                                        <input name="delivery_id" value={{ $entrega->id }} hidden>
                                         <input name="serial" value={{  $consignment->serial }} hidden>
                                         <button class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray" aria-label="Delete">
                                             <svg class="w-5 h-5" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20">
@@ -149,20 +136,21 @@
                 </tbody>
             </table>
         </div>
-        <div class="grid px-4 py-3 text-xs font-semibold tracking-wide text-gray-500 uppercase border-t dark:border-gray-700 bg-gray-50 sm:grid-cols-9 dark:text-gray-400 dark:bg-gray-800">
-            <span class="flex items-center col-span-3">
-                Mostrando {{ $scan ->firstItem() }} - {{ $scan ->lastItem() }}
-            </span>
-            <span class="col-span-2"></span>
-            <!-- Pagination -->
-            <span class="flex col-span-4 mt-2 sm:mt-auto sm:justify-end">
-                <nav aria-label="Table navigation">
-                    <ul class="inline-flex items-center">
-                        {{ $scan ->withQueryString()->links()}}
-                    </ul>
-                </nav>
-            </span>
-        </div>
+    </div>
+    <div class="grid px-4 py-3 text-xs font-semibold tracking-wide text-gray-500 uppercase border-t dark:border-gray-700 bg-gray-50 sm:grid-cols-9 dark:text-gray-400 dark:bg-gray-800">
+        <span class="flex items-center col-span-3">
+            Mostrando {{ $scan ->firstItem() }} - {{ $scan ->lastItem() }}
+        </span>
+        <span class="col-span-2"></span>
+        <!-- Pagination -->
+        <span class="flex col-span-4 mt-2 sm:mt-auto sm:justify-end">
+            <nav aria-label="Table navigation">
+                <ul class="inline-flex items-center">
+                    {{ $scan ->withQueryString()->links()}}
+                </ul>
+            </nav>
+        </span>
+    </div>
     </div>
     </div>
 </x-app-layout>

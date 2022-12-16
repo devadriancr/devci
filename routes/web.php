@@ -15,6 +15,7 @@ use App\Http\Controllers\TransactionTypeController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\WarehouseController;
 use App\Http\Controllers\TravelController;
+use App\Http\Controllers\DeiveryProductionController;
 use App\Http\Controllers\OutputController;
 use Illuminate\Support\Facades\Route;
 
@@ -118,15 +119,25 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function () {
     Route::resource('Travel', TravelController::class);
     Route::post('travel-store', [TravelController::class, 'store'])->name('travel.store');
     Route::post('travel-update', [TravelController::class, 'update'])->name('travel.update');
-
+    Route::POST('travel-export', [TravelController::class, 'export'])->name('travel.export');
     /**
-     * Routes output
+     * Routes output external House
      */
-    Route::get('output', [OutputController::class, 'index'])->name('output.index');
+
+    Route::get('output-search', [OutputController::class, 'search'])->name('output.search');
     Route::POST('output-store', [OutputController::class, 'store'])->name('output.store');
     Route::POST('output-create', [OutputController::class, 'create'])->name('output.create');
     Route::POST('output-update', [OutputController::class, 'update'])->name('output.update');
-
+    Route::POST('output-destroy', [OutputController::class, 'destroy'])->name('output.destroy');
+    /**
+     * Routes output Delivery line
+     */
+    Route::resource('Delivery', DeiveryProductionController::class);
+    Route::POST('DeliveryProduction-store', [DeiveryProductionController::class, 'store'])->name('Delivery.store');
+    Route::POST('DeliveryProduction-create', [DeiveryProductionController::class, 'create'])->name('Delivery.create');
+    Route::POST('DeliveryProduction-update', [DeiveryProductionController::class, 'update'])->name('Delivery.update');
+    Route::POST('Delivery-export', [DeiveryProductionController::class, 'export'])->name('Delivery.export');
+    Route::POST('Delivery-destroy', [DeiveryProductionController::class, 'destroy'])->name('Delivery.destroy');
     /**
      * Routes Consignment Instructions
      */

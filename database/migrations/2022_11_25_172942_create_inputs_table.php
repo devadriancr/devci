@@ -23,13 +23,15 @@ return new class extends Migration
             $table->unsignedBigInteger('transaction_type_id');
             $table->unsignedBigInteger('location_id')->nullable();
             $table->unsignedBigInteger('travel_id')->nullable();
+            $table->unsignedBigInteger('delivery_production_id')->nullable();
             $table->timestamps();
-
             $table->foreign('item_id')->references('id')->on('items')->onDelete('set null');
             $table->foreign('container_id')->references('id')->on('containers')->onDelete('set null');
             $table->foreign('transaction_type_id')->references('id')->on('transaction_types')->onDelete('set null');
             $table->foreign('location_id')->references('id')->on('locations')->onDelete('set null');
             $table->foreign('travel_id')->references('id')->on('travel')->onDelete('set null');
+            $table->foreign('delivery_production_id')->references('id')->on('delivery_productions')->onDelete('set null');
+
         });
     }
 

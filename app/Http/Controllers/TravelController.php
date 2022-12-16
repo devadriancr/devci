@@ -4,8 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Models\Travel;
 use App\Models\Location;
+use App\Export\ShippingExport;
+use App\Exports\ShippingExport as ExportsShippingExport;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
+
+
+
 
 class TravelController extends Controller
 {
@@ -18,7 +24,7 @@ class TravelController extends Controller
     {
         $travels = Travel::with('location')->orderby('id', 'desc')
             ->simplePaginate(10);
-        $locations = location::where('code','like','%L60%')->orwhere('code','like','%L61%')->get();
+        $locations = location::where('code', 'like', '%L60%')->orwhere('code', 'like', '%L61%')->get();
         return view('travel.index', ['travels' => $travels, 'locations' => $locations]);
     }
 
@@ -46,7 +52,7 @@ class TravelController extends Controller
             'location_id' => ['required', 'string', 'max:20'],
         ]);
 
-        $idtravel=Travel::create(
+        $idtravel = Travel::create(
             [
                 'carta_porte' => $request->carta_porte,
                 'invoice_number' => $request->invoice_number,
@@ -55,13 +61,10 @@ class TravelController extends Controller
         );
 
         // // $travel = DB::table('travel')->where('carta_porte', $request->carta_porte)->first();
-        $msg='';
+        $msg = '';
         $scan = array();
-        $travels = Travel::orderby('id', 'desc')
-            ->simplePaginate(10);
-        $locations = location::get();
 
-        return view('output.index', ['travels' =>$idtravel, 'locations' => $locations,'scan'=>$scan,'msg'=>$msg]);
+        return view('output.index', ['travels' => $idtravel, 'scan' => $scan]);
     }
 
     /**
@@ -72,8 +75,6 @@ class TravelController extends Controller
      */
     public function show(Travel $travel)
     {
-
-
     }
 
     /**
@@ -84,7 +85,6 @@ class TravelController extends Controller
      */
     public function edit(Travel $travel)
     {
-
     }
 
     /**
@@ -114,5 +114,9 @@ class TravelController extends Controller
     public function destroy(Travel $travel)
     {
         //
+    }
+    public function export(Request $request)
+    {
+        return Excel::download(new ExportsShippingExport($request->travel_id), 'report' . $request->travel_id . '.xlsx');
     }
 }

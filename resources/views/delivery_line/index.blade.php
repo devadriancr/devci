@@ -1,14 +1,14 @@
 <x-app-layout title="Escaneo CI">
     <div class="container grid px-6 mx-auto">
         <h2 class="mt-4 mb-2 text-2xl font-semibold text-gray-700 dark:text-gray-200">
-            Envios / Recibos Almacen Ext
+            Entrega de Material
         </h2>
 
-        <form method="POST" action="{{ route('travel.store') }}">
+        <form method="POST" action="{{ route('Delivery.create') }}">
             <div class="mt-4 text-sm">
                 @csrf
                 <span class="text-gray-700 dark:text-gray-400">
-                    Nuevo
+                    Nueva Entrega
                 </span>
 
                 @if ($errors->any())
@@ -16,30 +16,12 @@
                 @endif
 
                 <div class="mt-2 group flex items-center">
+
                     <label class="block text-sm m-3">
-                        <span class="text-gray-700 dark:text-gray-400">Numero de Factura</span>
-                        <input id='invoice_number' name='invoice_number'
-                            class="block w-80 mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input"
-                            required />
-                    </label>
-                    <label class="block text-sm m-3">
-                        <span class="text-gray-700 dark:text-gray-400">Carta Porte</span>
-                        <input id='carta_porte' name='carta_porte'
+                        <span class="text-gray-700 dark:text-gray-400">No de Nomina </span>
+                        <input id='number_control' name='number_control'
                             class="block w-30 mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input"
                             required />
-                    </label>
-                    <label class="block text-sm m-3">
-                        <span class="text-gray-700 dark:text-gray-400">Locacion
-                        </span>
-                        <select id='location_id' name='location_id'
-                            class="block w-full mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-multiselect focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:focus:shadow-outline-gray"
-                            required>
-                            <option value=''>--Seleccionar---</option>
-                            @foreach ($locations as $location)
-                                <option value={{ $location->id }}>{{ $location->code }}//{{ $location->name }}
-                                </option>
-                            @endforeach
-                        </select>
                     </label>
                     <button
                         class="flex items-center justify-between px-4 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple">
@@ -49,7 +31,6 @@
                         </svg>
                         <span class="ml-4">crear</span>
                     </button>
-
                 </div>
             </div>
 
@@ -60,11 +41,9 @@
                     <thead>
                         <tr
                             class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b dark:border-gray-700 bg-gray-50 dark:text-gray-400 dark:bg-gray-800">
-                            <th class="px-4 py-3"> </th>
-                            <th class="px-4 py-3">Carta Porte</th>
-                            <th class="px-4 py-3">Factura</th>
+                            <th class="px-4 py-3"> Id de entrega</th>
+                            <th class="px-4 py-3">Nomina</th>
                             <th class="px-4 py-3">Fecha</th>
-                            <th class="px-4 py-3">Locación</th>
                             <th class="px-4 py-3"></th>
                             <th class="px-4 py-3"></th>
                         </tr>
@@ -76,46 +55,20 @@
                                     {{ $travelss->id }}
                                 </td>
                                 <td class="px-4 py-3 text-sm">
-                                    {{ $travelss->invoice_number }}
+                                    {{ $travelss->control_number}}
                                 </td>
-                                <td class="px-4 py-3 text-sm">
-                                    {{ $travelss->carta_porte }}
-                                </td>
-
                                 <td class="px-4 py-3 text-sm">
                                     {{ $travelss->created_at }}
                                 </td>
+
                                 <td class="px-4 py-3 text-sm">
-                                    {{ $travelss->location->code }}
-                                </td>
-                                <td class="px-4 py-3 text-sm">
-                                    @if ($travelss->finish == true)
                                         Finalizado
-                                    @else
-                                        <form method="POST" action="{{ route('output.store') }}">
-                                            @csrf
-                                            <input name="travel_id" value={{ $travelss->id }} hidden>
-
-                                            <div class="flex justify-end mt-2 gap-2">
-                                                <button
-                                                    class="flex items-center justify-between px-4 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6"
-                                                        fill="none" viewBox="0 0 24 24" stroke="currentColor"
-                                                        stroke-width="2">
-                                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                                            d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                                                    </svg>
-                                                    <span class="ml-2">Escanear </span>
-                                                </button>
-                                            </div>
-                                        </form>
-                                    @endif
                                 </td>
                                 <td class="px-4 py-3 text-sm">
 
-                                    <form method="POST" action="{{ route('travel.export') }}">
+                                    <form method="POST" action="{{ route('Delivery.export') }}">
                                         @csrf
-                                        <input name="travel_id" value={{ $travelss->id }} hidden>
+                                        <input name="delivery_id" value={{ $travelss->id }} hidden>
 
                                         <div class="flex justify-end mt-2 gap-2">
                                             <button
