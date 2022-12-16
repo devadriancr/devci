@@ -129,6 +129,7 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function () {
     Route::POST('output-create', [OutputController::class, 'create'])->name('output.create');
     Route::POST('output-update', [OutputController::class, 'update'])->name('output.update');
     Route::POST('output-destroy', [OutputController::class, 'destroy'])->name('output.destroy');
+    Route::get('output', [OutputController::class, 'index'])->name('output.index');
     /**
      * Routes output Delivery line
      */
