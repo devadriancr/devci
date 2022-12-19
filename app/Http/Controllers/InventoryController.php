@@ -10,6 +10,7 @@ use App\Models\Location;
 use App\Models\output;
 use App\Models\TransactionType;
 use Illuminate\Http\Request;
+use PhpOffice\PhpSpreadsheet\Calculation\TextData\Search;
 
 class InventoryController extends Controller
 {
@@ -18,9 +19,10 @@ class InventoryController extends Controller
      */
     public function upload()
     {
-        $$inventories = ILI::query()
-            ->select(['LPROD', 'LWHS', 'LLOC', 'LOPB'])
-            ->orderBy('LOPB', 'ASC')
+        $inventories = ILI::query()
+            ->select(['LID', 'LPROD', 'LWHS', 'LLOC', 'LOPB'])
+            ->where('LID', 'LI')
+            ->orderBy('LOPB', 'DESC')
             ->get();
 
         foreach ($inventories as $key => $inventory) {
@@ -30,61 +32,58 @@ class InventoryController extends Controller
             if ($item != null && $location != null) {
 
                 $data = Inventory::where([['item_id', $item->id], ['location_id', $location->id]])->first();
+                $transaction = TransactionType::where('code', 'LIKE', '%O%')->first();
 
                 if ($data !== null) {
-                    if ($inventory->LOPB > $data->opening_balance) {
-                        $transaction = TransactionType::where('code', 'LIKE', 'O ')->first();
-                        $result = $inventory->LOPB - $data->opening_balance;
+                    $sum = $data->opening_balance + $data->quantity;
 
-                        // echo "- $key Num: $inventory->LPROD *** Infor: $inventory->LOPB *** SQL:  $data->opening_balance *** Res: $result <br>";
-
+                    if ($inventory->LOPB > $sum) {
+                        $result = $inventory->LOPB - $sum;
                         Input::create(
                             [
                                 'item_id' => $item->id,
                                 'item_quantity' => $result,
                                 'transaction_type_id' => $transaction->id,
+                                'location_id' => $location->id
                             ]
                         );
-
-                        $data->update(
-                            [
-                                'opening_balance' => $inventory->LOPB,
-                                'quantity' => 0,
-                            ]
-                        );
-                    } elseif ($data->opening_balance > $inventory->LOPB) {
-                        $transaction = TransactionType::where('code', 'LIKE', 'O ')->first();
-                        $result = $data->opening_balance - $inventory->LOPB;
-
-                        // echo "+ $key Num: $inventory->LPROD *** Infor: $inventory->LOPB *** SQL:  $data->opening_balance *** Res: $result <br>";
-
+                        $data->update(['opening_balance' => $inventory->LOPB, 'quantity' => 0]);
+                    } elseif ($sum > $inventory->LOPB) {
+                        $result = $sum - $inventory->LOPB;
                         output::create(
                             [
                                 'item_id' => $item->id,
                                 'item_quantity' => $result,
                                 'transaction_type_id' => $transaction->id,
+                                'location_id' => $location->id
                             ]
                         );
-
-                        $data->update(
-                            [
-                                'opening_balance' => $inventory->LOPB,
-                                'quantity' => 0,
-                            ]
-                        );
+                        $data->update(['opening_balance' => $inventory->LOPB, 'quantity' => 0]);
+                    } else {
+                        $result = $inventory->LOPB - $sum;
+                        $data->update(['opening_balance' => $inventory->LOPB, 'quantity' => 0]);
                     }
                 } else {
+                    Input::create(
+                        [
+                            'item_id' => $item->id,
+                            'item_quantity' => $inventory->LOPB,
+                            'transaction_type_id' => $transaction->id,
+                            'location_id' => $location->id
+                        ]
+                    );
                     $data = Inventory::create(
                         [
                             'item_id' => $item->id,
                             'location_id' => $location->id,
                             'opening_balance' => $inventory->LOPB,
-                            'quantity' => 0,
+                            'quantity' => 0
                         ]
                     );
                 }
             }
         }
+
         return redirect('inventory');
     }
 
@@ -93,13 +92,24 @@ class InventoryController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
+        $search = strtoupper($request->search);
+
         $inventories = Inventory::query()
             ->join('items', 'inventories.item_id', '=', 'items.id')
             ->join('item_classes', 'items.item_class_id', '=', 'item_classes.id')
-            ->where('item_classes.code', 'LIKE', '%S1%')
-            ->orderBy('items.item_number', 'DESC')
+            ->join('locations', 'inventories.location_id', '=', 'locations.id')
+            ->join('warehouses', 'locations.warehouse_id', '=', 'warehouses.id')
+            ->where(
+                [
+                    ['item_classes.code', 'LIKE', '%S1%'],
+                    ['items.item_number', 'LIKE', '%' . $search . '%'],
+                ]
+            )
+            ->orWhere('locations.code', 'LIKE', '%' . $search . '%')
+            ->orWhere('warehouses.code', 'LIKE', '%' . $search . '%')
+            ->orderByRaw('inventories.updated_at DESC, items.item_number ASC, warehouses.code ASC, locations.code ASC')
             ->paginate(10);
 
         return view('inventory.index', ['inventories' => $inventories]);

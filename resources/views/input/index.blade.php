@@ -17,90 +17,81 @@
             <span class="ml-4">Agregar Entradas</span>
         </a>
     </div> --}}
+
+    <div class="py-4">
+        <form method="GET" action="{{ route('input.index') }}">
+            <label class="text-sm">
+                <div class="relative text-gray-500 focus-within:text-purple-600">
+                    <input name="search" class="block w-full pr-20 mt-1 text-sm text-black dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:focus:shadow-outline-gray form-input" placeholder="" autocomplete="off" />
+                    <button class="absolute inset-y-0 right-0 px-4 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-r-md active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple">
+                        Buscar
+                    </button>
+                </div>
+            </label>
+        </form>
+    </div>
+
     <div class="w-full overflow-hidden rounded-lg shadow-xs">
         <div class="w-full overflow-x-auto">
             <table class="w-full whitespace-no-wrap">
                 <thead>
                     <tr class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b dark:border-gray-700 bg-gray-50 dark:text-gray-400 dark:bg-gray-800">
-                        <th class="px-4 py-3">Proveedor</th>
-                        <th class="px-4 py-3">Serial</th>
                         <th class="px-4 py-3">Item</th>
                         <th class="px-4 py-3">Cantidad</th>
-                        <th class="px-4 py-3">Contenedor</th>
                         <th class="px-4 py-3">Transacción</th>
                         <th class="px-4 py-3">Almacen</th>
                         <th class="px-4 py-3">Locación</th>
-                        <th class="px-4 py-3">Fecha de Creación</th>
+                        <th class="px-4 py-3">Proveedor</th>
+                        <th class="px-4 py-3">Serial</th>
+                        <th class="px-4 py-3">Contenedor</th>
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y dark:divide-gray-700 dark:bg-gray-800">
                     @foreach ($inputs as $input)
                     <tr class="text-gray-700 dark:text-gray-400">
                         <td class="px-4 py-3 text-sm">
-                            {{ $input->supplier }}
+                            {{ $input->item->item_number ?? ''}}
                         </td>
                         <td class="px-4 py-3 text-sm">
-                            {{ $input->serial }}
+                            {{ $input->item_quantity ?? ''}}
                         </td>
                         <td class="px-4 py-3 text-sm">
-                            {{ $input->item->item_number }}
+                            {{ $input->transaction->code ?? ''}}
                         </td>
                         <td class="px-4 py-3 text-sm">
-                            {{ $input->item_quantity }}
+                            {{ $input->location->warehouse->code ?? ''}}
                         </td>
                         <td class="px-4 py-3 text-sm">
-                            {{ $input->container->code }}
+                            {{ $input->location->code ?? ''}}
                         </td>
                         <td class="px-4 py-3 text-sm">
-                            {{ $input->transaction->code}}
+                            {{ $input->supplier ?? ''}}
                         </td>
                         <td class="px-4 py-3 text-sm">
-                            {{ $input->location->warehouse->code }}
+                            {{ $input->serial ?? ''}}
                         </td>
                         <td class="px-4 py-3 text-sm">
-                            {{ $input->location->code }}
+                            {{ $input->container->code ?? ''}}
                         </td>
-                        <td class="px-4 py-3 text-sm">
-                            {{ $input->created_at }}
-                        </td>
-                        {{-- <td class="px-4 py-3">
-                                <div class="flex items-center space-x-4 text-sm">
-                                    <a href="{{ route('input.edit', $input->id) }}" class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray" aria-label="Edit">
-                        <svg class="w-5 h-5" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20">
-                            <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z">
-                            </path>
-                        </svg>
-                        </a>
-                        <form method="POST" action="{{ route('input.destroy', $input->id) }}">
-                            @csrf
-                            @method('DELETE')
-                            <button class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray" aria-label="Delete">
-                                <svg class="w-5 h-5" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"></path>
-                                </svg>
-                            </button>
-                        </form>
-                            </div>
-                        </td> --}}
                     </tr>
-                @endforeach
-            </tbody>
-        </table>
-    </div>
-    <div class="grid px-4 py-3 text-xs font-semibold tracking-wide text-gray-500 uppercase border-t dark:border-gray-700 bg-gray-50 sm:grid-cols-9 dark:text-gray-400 dark:bg-gray-800">
-        <span class="flex items-center col-span-3">
-            Mostrando {{ $inputs->firstItem() }} - {{ $inputs->lastItem() }} de {{ $inputs->total()}}
-        </span>
-        <span class="col-span-2"></span>
-        <!-- Pagination -->
-        <span class="flex col-span-4 mt-2 sm:mt-auto sm:justify-end">
-            <nav aria-label="Table navigation">
-                <ul class="inline-flex items-center">
-                    {{ $inputs->withQueryString()->links()}}
-                </ul>
-            </nav>
-        </span>
-    </div>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+        <div class="grid px-4 py-3 text-xs font-semibold tracking-wide text-gray-500 uppercase border-t dark:border-gray-700 bg-gray-50 sm:grid-cols-9 dark:text-gray-400 dark:bg-gray-800">
+            <span class="flex items-center col-span-3">
+                Mostrando {{ $inputs->firstItem() }} - {{ $inputs->lastItem() }} de {{ $inputs->total()}}
+            </span>
+            <span class="col-span-2"></span>
+            <!-- Pagination -->
+            <span class="flex col-span-4 mt-2 sm:mt-auto sm:justify-end">
+                <nav aria-label="Table navigation">
+                    <ul class="inline-flex items-center">
+                        {{ $inputs->withQueryString()->links()}}
+                    </ul>
+                </nav>
+            </span>
+        </div>
     </div>
     </div>
 </x-app-layout>

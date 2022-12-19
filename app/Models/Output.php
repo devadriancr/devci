@@ -24,7 +24,7 @@ class output extends Model
     // relacion de 1:N inversa transaction type
     public function transactiontype(): BelongsTo
     {
-        return $this->belongsTo(transactiontype::class);
+        return $this->belongsTo(transactiontype::class, 'transaction_type_id');
     }
     // relacion de 1:N inversa location
     public function location(): BelongsTo
