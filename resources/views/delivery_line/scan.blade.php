@@ -100,7 +100,7 @@
                         <th class="px-4 py-3">Eliminar</th>
                     </tr>
                 </thead>
-                @if($scan==null)
+
                 <tbody class="bg-white divide-y dark:divide-gray-700 dark:bg-gray-800">
                     @foreach ($scan as $consignment)
                         <tr class="text-gray-700 dark:text-gray-400">
@@ -134,6 +134,7 @@
                         </tr>
                     @endforeach
                 </tbody>
+
             </table>
         </div>
     </div>

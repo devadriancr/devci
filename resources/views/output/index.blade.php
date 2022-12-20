@@ -1,11 +1,17 @@
 <x-app-layout title="Escaneo CI">
     <div class="container grid px-6 mx-auto">
-        <div class="max-w-sm w-full lg:max-w-full mt-5 lg:flex border border-blue-500 border-opacity-100 rounded-lg  bg-white">
+        <div
+            class="max-w-sm w-full lg:max-w-full mt-5 lg:flex border border-blue-500 border-opacity-100 rounded-lg  bg-white">
 
             <div class="bg-blue-500 bg-opacity-75  py-8">
                 <div class="text-gray-900 font-bold text-xl p-2 text-white">Información de viaje</div>
             </div>
             <div class="flex items-center bg-white">
+                {{-- <div class="text-base m-5 border-blue-500 border-opacity-75">
+
+                    <p class="font-semibold"> Orden : </p>
+                    <p class="font-normal">{{ $travels->orderinformation->id}}</p>
+                </div> --}}
                 <div class="text-base m-5">
                     <p class="font-semibold">ID de Viaje: </p>
                     <p class="font-normal">{{ $travels->id }}<br></p>
@@ -26,6 +32,7 @@
                     <p class="font-semibold"> Locacion: </p>
                     <p class="font-normal">{{ $travels->location->name }}</p>
                 </div>
+
 
             </div>
         </div>
@@ -62,8 +69,8 @@
                     autofocus='enable'>
 
                 @if (isset($error))
-                    @if ($error != 0)
-                        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative"
+                    @if ($error > 1)
+                        <div class="bg-orange-100 border border-red-400 text-red-700 px-4 py-3 rounded relative"
                             role="alert">
                             <strong class="font-bold">Alerta!</strong>
                             <span class="block sm:inline">{{ $msg }}</span>
@@ -77,11 +84,27 @@
                             </span>
                         </div>
                     @else
-                        <div class="bg-blue-100 border-t border-b border-blue-500 text-blue-700 px-4 py-3"
-                            role="alert">
-                            <p class="font-bold">Escaneo Correcto</p>
+                        @if ($error == 1)
+                            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative"
+                                role="alert">
+                                <strong class="font-bold">Alerta!</strong>
+                                <span class="block sm:inline">{{ $msg }}</span>
+                                <span class="absolute top-0 bottom-0 right-0 px-4 py-3">
+                                    <svg class="fill-current h-6 w-6 text-red-500" role="button"
+                                        xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                                        <title>Close</title>
+                                        <path
+                                            d="M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z" />
+                                    </svg>
+                                </span>
+                            </div>
+                        @else
+                            <div class="bg-blue-100 border-t border-b border-blue-500 text-blue-700 px-4 py-3"
+                                role="alert">
+                                <p class="font-bold">Escaneo Correcto</p>
 
-                        </div>
+                            </div>
+                        @endif
                     @endif
                 @endif
 
@@ -133,12 +156,17 @@
                                 <div class="flex items-center space-x-4 text-sm">
                                     <form method="POST" action="{{ route('output.destroy') }}">
                                         @csrf
-                                        <input name="serial_id" value={{ $consignment->id}} hidden>
+                                        <input name="serial_id" value={{ $consignment->id }} hidden>
                                         <input name="travel_id" value={{ $travels->id }} hidden>
-                                        <input name="serial" value={{  $consignment->serial }} hidden>
-                                        <button class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray" aria-label="Delete">
-                                            <svg class="w-5 h-5" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20">
-                                                <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                                        <input name="serial" value={{ $consignment->serial }} hidden>
+                                        <button
+                                            class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
+                                            aria-label="Delete">
+                                            <svg class="w-5 h-5" aria-hidden="true" fill="currentColor"
+                                                viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd"
+                                                    d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
+                                                    clip-rule="evenodd"></path>
                                             </svg>
                                         </button>
                                     </form>
@@ -149,16 +177,17 @@
                 </tbody>
             </table>
         </div>
-        <div class="grid px-4 py-3 text-xs font-semibold tracking-wide text-gray-500 uppercase border-t dark:border-gray-700 bg-gray-50 sm:grid-cols-9 dark:text-gray-400 dark:bg-gray-800">
+        <div
+            class="grid px-4 py-3 text-xs font-semibold tracking-wide text-gray-500 uppercase border-t dark:border-gray-700 bg-gray-50 sm:grid-cols-9 dark:text-gray-400 dark:bg-gray-800">
             <span class="flex items-center col-span-3">
-                Mostrando {{ $scan ->firstItem() }} - {{ $scan ->lastItem() }}
+                Mostrando {{ $scan->firstItem() }} - {{ $scan->lastItem() }}
             </span>
             <span class="col-span-2"></span>
             <!-- Pagination -->
             <span class="flex col-span-4 mt-2 sm:mt-auto sm:justify-end">
                 <nav aria-label="Table navigation">
                     <ul class="inline-flex items-center">
-                        {{ $scan ->withQueryString()->links()}}
+                        {{ $scan->withQueryString()->links() }}
                     </ul>
                 </nav>
             </span>

@@ -75,4 +75,8 @@ class User extends Authenticatable
     {
         return $this->hasMany(ShippingInstruction::class);
     }
+    public function orderinformation():  BelongsTo
+    {
+        return $this->belongsTo(orderinformation::class);
+    }
 }

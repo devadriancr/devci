@@ -15,9 +15,9 @@ class Order extends Model
         return $this->belongsTo(Item::class);
     }
     // relacion de 1:N inversa travel
-    public function travel(): BelongsTo
+    public function orderinformation(): BelongsTo
     {
-        return $this->belongsTo(Travel::class);
+        return $this->belongsTo(orderinformation::class);
     }
 
 }

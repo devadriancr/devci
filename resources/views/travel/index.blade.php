@@ -17,11 +17,18 @@
 
                 <div class="mt-2 group flex items-center">
                     <label class="block text-sm m-3">
+                        <span class="text-gray-700 dark:text-gray-400">Numero de orden </span>
+                        <input id='invoice_number' name='invoice_number'
+                            class="block w-80 mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input"
+                            required />
+                    </label>
+                    <label class="block text-sm m-3">
                         <span class="text-gray-700 dark:text-gray-400">Numero de Factura</span>
                         <input id='invoice_number' name='invoice_number'
                             class="block w-80 mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input"
                             required />
                     </label>
+
                     <label class="block text-sm m-3">
                         <span class="text-gray-700 dark:text-gray-400">Carta Porte</span>
                         <input id='carta_porte' name='carta_porte'

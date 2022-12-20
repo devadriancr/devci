@@ -9,6 +9,7 @@ use App\Models\transactiontype;
 use App\Models\travel;
 use App\Models\Inventory;
 use App\Models\Location;
+use App\Models\OrderInformation;
 use App\Models\Warehouse;
 use App\Models\YI007;
 use Illuminate\Support\Facades\DB;
@@ -42,7 +43,7 @@ class OutputController extends Controller
         $location = location::find($request->location_id);
         $cadena = explode(",", $request->serial);
         if (count($cadena) != 27) {
-            $error = 1;
+            $error = 8;
             $message = 'ESCANEO INCORRECTO';
         }
         if ($error == 0) {
@@ -60,7 +61,7 @@ class OutputController extends Controller
             }
         }
         if ($error == 0) {
-            $serial_exist = input::where('serial', $cadena[13],)->where('delivery_production_id','!=', null)->first();
+            $serial_exist = input::where('serial', $cadena[13],)->where('delivery_production_id', '!=', null)->first();
             if ($serial_exist == true) {
                 $error = 11;
                 $message = 'Serial ya fue entregado a linea de produccion ';
@@ -85,8 +86,28 @@ class OutputController extends Controller
                 }
             }
         }
-        $Transaction_type = transactiontype::where('code', 'like', '%T %')->first();
+
         if ($error == 0) {
+            $location = location::where('code', 'like', '%L60%')->first();
+            $safetystock = item::whereraw("TRIM(item_number)='".end($cadena)."'") ->first();
+
+            $invenoti=inventory::where([['item_id', $safetystock->id],['location_id', $location->id]])->first();
+
+            $total=$invenoti->opening_balance+$invenoti->quantity;
+
+
+            if($safetystock->safety_stock>$total)
+            {
+                $error=1;
+                $message='inventario menor a safety stock';
+            }
+
+
+
+
+        }
+        $Transaction_type = transactiontype::where('code', 'like', '%T %')->first();
+        if ($error <=1) {
             if ($location->code == 'L61       ') {
                 $location_old = location::where('code', 'like', '%L60%')->first();
             } else {
@@ -110,13 +131,18 @@ class OutputController extends Controller
                 'travel_id' => $request->travel_id,
                 'location_id' => $request->location_id
             ]);
-            $message = 'serial capturado exitosamente';
+            if($error==0)
+            {
+                $message = 'serial capturado exitosamente';
+            }
+
         }
 
 
         $scan  = output::with('item')->where('travel_id', $request->travel_id)->simplePaginate(10);
         $locations = location::find($request->location_id);
-        $travels = travel::find($request->travel_id);
+        $travels = travel::with('orderinformation')->find($request->travel_id);
+
         return view('Output.index', ['travels' => $travels, 'scan' => $scan, 'error' => $error, 'msg' => $message, 'location_id' => $locations]);
     }
 
@@ -129,7 +155,9 @@ class OutputController extends Controller
      */
     public function store(Request $request)
     {
-        $travel = Travel::with('location')->find($request->travel_id);
+        $travel = Travel::with('location','orderinformation')->find($request->travel_id);
+
+
         if ($travel->location->code == 'L61       ') {
             $scan  = output::with('item')->where('travel_id', $request->travel_id)->simplePaginate(10);
         } else {
@@ -152,18 +180,15 @@ class OutputController extends Controller
     public function search(Request $request)
     {
 
-        $buscar= $request->buscar??'serial';
-        if($buscar=='serial'){
+        $buscar = $request->buscar ?? 'serial';
+        if ($buscar == 'serial') {
             $serial = $request->serial ?? '*';
             $regin = input::with('item', 'location', 'container')->where('serial', $serial)->orderby('id', 'desc')->simplePaginate(10);
-
-        }else
-        {
+        } else {
             $serial = $request->serial ?? '*';
 
-            $item=item::whereRaw("TRIM(item_number)= '" .  $serial . "'")->first();
-            $regin = input::orderby('serial')->with('item', 'location', 'container')->where('item_id',$item->id )->orderby('id', 'desc')->simplePaginate(10);
-
+            $item = item::whereRaw("TRIM(item_number)= '" .  $serial . "'")->first();
+            $regin = input::orderby('serial')->with('item', 'location', 'container')->where('item_id', $item->id)->orderby('id', 'desc')->simplePaginate(10);
         }
 
         // $regin = input::with('item', 'location', 'container')->where('serial', $serial)->orderby('id', 'desc')->simplePaginate(10);
@@ -204,7 +229,7 @@ class OutputController extends Controller
         $loc_ant_id = location::with('warehouse')->where('code', $loc_ant)->first();
         $loc_act_id = location::with('warehouse')->where('id', $travel->location->id)->first();
         foreach ($scan as $scans) {
-            self::inventario($scans->serial, $scans->item_id, $scans->item->item_number, $scans->location_id, $operador, $scans->item_quantity, $loc_ant_id->id, $scans->created_at, $loc_ant_id->warehouse->code,$loc_act_id->warehouse->code);
+            self::inventario($scans->serial, $scans->item_id, $scans->item->item_number, $scans->location_id, $operador, $scans->item_quantity, $loc_ant_id->id, $scans->created_at, $loc_ant_id->warehouse->code, $loc_act_id->warehouse->code);
         }
         $conn = odbc_connect("Driver={Client Access ODBC Driver (32-bit)};System=192.168.200.7;", "LXSECOFR;", "LXSECOFR;");
         $query = "CALL LX834OU02.YIN151C";
@@ -220,7 +245,7 @@ class OutputController extends Controller
     }
 
 
-    public function inventario($serial, $item, $number_item, $loc, $op, $cantidad, $loc_ant, $fechahora, $WH,$wh_act)
+    public function inventario($serial, $item, $number_item, $loc, $op, $cantidad, $loc_ant, $fechahora, $WH, $wh_act)
     {
         $operacion = Inventory::where('location_id', $loc)->where('item_id', $item)->first();
         $operacion_ant = Inventory::where('location_id', $loc_ant)->where('item_id', $item)->first();
@@ -253,7 +278,7 @@ class OutputController extends Controller
         $horascan = date('His', strtotime($fechahora));
         $fechainfor = date('Ymd', strtotime('now'));
         $hora = date('His', time());
-        $use=Auth::user()->user_infor??'ykms';
+        $use = Auth::user()->user_infor ?? 'ykms';
         $infor = YI007::Query()->insert(
             [
                 'I7PROD' => $number_item,
@@ -277,7 +302,7 @@ class OutputController extends Controller
                 'I7TDTE' => $fechascan,
                 'I7TTIM' => $horascan,
                 'I7TQTY' => $cantidad,
-                'I7WHS' =>$wh_act,
+                'I7WHS' => $wh_act,
                 'I7CUSR' => 'YKMS',
                 'I7CCDT' => $fechainfor,
                 'I7CCTM' => $hora,
@@ -294,12 +319,12 @@ class OutputController extends Controller
      */
     public function destroy(Request $request)
     {
-        $itemin=input::where([['travel_id', $request->travel_id], ['serial', $request->serial]])->delete();
-        $itemout=output::where([['travel_id', $request->travel_id], ['serial', $request->serial]])->delete();
+        $itemin = input::where([['travel_id', $request->travel_id], ['serial', $request->serial]])->delete();
+        $itemout = output::where([['travel_id', $request->travel_id], ['serial', $request->serial]])->delete();
         $scan  = input::with('item')->where('travel_id', $request->travel_id)->simplePaginate(10);
-        $entrega = travel::find($request->travel_id);
+        $entrega = travel::with('location','orderinformation')->find($request->travel_id);
         $error = 1;
         $message = 'serial eliminado del viaje actual ';
-        return view('output.index', ['travels' => $entrega, 'scan' => $scan, 'error' => $error, 'msg' => $message, ]);
+        return view('output.index', ['travels' => $entrega, 'scan' => $scan, 'error' => $error, 'msg' => $message,]);
     }
 }
