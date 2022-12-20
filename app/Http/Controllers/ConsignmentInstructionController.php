@@ -42,7 +42,7 @@ class ConsignmentInstructionController extends Controller
     public function consignment_store(Request $request)
     {
         $request->validate([
-            'code_qr' => ['required', 'string', 'min:161', 'max:161'],
+            'code_qr' => ['required', 'string', 'min:160'],
             'container_id' => ['required', 'numeric'],
         ]);
 

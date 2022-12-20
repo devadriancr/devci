@@ -72,8 +72,17 @@ class ItemController extends Controller
      */
     public function index(Request $request)
     {
-        $class = ItemClass::where('code', 'LIKE', '%S1%')->first();
-        $items = Item::where('item_class_id', $class->id)->orderBy('updated_at', 'DESC')->paginate(10);
+        $search = strtoupper($request->search);
+
+        $items = Item::query()
+            ->join('item_types', 'item_types.id', '=', 'items.item_type_id')
+            ->join('item_classes', 'item_classes.id', '=', 'items.item_class_id')
+            ->where('items.item_number', 'LIKE', '%' . $search . '%')
+            ->orWhere('item_types.code', 'LIKE', '%' . $search . '%')
+            ->orWhere('item_classes.code', 'LIKE', '%' . $search . '%')
+            ->orderBy('items.updated_at', 'DESC')
+            ->orderBy('items.item_number', 'ASC')
+            ->paginate(10);
 
         return view('items.index', ['items' => $items]);
     }

@@ -155,6 +155,7 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function () {
      */
     Route::resource('inventory', InventoryController::class);
     Route::get('inventory-upload', [InventoryController::class, 'upload'])->name('inventory.upload');
+    // Route::get('inventory-opening-balance', [InventoryController::class, 'openingBalance'])->name('inventory.opening-balance');
 
     /**
      * Route Input

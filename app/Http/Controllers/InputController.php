@@ -14,9 +14,15 @@ class InputController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $inputs = Input::orderBy('id', 'DESC')->paginate(10);
+        $search = strtoupper($request->search);
+
+        $inputs = Input::query()
+            ->join('items', 'inputs.item_id', '=', 'items.id')
+            ->where('items.item_number', 'LIKE', '%' . $search . '%')
+            ->orderBy('items.created_at', 'DESC')
+            ->paginate(10);
 
         return view('input.index', ['inputs' => $inputs]);
     }

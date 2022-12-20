@@ -11,10 +11,10 @@ class Inventory extends Model
     use HasFactory;
 
     protected $fillable = [
-        'safety_stock',
+        'opening_balance',
         'quantity',
         'item_id',
-        'location_id',
+        'location_id'
     ];
 
     public function item(): BelongsTo
