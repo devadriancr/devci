@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Travel;
+use App\Models\Input;
 use App\Models\Location;
+use App\Models\OrderInformation;
 use App\Export\ShippingExport;
 use App\Exports\ShippingExport as ExportsShippingExport;
 use Illuminate\Support\Facades\DB;
@@ -20,12 +22,13 @@ class TravelController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $travels = Travel::with('location')->orderby('id', 'desc')
+       $ordernumber= $request->order_id ?? 0;
+        $travels = Travel::with('location','orderinformation')->orderby('id', 'desc')
             ->simplePaginate(10);
         $locations = location::where('code', 'like', '%L60%')->orwhere('code', 'like', '%L61%')->get();
-        return view('travel.index', ['travels' => $travels, 'locations' => $locations]);
+        return view('travel.index', ['travels' => $travels, 'locations' => $locations,'order_number'=>$ordernumber]);
     }
 
     /**
@@ -50,6 +53,7 @@ class TravelController extends Controller
             'carta_porte' => ['required', 'string', 'max:30', 'min:5', 'unique:travel'],
             'invoice_number' => ['required', 'string', 'max:20', 'min:5', 'unique:travel'],
             'location_id' => ['required', 'string', 'max:20'],
+            'order_id' => ['required', 'int'],
         ]);
 
         $idtravel = Travel::create(
@@ -61,8 +65,10 @@ class TravelController extends Controller
         );
 
         // // $travel = DB::table('travel')->where('carta_porte', $request->carta_porte)->first();
+
+        orderinformation::find($request->order_id)->update(['travel_id'=>$idtravel->id]);
         $msg = '';
-        $scan = array();
+        $scan = input::find($idtravel->id)->paginate(10);
 
         return view('output.index', ['travels' => $idtravel, 'scan' => $scan]);
     }
@@ -100,7 +106,7 @@ class TravelController extends Controller
             'departure_date' => $request->departure_date
         ]);
         $travels = Travel::orderby('id', 'desc')
-            ->simplePaginate(10);
+            ->paginate(10);
         $locations = location::get();
         return view('Travel.index', ['travels' => $travels, 'locations' => $locations]);
     }

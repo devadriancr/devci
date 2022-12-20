@@ -24,9 +24,9 @@ class travel extends Model
         return $this->hasMany(Input::class);
     }
     // relacion 1:n de orders
-    public function order(): HasMany
+    public function orderinformation():BelongsTo
     {
-        return $this->hasMany(Order::class);
+        return $this->belongsTo(Orderinformation::class);
     }
     // relacion de 1:N inversa location
     public function location(): BelongsTo

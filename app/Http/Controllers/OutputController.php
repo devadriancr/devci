@@ -9,6 +9,7 @@ use App\Models\transactiontype;
 use App\Models\travel;
 use App\Models\Inventory;
 use App\Models\Location;
+use App\Models\Warehouse;
 use App\Models\YI007;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
@@ -45,7 +46,7 @@ class OutputController extends Controller
         $location = location::find($request->location_id);
         $cadena = explode(",", $request->serial);
         if (count($cadena) != 27) {
-            $error = 1;
+            $error = 8;
             $message = 'ESCANEO INCORRECTO';
         }
         if ($error == 0) {
@@ -88,8 +89,28 @@ class OutputController extends Controller
                 }
             }
         }
-        $Transaction_type = transactiontype::where('code', 'like', '%T %')->first();
+
         if ($error == 0) {
+            $location = location::where('code', 'like', '%L60%')->first();
+            $safetystock = item::whereraw("TRIM(item_number)='".end($cadena)."'") ->first();
+
+            $invenoti=inventory::where([['item_id', $safetystock->id],['location_id', $location->id]])->first();
+
+            $total=$invenoti->opening_balance+$invenoti->quantity;
+
+
+            if($safetystock->safety_stock>$total)
+            {
+                $error=1;
+                $message='inventario menor a safety stock';
+            }
+
+
+
+
+        }
+        $Transaction_type = transactiontype::where('code', 'like', '%T %')->first();
+        if ($error <=1) {
             if ($location->code == 'L61       ') {
                 $location_old = location::where('code', 'like', '%L60%')->first();
             } else {
@@ -113,13 +134,18 @@ class OutputController extends Controller
                 'travel_id' => $request->travel_id,
                 'location_id' => $request->location_id
             ]);
-            $message = 'serial capturado exitosamente';
+            if($error==0)
+            {
+                $message = 'serial capturado exitosamente';
+            }
+
         }
 
 
         $scan  = output::with('item')->where('travel_id', $request->travel_id)->simplePaginate(10);
         $locations = location::find($request->location_id);
-        $travels = travel::find($request->travel_id);
+        $travels = travel::with('orderinformation')->find($request->travel_id);
+
         return view('Output.index', ['travels' => $travels, 'scan' => $scan, 'error' => $error, 'msg' => $message, 'location_id' => $locations]);
     }
 
@@ -132,7 +158,9 @@ class OutputController extends Controller
      */
     public function store(Request $request)
     {
-        $travel = Travel::with('location')->find($request->travel_id);
+        $travel = Travel::with('location','orderinformation')->find($request->travel_id);
+
+
         if ($travel->location->code == 'L61       ') {
             $scan  = output::with('item')->where('travel_id', $request->travel_id)->simplePaginate(10);
         } else {
@@ -297,7 +325,7 @@ class OutputController extends Controller
         $itemin = input::where([['travel_id', $request->travel_id], ['serial', $request->serial]])->delete();
         $itemout = output::where([['travel_id', $request->travel_id], ['serial', $request->serial]])->delete();
         $scan  = input::with('item')->where('travel_id', $request->travel_id)->simplePaginate(10);
-        $entrega = travel::find($request->travel_id);
+        $entrega = travel::with('location','orderinformation')->find($request->travel_id);
         $error = 1;
         $message = 'serial eliminado del viaje actual ';
         return view('output.index', ['travels' => $entrega, 'scan' => $scan, 'error' => $error, 'msg' => $message,]);

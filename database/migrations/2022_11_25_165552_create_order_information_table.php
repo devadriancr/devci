@@ -13,17 +13,14 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('consignment_instructions', function (Blueprint $table) {
+        Schema::create('order_information', function (Blueprint $table) {
             $table->id();
-            $table->string('supplier');
-            $table->string('serial')->unique();
-            $table->integer('part_qty');
-            $table->string('part_no');
-            $table->unsignedBigInteger('container_id')->nullable();
+            $table->string('order_type');
             $table->unsignedBigInteger('user_id')->nullable();
-            $table->timestamps();
-            $table->foreign('container_id')->references('id')->on('containers')->onDelete('set null');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('set null');
+            $table->unsignedBigInteger('travel_id')->nullable();
+            $table->foreign('travel_id')->references('id')->on('travel')->onDelete('set null');
+            $table->timestamps();
         });
     }
 
@@ -34,6 +31,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('consignment_instructions');
+        Schema::dropIfExists('order_information');
     }
 };

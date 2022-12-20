@@ -17,6 +17,7 @@ use App\Http\Controllers\WarehouseController;
 use App\Http\Controllers\TravelController;
 use App\Http\Controllers\DeiveryProductionController;
 use App\Http\Controllers\OutputController;
+use App\Http\Controllers\RequestListController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -120,10 +121,12 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function () {
     Route::post('travel-store', [TravelController::class, 'store'])->name('travel.store');
     Route::post('travel-update', [TravelController::class, 'update'])->name('travel.update');
     Route::POST('travel-export', [TravelController::class, 'export'])->name('travel.export');
+    Route::POST('travel-new', [TravelController::class, 'index'])->name('travel.new');
+
     /**
      * Routes output external House
      */
-
+    Route::resource('output', TravelController::class);
     Route::get('output-search', [OutputController::class, 'search'])->name('output.search');
     Route::POST('output-store', [OutputController::class, 'store'])->name('output.store');
     Route::POST('output-create', [OutputController::class, 'create'])->name('output.create');
@@ -161,4 +164,20 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function () {
      * Route Input
      */
     Route::resource('input', InputController::class);
+    /**
+     * Route report request list
+     *
+     */
+    Route::resource('Requestlist', RequestListController::class);
+    Route::get('Requestlist-list', [RequestListController::class, 'list_order'])->name('RequestList.list_order');
+    Route::get('Requestlist-send', [RequestListController::class, 'send'])->name('RequestList.send');
+    Route::get('Requestlist-receipt', [RequestListController::class, 'receipt']);
+    Route::get('Requestlist-orderdetail', [RequestListController::class, 'order_detail'])->name('RequestList.order_detail');
+    Route::Post('Requestlist-order', [RequestListController::class, 'order'])->name('RequestList.order');
+    Route::Post('Requestlist-Quitorder', [RequestListController::class, 'Quitorder'])->name('RequestList.quitorder');
+    Route::Post('Requestlist-create', [RequestListController::class, 'create_order'])->name('RequestList.create_order');
+    Route::Post('Requestlist-export', [RequestListController::class, 'export'])->name('RequestList.export');
+
+
 });
+
