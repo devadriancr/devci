@@ -16,7 +16,7 @@ class InputController extends Controller
      */
     public function index(Request $request)
     {
-        $search = strtoupper($request->search);
+        $search = strtoupper($request->search) ?? '';
 
         $inputs = Input::query()
             ->join('items', 'inputs.item_id', '=', 'items.id')

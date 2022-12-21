@@ -72,7 +72,7 @@ class ItemController extends Controller
      */
     public function index(Request $request)
     {
-        $search = strtoupper($request->search);
+        $search = strtoupper($request->search) ?? '';
 
         $items = Item::query()
             ->join('item_types', 'item_types.id', '=', 'items.item_type_id')

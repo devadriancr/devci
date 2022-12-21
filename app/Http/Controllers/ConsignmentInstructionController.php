@@ -197,38 +197,21 @@ class ConsignmentInstructionController extends Controller
             ->orderBy('serial', 'ASC')
             ->get();
 
-        $shipments = ShippingInstruction::query()
-            ->where([
-                ['container', '=', $container],
-                ['arrival_date', '=', $date],
-                ['arrival_time', '=', $time],
-                ['status', '=', true]
-            ])
-            ->orderBy('serial', 'ASC')
-            ->get();
-
         $array_consignment = [];
         foreach ($consignments as $key => $consignment) {
             $serial = $consignment->supplier . $consignment->serial;
-            array_push($array_consignment, $serial);
+            array_push($array_consignment, [
+                'container' => $consignment->container->code,
+                // 'invoice' => $consignment->invoice,
+                'serial' => $serial,
+                'part_no' => $consignment->part_no,
+                'part_qty' => $consignment->part_qty,
+                'arrival_date' => $consignment->arrival_date,
+                'arrival_time' => $consignment->arrival_time,
+            ]);
         }
 
-        $arrayFound = [];
-        foreach ($shipments as $key => $shipping) {
-            if (self::search($array_consignment, 0, count($array_consignment) - 1, $shipping->serial) === true) {
-                array_push($arrayFound, [
-                    'container' => $shipping->container,
-                    'invoice' => $shipping->invoice,
-                    'serial' => $shipping->serial,
-                    'part_no' => $shipping->part_no,
-                    'part_qty' => $shipping->part_qty,
-                    'arrival_date' => $shipping->arrival_date,
-                    'arrival_time' => $shipping->arrival_time,
-                ]);
-            }
-        }
-
-        return Excel::download(new ConsignmentInstructionExport($arrayFound), 'Found.xlsx');
+        return Excel::download(new ConsignmentInstructionExport($array_consignment), 'Scanned.xlsx');
     }
 
     public function reportNotFount(Request $request)

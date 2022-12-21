@@ -24,7 +24,7 @@ class OutputController extends Controller
      */
     public function index(Request $request)
     {
-        $search = strtoupper($request->search);
+        $search = strtoupper($request->search) ?? '';
 
         $outputs = Output::query()
             ->join('items', 'outputs.item_id', '=', 'items.id')

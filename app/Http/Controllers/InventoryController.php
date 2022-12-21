@@ -94,7 +94,7 @@ class InventoryController extends Controller
      */
     public function index(Request $request)
     {
-        $search = strtoupper($request->search);
+        $search = strtoupper($request->search) ?? '';
 
         $inventories = Inventory::query()
             ->join('items', 'inventories.item_id', '=', 'items.id')

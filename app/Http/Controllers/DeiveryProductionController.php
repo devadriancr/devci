@@ -56,9 +56,11 @@ class DeiveryProductionController extends Controller
     public function store(Request $request)
     {
         $scan  = input::with('item')->where('delivery_production_id', $request->Delivery_id)->get();
+
         $loc_ant_id = location::with('warehouse')->whereRaw("TRIM(code)='L60'")->first();
         $loc_act_id = location::with('warehouse')->whereRaw("TRIM(code)='L12'")->first();
         foreach ($scan as $scans) {
+
             self::inventario($scans->serial, $scans->item_id, $scans->item->item_number, $scans->location_id, $scans->item_quantity, $loc_ant_id->id, $scans->created_at, $loc_ant_id->warehouse->code, $loc_act_id->warehouse->code);
         }
         $conn = odbc_connect("Driver={Client Access ODBC Driver (32-bit)};System=192.168.200.7;", "LXSECOFR;", "LXSECOFR;");
@@ -126,7 +128,7 @@ class DeiveryProductionController extends Controller
         $infor = YI007::Query()->insert(
             [
                 'I7PROD' => $number_item,
-                'I7SENO' => $serial,
+                'I7SENO' => $serial ?? '',
                 'I7TFLG' => 'O',
                 'I7TDTE' => $fechascan,
                 'I7TTIM' => $horascan,

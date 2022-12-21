@@ -22,7 +22,7 @@
     </div>
     <form method="POST" action={{ route('Delivery.store') }}>
         @csrf
-        <input name="travel_id" value={{ $entrega->id }} hidden>
+        <input name="Delivery_id" value={{ $entrega->id }} hidden>
         <div class="flex justify-end mt-2 gap-2">
             <button
                 class="flex items-center justify-between px-4 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple">
