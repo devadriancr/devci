@@ -287,10 +287,10 @@ class ConsignmentInstructionController extends Controller
             ->get();
 
         foreach ($consignments as $key => $consignment) {
+
             $item = Item::where('item_number', 'LIKE', '%' . $consignment->part_no . '%')->firstOrFail();
             $transaccion = TransactionType::where('code', '=', 'U3')->firstOrFail();
             $location = Location::where('code', 'LIKE', '%L60%')->firstOrFail();
-
             Input::storeInputConsignment(
                 $consignment->supplier,
                 $consignment->serial,

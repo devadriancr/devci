@@ -187,14 +187,16 @@ class OutputController extends Controller
     {
 
         $buscar = $request->buscar ?? 'serial';
+
         if ($buscar == 'serial') {
-            $serial = $request->serial ?? '*';
+            $serial = $request->serial ?? '0';
             $regin = input::with('item', 'location', 'container')->where('serial', $serial)->orderby('id', 'desc')->simplePaginate(10);
         } else {
-            $serial = $request->serial ?? '*';
+            $serial = $request->serial ?? '0';
 
             $item = item::whereRaw("TRIM(item_number)= '" .  $serial . "'")->first();
-            $regin = input::orderby('serial')->with('item', 'location', 'container')->where('item_id', $item->id)->orderby('id', 'desc')->simplePaginate(10);
+           $num=$item->id ?? '0';
+            $regin = input::orderby('serial')->with('item', 'location', 'container')->where('item_id', $num)->orderby('id', 'desc')->simplePaginate(10);
         }
 
         // $regin = input::with('item', 'location', 'container')->where('serial', $serial)->orderby('id', 'desc')->simplePaginate(10);

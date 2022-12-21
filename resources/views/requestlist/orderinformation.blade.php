@@ -1,7 +1,7 @@
 <x-app-layout title="Orden de viaje">
     <div class="container grid px-6 mx-auto">
         <h2 class="mt-4 mb-2 text-2xl font-semibold text-gray-700 dark:text-gray-200">
-            Orden de viaje
+            Lista de Ordenes
         </h2>
 
         <div class="w-full overflow-hidden rounded-lg shadow-xs">
@@ -38,36 +38,36 @@
                                 </td>
                                 <td>
 
-                                    @if( $inventory->travel_id==null)
-                                    <form method="POST" action="{{ route('travel.new') }}">
-                                        @csrf
-                                        <input name="order_id" value={{ $inventory->id }} hidden>
-                                        <button
-                                            class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
-                                            aria-label="Delete">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20"
-                                                fill="currentColor">
-                                                <path
-                                                    d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" />
-                                            </svg>
-                                        </button>
-                                    </form>
+                                    @if ($inventory->travel_id == null)
+                                        <form method="POST" action="{{ route('travel.new') }}">
+                                            @csrf
+                                            <input name="order_id" value={{ $inventory->id }} hidden>
+                                            <button
+                                                class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
+                                                aria-label="Delete">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5"
+                                                    viewBox="0 0 20 20" fill="currentColor">
+                                                    <path
+                                                        d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" />
+                                                </svg>
+                                            </button>
+                                        </form>
                                     @else
-                                    @if($inventory->travel->finish==null)
-                                    <form method="POST" action="{{ route('output.store')}}">
-                                        @csrf
-                                        <input name="travel_id" value={{ $inventory->travel_id }} hidden>
-                                        <button
-                                            class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
-                                            aria-label="Delete">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20"
-                                                fill="currentColor">
-                                                <path
-                                                    d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" />
-                                            </svg>
-                                        </button>
-                                    </form>
-                                    @endif
+                                        @if ($inventory->travel->finish == null)
+                                            <form method="POST" action="{{ route('output.store') }}">
+                                                @csrf
+                                                <input name="travel_id" value={{ $inventory->travel_id }} hidden>
+                                                <button
+                                                    class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
+                                                    aria-label="Delete">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5"
+                                                        viewBox="0 0 20 20" fill="currentColor">
+                                                        <path
+                                                            d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" />
+                                                    </svg>
+                                                </button>
+                                            </form>
+                                        @endif
                                     @endif
                                 </td>
                                 <td>
