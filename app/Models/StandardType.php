@@ -19,7 +19,7 @@ class StandardType extends Model
     {
         return $this->hasMany(StandardPack::class);
     }
-    
+
     public function fromDateTime($value)
 
     {

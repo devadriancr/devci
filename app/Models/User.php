@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -78,16 +79,13 @@ class User extends Authenticatable
     {
         return $this->hasMany(ShippingInstruction::class);
     }
-    public function orderinformation():  BelongsTo
+    public function orderinformation(): BelongsTo
     {
         return $this->belongsTo(orderinformation::class);
     }
 
     public function fromDateTime($value)
-    
     {
-
         return Carbon::parse(parent::fromDateTime($value))->format('Y-d-m H:i:s');
-
     }
 }
