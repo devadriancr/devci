@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -21,6 +22,8 @@ class User extends Authenticatable
     use Notifiable;
     use TwoFactorAuthenticatable;
     use HasRoles;
+
+    protected $dateFormat = 'Y-m-d H:i:s';
 
     /**
      * The attributes that are mass assignable.
@@ -78,5 +81,13 @@ class User extends Authenticatable
     public function orderinformation():  BelongsTo
     {
         return $this->belongsTo(orderinformation::class);
+    }
+
+    public function fromDateTime($value)
+    
+    {
+
+        return Carbon::parse(parent::fromDateTime($value))->format('Y-d-m H:i:s');
+
     }
 }

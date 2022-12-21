@@ -17,10 +17,10 @@ return new class extends Migration
             $table->id();
             $table->string('supplier')->nullable();
             $table->string('serial')->nullable();
-            $table->unsignedBigInteger('item_id');
+            $table->unsignedBigInteger('item_id')->nullable();
             $table->double('item_quantity');
             $table->unsignedBigInteger('container_id')->nullable();
-            $table->unsignedBigInteger('transaction_type_id');
+            $table->unsignedBigInteger('transaction_type_id')->nullable();
             $table->unsignedBigInteger('location_id')->nullable();
             $table->unsignedBigInteger('travel_id')->nullable();
             $table->unsignedBigInteger('delivery_production_id')->nullable();
