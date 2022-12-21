@@ -15,11 +15,11 @@
                 </span>
                 <div class="mt-2">
                     <label class="inline-flex items-center text-gray-600 dark:text-gray-400">
-                        <input name='buscar' type="radio" class="text-purple-600 form-radio focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:focus:shadow-outline-gray"  value="serial" />
+                        <input name='buscar' type="radio" class="text-purple-600 form-radio focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:focus:shadow-outline-gray"  value="serial" required />
                         <span class="ml-2">Serial</span>
                     </label>
                     <label  class="inline-flex items-center ml-6 text-gray-600 dark:text-gray-400">
-                        <input  name='buscar' type="radio" class="text-purple-600 form-radio focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:focus:shadow-outline-gray"  value="parte" />
+                        <input  name='buscar' type="radio" class="text-purple-600 form-radio focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:focus:shadow-outline-gray"  value="parte" required />
                         <span class="ml-2">No de parte</span>
                     </label>
                 </div>
@@ -28,7 +28,7 @@
                 <span class="text-gray-700 dark:text-gray-400">Serial</span>
                 <input name="serial" id="serial"
                     class="block w-full my-2 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input"
-                    autofocus='enable'>
+                    autofocus='enable' required>
 
                 <div class="flex justify-end mt-2 gap-2">
                     <button
