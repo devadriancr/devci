@@ -79,13 +79,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(ShippingInstruction::class);
     }
+
     public function orderinformation(): BelongsTo
     {
         return $this->belongsTo(orderinformation::class);
-    }
-
-    public function fromDateTime($value)
-    {
-        return Carbon::parse(parent::fromDateTime($value))->format('Y-d-m H:i:s');
     }
 }

@@ -11,13 +11,10 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class DeliveryProduction extends Model
 {
     use HasFactory;
-    use HasFactory;
-    protected $guarded = ['id', 'created_at', 'updated_at'];
 
-    public function fromDateTime($value)
-    {
-        return Carbon::parse(parent::fromDateTime($value))->format('Y-d-m H:i:s');
-    }
+    protected $dateFormat = 'Ymd H:i:s.v';
+
+    protected $guarded = ['id', 'created_at', 'updated_at'];
 
     // relacion 1:n de outputs
     public function output(): HasMany

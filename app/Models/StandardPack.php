@@ -11,14 +11,11 @@ class StandardPack extends Model
 {
     use HasFactory;
 
+    protected $dateFormat = 'Ymd H:i:s.v';
+
     protected $fillable = [
         'name', 'quantity', 'standard_type_id', 'status',
     ];
-
-    public function fromDateTime($value)
-    {
-        return Carbon::parse(parent::fromDateTime($value))->format('Y-d-m H:i:s');
-    }
 
     public function standardType(): BelongsTo
     {

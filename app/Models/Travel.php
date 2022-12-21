@@ -8,32 +8,33 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\hasOne;
+
 class travel extends Model
 {
     use HasFactory;
+
     protected $guarded = ['id', 'created_at', 'updated_at'];
 
-    public function fromDateTime($value)
-    {
-        return Carbon::parse(parent::fromDateTime($value))->format('Y-d-m H:i:s');
-    }
+    protected $dateFormat = 'Ymd H:i:s.v';
 
     // relacion 1:n de outputs
     public function output(): HasMany
     {
         return $this->hasMany(Output::class);
     }
+
     // relacion 1:n de intputs
     public function intput(): HasMany
     {
         return $this->hasMany(Input::class);
     }
+
     // relacion 1:n de orders
-    public function orderinformation():hasOne
+    public function orderinformation(): hasOne
     {
         return $this->hasOne(orderinformation::class);
-
     }
+
     // relacion de 1:N inversa location
     public function location(): BelongsTo
     {

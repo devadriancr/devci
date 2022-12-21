@@ -11,14 +11,11 @@ class Container extends Model
 {
     use HasFactory;
 
+    protected $dateFormat = 'Ymd H:i:s.v';
+
     protected $fillable = [
         'code', 'arrival_date', 'arrival_time', 'status',
     ];
-
-    public function fromDateTime($value)
-    {
-        return Carbon::parse(parent::fromDateTime($value))->format('Y-d-m H:i:s');
-    }
 
      public function intputs():HasMany
      {

@@ -11,14 +11,11 @@ class MeasurementType extends Model
 {
     use HasFactory;
 
+    protected $dateFormat='Ymd H:i:s.v';
+
     protected $fillable = [
         'code', 'name', 'description', 'status',
     ];
-
-    public function fromDateTime($value)
-    {
-        return Carbon::parse(parent::fromDateTime($value))->format('Y-d-m H:i:s');
-    }
 
     public function items(): HasMany
     {

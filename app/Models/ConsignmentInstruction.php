@@ -11,14 +11,11 @@ class ConsignmentInstruction extends Model
 {
     use HasFactory;
 
+    protected $dateFormat = 'Ymd H:i:s.v';
+
     protected $fillable = [
         'supplier', 'serial', 'part_no', 'part_qty', 'container_id', 'user_id'
     ];
-
-    public function fromDateTime($value)
-    {
-        return Carbon::parse(parent::fromDateTime($value))->format('Y-d-m H:i:s');
-    }
 
     public function container(): BelongsTo
     {

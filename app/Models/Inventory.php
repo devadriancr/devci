@@ -11,17 +11,14 @@ class Inventory extends Model
 {
     use HasFactory;
 
+    protected $dateFormat = 'Ymd H:i:s.v';
+
     protected $fillable = [
         'opening_balance',
         'quantity',
         'item_id',
         'location_id'
     ];
-
-    public function fromDateTime($value)
-    {
-        return Carbon::parse(parent::fromDateTime($value))->format('Y-d-m H:i:s');
-    }
 
     public function item(): BelongsTo
     {

@@ -11,6 +11,8 @@ class StandardType extends Model
 {
     use HasFactory;
 
+    protected $dateFormat = 'Ymd H:i:s.v';
+
     protected $fillable = [
         'name', 'description', 'status',
     ];
@@ -18,13 +20,5 @@ class StandardType extends Model
     public function standardPacks(): HasMany
     {
         return $this->hasMany(StandardPack::class);
-    }
-
-    public function fromDateTime($value)
-
-    {
-
-        return Carbon::parse(parent::fromDateTime($value))->format('Y-d-m H:i:s');
-
     }
 }

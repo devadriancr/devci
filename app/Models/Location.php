@@ -12,14 +12,11 @@ class Location extends Model
 {
     use HasFactory;
 
+    protected $dateFormat='Ymd H:i:s.v';
+
     protected $fillable = [
         'wid', 'code', 'name', 'description', 'status', 'warehouse_id',
     ];
-
-    public function fromDateTime($value)
-    {
-        return Carbon::parse(parent::fromDateTime($value))->format('Y-d-m H:i:s');
-    }
 
     public function warehouse(): BelongsTo
     {

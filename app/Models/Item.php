@@ -13,6 +13,8 @@ class Item extends Model
 {
     use HasFactory;
 
+    protected $dateFormat = 'Ymd H:i:s.v';
+
     protected $fillable = [
         'iid',
         'item_number',
@@ -23,11 +25,6 @@ class Item extends Model
         'item_class_id',
         'standard_pack_id'
     ];
-
-    public function fromDateTime($value)
-    {
-        return Carbon::parse(parent::fromDateTime($value))->format('Y-d-m H:i:s');
-    }
 
     public function measurementType(): BelongsTo
     {
@@ -59,12 +56,12 @@ class Item extends Model
         return $this->hasMany(Output::class);
     }
 
-     public function input(): HasMany
-     {
-         return $this->hasMany(Input::class);
-     }
-     public function order(): HasMany
-     {
-         return $this->hasMany(Order::class);
-     }
+    public function input(): HasMany
+    {
+        return $this->hasMany(Input::class);
+    }
+    public function order(): HasMany
+    {
+        return $this->hasMany(Order::class);
+    }
 }
