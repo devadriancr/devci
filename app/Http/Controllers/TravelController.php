@@ -24,11 +24,26 @@ class TravelController extends Controller
      */
     public function index(Request $request)
     {
-       $ordernumber= $request->order_id ?? 0;
-        $travels = Travel::with('location','orderinformation')->orderby('id', 'desc')
+        $ordernumber = $request->order_id ?? 0;
+        if ($ordernumber == 0) {
+            $locations = location::where('code', 'like', '%L60%')->orwhere('code', 'like', '%L61%')->get();
+        } else {
+            $info_order = orderinformation::find($ordernumber)->first();
+            if ($info_order->order_type == 'O') {
+                $locations = location::where('code', 'like', '%L61%')->get();
+            } else {
+                $locations = location::where('code', 'like', '%L60%')->get();
+            }
+        }
+
+
+
+        $travels = Travel::with('location')->orderby('id', 'desc')
             ->simplePaginate(10);
-        $locations = location::where('code', 'like', '%L60%')->orwhere('code', 'like', '%L61%')->get();
-        return view('travel.index', ['travels' => $travels, 'locations' => $locations,'order_number'=>$ordernumber]);
+
+
+
+        return view('travel.index', ['travels' => $travels, 'locations' => $locations, 'order_number' => $ordernumber]);
     }
 
     /**
@@ -50,13 +65,17 @@ class TravelController extends Controller
     {
 
         $request->validate([
-            'carta_porte' => ['required', 'string', 'max:30', 'min:5', 'unique:travel'],
-            'invoice_number' => ['required', 'string', 'max:20', 'min:5', 'unique:travel'],
+            'carta_porte' => ['required', 'string', 'max:30', 'min:5'],
+            'invoice_number' => ['required', 'string', 'max:20', 'min:5'],
             'location_id' => ['required', 'string', 'max:20'],
             'order_id' => ['required', 'int'],
         ]);
 
-        $idtravel = Travel::create(
+        $busca = travel::where('invoice_number', $request->invoice_number)->count();
+        if ($busca > 0) {
+            return redirect()->route('Travel.index');
+        }
+        $idtravel = Travel::updateorcreate(
             [
                 'carta_porte' => $request->carta_porte,
                 'invoice_number' => $request->invoice_number,
@@ -66,9 +85,9 @@ class TravelController extends Controller
 
         // // $travel = DB::table('travel')->where('carta_porte', $request->carta_porte)->first();
 
-        orderinformation::find($request->order_id)->update(['travel_id'=>$idtravel->id]);
+        orderinformation::find($request->order_id)->update(['travel_id' => $idtravel->id]);
         $msg = '';
-        $scan = input::find($idtravel->id)->paginate(10);
+        $scan = input::where('travel_id', $idtravel->id)->paginate(10);
 
         return view('output.index', ['travels' => $idtravel, 'scan' => $scan]);
     }

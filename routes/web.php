@@ -121,7 +121,7 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function () {
     Route::post('travel-store', [TravelController::class, 'store'])->name('travel.store');
     Route::post('travel-update', [TravelController::class, 'update'])->name('travel.update');
     Route::POST('travel-export', [TravelController::class, 'export'])->name('travel.export');
-    Route::POST('travel-new', [TravelController::class, 'index'])->name('travel.new');
+    Route::post('travel-new', [TravelController::class, 'index'])->name('travel.new');
 
     /**
      * Routes output external House
@@ -171,7 +171,7 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function () {
     Route::resource('Requestlist', RequestListController::class);
     Route::get('Requestlist-list', [RequestListController::class, 'list_order'])->name('RequestList.list_order');
     Route::get('Requestlist-send', [RequestListController::class, 'send'])->name('RequestList.send');
-    Route::get('Requestlist-receipt', [RequestListController::class, 'receipt']);
+    Route::get('Requestlist-receipt', [RequestListController::class, 'receipt'])->name('RequestList.receipt');
     Route::get('Requestlist-orderdetail', [RequestListController::class, 'order_detail'])->name('RequestList.order_detail');
     Route::Post('Requestlist-order', [RequestListController::class, 'order'])->name('RequestList.order');
     Route::Post('Requestlist-Quitorder', [RequestListController::class, 'Quitorder'])->name('RequestList.quitorder');

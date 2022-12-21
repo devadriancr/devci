@@ -78,16 +78,18 @@ class OutputController extends Controller
                 $message = 'serial ya fue  escaneado';
             }
         }
-        if ($error == 0) {
-            $ultimaEnt = input::where([['serial', $cadena[13]], ['travel_id', '!=', $request->travel_id]])->exists();
-            if ($ultimaEnt != false) {
-                $ultimaEnt = input::where([['serial', $cadena[13]], ['travel_id', '!=', $request->travel_id]])->orderby('id', 'desc')->first();
 
-                if ($ultimaEnt->location_id == $request->location_id) {
-                    $error = 4;
-                    $message = 'serial ya existente en el almacen actual ';
+        if ($error == 0) {
+                $ultimaEnt = input::where([['serial', $cadena[13]]])->orderby('id', 'desc')->first();
+                if($ultimaEnt!=null)
+                {
+                    if ($ultimaEnt->location_id == $request->location_id) {
+                        $error = 4;
+                        $message = 'serial ya existente en el almacen actual ';
+                    }
                 }
-            }
+
+
         }
 
         if ($error == 0) {
@@ -144,7 +146,7 @@ class OutputController extends Controller
 
         $scan  = output::with('item')->where('travel_id', $request->travel_id)->simplePaginate(10);
         $locations = location::find($request->location_id);
-        $travels = travel::with('orderinformation')->find($request->travel_id);
+        $travels = travel::find($request->travel_id);
 
         return view('Output.index', ['travels' => $travels, 'scan' => $scan, 'error' => $error, 'msg' => $message, 'location_id' => $locations]);
     }
@@ -158,7 +160,8 @@ class OutputController extends Controller
      */
     public function store(Request $request)
     {
-        $travel = Travel::with('location','orderinformation')->find($request->travel_id);
+
+        $travel = Travel::with('location')->find($request->travel_id);
 
 
         if ($travel->location->code == 'L61       ') {
@@ -219,6 +222,7 @@ class OutputController extends Controller
      */
     public function update(Request $request, Output $output)
     {
+
         $travel = Travel::find($request->travel_id);
         if ($travel->location->code == 'L61       ') {
             $operador = 'O';
@@ -240,11 +244,10 @@ class OutputController extends Controller
         Travel::updateOrCreate(
             ['id' => $request->travel_id],
             ['finish' => 1]
-
         );
 
 
-        return redirect()->action([TravelController::class, 'index']);
+        return redirect()->route('Travel.index');
     }
 
 

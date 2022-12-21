@@ -3,22 +3,23 @@
         <h2 class="mt-4 mb-2 text-2xl font-semibold text-gray-700 dark:text-gray-200">
             Envios / Recibos Almacen Ext
         </h2>
-
+        @if ($errors->any())
+        <p>Hay errores!</p>
+    @endif
         <form method="POST" action="{{ route('travel.store') }}">
             <div class="mt-4 text-sm">
                 @csrf
+                @method('POST')
                 <span class="text-gray-700 dark:text-gray-400">
                     Nuevo
                 </span>
 
-                @if ($errors->any())
-                    <p>Hay errores!</p>
-                @endif
+
 
                 <div class="mt-2 group flex items-center">
                     <label class="block text-sm m-3">
                         <span class="text-gray-700 dark:text-gray-400">Numero de orden </span>
-                        <input id='invoice_number' name='invoice_number'
+                        <input id='order_id' name='order_id' value='{{ $order_number }}'
                             class="block w-80 mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input"
                             required />
                     </label>
@@ -68,8 +69,8 @@
                         <tr
                             class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b dark:border-gray-700 bg-gray-50 dark:text-gray-400 dark:bg-gray-800">
                             <th class="px-4 py-3"> </th>
-                            <th class="px-4 py-3">Carta Porte</th>
                             <th class="px-4 py-3">Factura</th>
+                            <th class="px-4 py-3">Carta Porte</th>
                             <th class="px-4 py-3">Fecha</th>
                             <th class="px-4 py-3">Locación</th>
                             <th class="px-4 py-3"></th>

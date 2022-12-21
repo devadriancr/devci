@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-
+use Illuminate\Database\Eloquent\Relations\hasOne;
 class travel extends Model
 {
     use HasFactory;
@@ -24,9 +24,10 @@ class travel extends Model
         return $this->hasMany(Input::class);
     }
     // relacion 1:n de orders
-    public function orderinformation():BelongsTo
+    public function orderinformation():hasOne
     {
-        return $this->belongsTo(Orderinformation::class);
+        return $this->hasOne(orderinformation::class);
+
     }
     // relacion de 1:N inversa location
     public function location(): BelongsTo

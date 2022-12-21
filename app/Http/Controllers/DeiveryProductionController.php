@@ -43,7 +43,7 @@ class DeiveryProductionController extends Controller
             'finish'=>1
         ]);
         $scan =  input::where('delivery_production_id',$No->id)->simplePaginate(10);
-        return view('delivery_li ne.scan', ['entrega' => $No, 'scan' => $scan]);
+        return view('delivery_line.scan', ['entrega' => $No, 'scan' => $scan]);
     }
 
 

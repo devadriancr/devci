@@ -17,9 +17,9 @@ class OrderInformation extends Model
     {
         return $this->hasMany(Order::class);
     }
-    public function travel(): hasOne
+    public function travel(): BelongsTo
     {
-        return $this->hasOne(travel::class);
+        return $this->belongsTo(travel::class);
     }
     public function user():  BelongsTo
     {

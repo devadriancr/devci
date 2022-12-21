@@ -19,10 +19,12 @@
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y dark:divide-gray-700 dark:bg-gray-800">
+
                         @foreach ($order as $inventory)
                             <tr class="text-gray-700 dark:text-gray-400">
 
                                 <td class="px-4 py-3 text-sm">
+
                                     {{ $inventory->id }}
                                 </td>
                                 <td class="px-4 py-3 text-sm">
@@ -35,6 +37,7 @@
                                     {{ $inventory->travel_id ?? '' }}
                                 </td>
                                 <td>
+
                                     @if( $inventory->travel_id==null)
                                     <form method="POST" action="{{ route('travel.new') }}">
                                         @csrf
@@ -50,7 +53,7 @@
                                         </button>
                                     </form>
                                     @else
-                                    @if($inventory->finish==null)
+                                    @if($inventory->travel->finish==null)
                                     <form method="POST" action="{{ route('output.store')}}">
                                         @csrf
                                         <input name="travel_id" value={{ $inventory->travel_id }} hidden>

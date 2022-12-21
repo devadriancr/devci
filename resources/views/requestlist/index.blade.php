@@ -3,7 +3,7 @@
         <h2 class="mt-4 mb-2 text-2xl font-semibold text-gray-700 dark:text-gray-200">
         Lista de orden
         </h2>
-        <form method="GET" action={{ route('RequestList.order_detail') }}>
+        {{-- <form method="GET" action={{ route('RequestList.order_detail') }}>
             <div class="flex justify-end mt-2 gap-2">
                 <button
                     class="flex items-center justify-between px-4 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple">
@@ -15,8 +15,9 @@
                     <span class="ml-2">Ver orden</span>
                 </button>
             </div>
-        </form>
-        <form method="GET" action={{ route('RequestList.order_detail') }}>
+        </form> --}}
+        <form method="GET" action={{ route('RequestList.receipt') }}>
+            <input type='hidden'id='type_order' name='type_order' value='I'>
             <div class="flex justify-end mt-2 gap-2">
                 <button
                     class="flex items-center justify-between px-4 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple">
@@ -31,6 +32,7 @@
         </form>
         <form method="GET" action={{ route('RequestList.send') }}>
             <div class="flex justify-end mt-2 gap-2">
+                <input type='hidden' id='type_order' name='type_order' value='O'>
                 <button
                     class="flex items-center justify-between px-4 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
