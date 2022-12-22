@@ -10,7 +10,6 @@ use App\Models\Location;
 use App\Models\output;
 use App\Models\TransactionType;
 use Illuminate\Http\Request;
-use PhpOffice\PhpSpreadsheet\Calculation\TextData\Search;
 
 class InventoryController extends Controller
 {
@@ -39,39 +38,24 @@ class InventoryController extends Controller
 
                     if ($inventory->LOPB > $sum) {
                         $result = $inventory->LOPB - $sum;
-                        Input::create(
-                            [
-                                'item_id' => $item->id,
-                                'item_quantity' => $result,
-                                'transaction_type_id' => $transaction->id,
-                                'location_id' => $location->id
-                            ]
-                        );
+
+                        Input::storeInput($item->id,  $result, $transaction->id, $location->id);
+
                         $data->update(['opening_balance' => $inventory->LOPB, 'quantity' => 0]);
                     } elseif ($sum > $inventory->LOPB) {
                         $result = $sum - $inventory->LOPB;
-                        output::create(
-                            [
-                                'item_id' => $item->id,
-                                'item_quantity' => $result,
-                                'transaction_type_id' => $transaction->id,
-                                'location_id' => $location->id
-                            ]
-                        );
+
+                        output::storeOutput($item->id, $result, $transaction->id, $location->id);
+
                         $data->update(['opening_balance' => $inventory->LOPB, 'quantity' => 0]);
                     } else {
                         $result = $inventory->LOPB - $sum;
+
                         $data->update(['opening_balance' => $inventory->LOPB, 'quantity' => 0]);
                     }
                 } else {
-                    Input::create(
-                        [
-                            'item_id' => $item->id,
-                            'item_quantity' => $inventory->LOPB,
-                            'transaction_type_id' => $transaction->id,
-                            'location_id' => $location->id
-                        ]
-                    );
+                    Input::storeInput($item->id, $inventory->LOPB, $transaction->id, $location->id);
+
                     $data = Inventory::create(
                         [
                             'item_id' => $item->id,
@@ -83,7 +67,6 @@ class InventoryController extends Controller
                 }
             }
         }
-
         return redirect('inventory');
     }
 

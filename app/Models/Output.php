@@ -2,10 +2,10 @@
 
 namespace App\Models;
 
-use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Auth;
 
 class output extends Model
 {
@@ -39,5 +39,26 @@ class output extends Model
     public function deliveryproduction(): BelongsTo
     {
         return $this->belongsTo(delveryproduction::class);
+    }
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
+
+     /**
+     *
+     */
+    public  static function storeOutput(int $item, string $quantity, int $transaction, int $location)
+    {
+        output::create(
+            [
+                'item_id' => $item,
+                'item_quantity' => $quantity,
+                'transaction_type_id' => $transaction,
+                'location_id' => $location,
+                'user_id' => Auth::id()
+            ]
+        );
     }
 }

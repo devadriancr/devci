@@ -24,6 +24,7 @@ class Input extends Model
         'delivery_production_id',
         'location_id',
         'travel_id',
+        'user_id'
     ];
 
     public function item(): BelongsTo
@@ -54,38 +55,35 @@ class Input extends Model
     {
         return $this->belongsTo(delveryproduction::class);
     }
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
+
     /**
      *
-     * @property string $supplier
-     * @property string $serial
-     * @property int $item
-     * @property int $quantity
-     * @property int $container
-     * @property int $transaction
-     * @property int $location
      */
-    public static function storeInputConsignment(
-        string $supplier,
-        string $serial,
-        int $item,
-        int $quantity,
-        int $container,
-        int $transaction,
-        int $location,
-    ) {
+    public  static function storeInput(int $item, string $quantity, int $transaction, int $location)
+    {
+        Input::create(
+            [
+                'item_id' => $item,
+                'item_quantity' => $quantity,
+                'transaction_type_id' => $transaction,
+                'location_id' => $location,
+                'user_id' => Auth::id()
+            ]
+        );
+    }
+
+    /**
+     *
+     */
+    public static function storeInputConsignment(string $supplier, string $serial, int $item, int $quantity, int $container, int $transaction, int $location)
+    {
         $info_cont = Container::where('id', '=', $container)->firstOrFail();
         $part_no = Item::where('id', '=', $item)->firstOrFail();
-
-        // $shipment = ShippingInstruction::query()
-        //     ->where(
-        //         [
-        //             ['serial', 'LIKE', '%' . $serial . '%'],
-        //             ['container', '=', $info_cont->code],
-        //             ['arrival_date', '=', $info_cont->arrival_date],
-        //             ['arrival_time', '=', $info_cont->arrival_time]
-        //         ]
-        //     )
-        //     ->update(['status' => false]);
 
         $input = Input::create(
             [
@@ -96,6 +94,7 @@ class Input extends Model
                 'container_id' => $container,
                 'transaction_type_id' => $transaction,
                 'location_id' => $location,
+                'user_id' => Auth::id()
             ]
         );
 

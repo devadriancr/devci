@@ -23,6 +23,7 @@ return new class extends Migration
             $table->unsignedBigInteger('location_id')->nullable();
             $table->unsignedBigInteger('travel_id')->nullable();
             $table->unsignedBigInteger('delivery_production_id')->nullable();
+            $table->unsignedBigInteger('user_id')->nullable();
             $table->timestamps();
             //  ------------------------------------------------------------------------------
             // llave items
@@ -35,6 +36,8 @@ return new class extends Migration
             $table->foreign('travel_id')->references('id')->on('travel')->onDelete('set null');
             // llave a delivery
             $table->foreign('delivery_production_id')->references('id')->on('delivery_productions')->onDelete('set null');
+
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('set null');
         });
     }
 

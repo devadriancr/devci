@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\output;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -83,5 +84,15 @@ class User extends Authenticatable
     public function orderinformation(): BelongsTo
     {
         return $this->belongsTo(orderinformation::class);
+    }
+
+    public function inputs(): HasMany
+    {
+        return $this->hasMany(Input::class);
+    }
+
+    public function outputs(): HasMany
+    {
+        return $this->hasMany(output::class);
     }
 }
