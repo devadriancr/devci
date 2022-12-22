@@ -125,7 +125,8 @@ class OutputController extends Controller
                 'item_quantity' =>  $cadena[10],
                 'transaction_type_id' => $Transaction_type->id,
                 'travel_id' => $request->travel_id,
-                'location_id' => $location_old->id
+                'location_id' => $location_old->id,
+                'user_id'=>     $use = Auth::user()->id
             ]);
             input::create([
                 'supplier' =>  $cadena[11],
@@ -134,7 +135,8 @@ class OutputController extends Controller
                 'item_quantity' =>  $cadena[10],
                 'transaction_type_id' => $Transaction_type->id,
                 'travel_id' => $request->travel_id,
-                'location_id' => $request->location_id
+                'location_id' => $request->location_id,
+                'user_id'=>     $use = Auth::user()->id
             ]);
             if($error==0)
             {

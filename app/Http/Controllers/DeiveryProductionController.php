@@ -223,7 +223,8 @@ class DeiveryProductionController extends Controller
                 'item_quantity' =>  $cadena[10],
                 'transaction_type_id' => $Transaction_type->id,
                 'delivery_production_id' => $request->delivery_id,
-                'location_id' => $request->location_id
+                'location_id' => $request->location_id,
+                'user_id'=>     $use = Auth::user()->id
             ]);
             $re = input::create([
                 'supplier' =>  $cadena[11],
@@ -232,7 +233,8 @@ class DeiveryProductionController extends Controller
                 'item_quantity' =>  $cadena[10],
                 'transaction_type_id' => $Transaction_type->id,
                 'delivery_production_id' => $request->delivery_id,
-                'location_id' => $request->location_id
+                'location_id' => $request->location_id,
+                'user_id'=>     $use = Auth::user()->id
             ]);
             $message = 'Serial capturado exitosamente';
         }
