@@ -21,7 +21,7 @@ class InputController extends Controller
         $inputs = Input::query()
             ->join('items', 'inputs.item_id', '=', 'items.id')
             ->where('items.item_number', 'LIKE', '%' . $search . '%')
-            ->orderBy('items.created_at', 'DESC')
+            ->orderBy('inputs.created_at', 'DESC')
             ->paginate(10);
 
         return view('input.index', ['inputs' => $inputs]);

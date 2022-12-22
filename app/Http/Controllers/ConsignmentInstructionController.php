@@ -46,24 +46,16 @@ class ConsignmentInstructionController extends Controller
             'container_id' => ['required', 'numeric'],
         ]);
 
-        $dataRequest = $request->code_qr;
+        $dataRequest = strtoupper($request->code_qr);
 
         list($a, $b, $c, $d, $e, $f, $g, $h, $i, $j, $part_qty, $supplier, $m, $serial, $o, $p, $q, $r, $s, $t, $u, $v, $w, $x, $y, $z, $part_no) = explode(',', $dataRequest);
 
-        $data = ConsignmentInstruction::query()
-            ->where(
-                [
-                    ['serial', '=', $serial],
-                ]
-            )
-            ->first();
+        $data = ConsignmentInstruction::where('serial', $serial)->first();
 
         if ($data === null) {
-            ConsignmentInstruction::updateOrCreate(
+            ConsignmentInstruction::create(
                 [
                     'serial' => $serial,
-                ],
-                [
                     'supplier' => $supplier,
                     'part_qty' => $part_qty,
                     'part_no' => $part_no,
@@ -71,7 +63,6 @@ class ConsignmentInstructionController extends Controller
                     'user_id' => Auth::id(),
                 ]
             );
-
             return redirect()->back()->with('success', 'Registro Exitoso');
         } else {
             return redirect()->back()->with('warning', 'Registro Duplicado');
@@ -287,7 +278,6 @@ class ConsignmentInstructionController extends Controller
             ->get();
 
         foreach ($consignments as $key => $consignment) {
-
             $item = Item::where('item_number', 'LIKE', '%' . $consignment->part_no . '%')->firstOrFail();
             $transaccion = TransactionType::where('code', '=', 'U3')->firstOrFail();
             $location = Location::where('code', 'LIKE', '%L60%')->firstOrFail();

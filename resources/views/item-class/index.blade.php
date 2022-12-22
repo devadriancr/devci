@@ -10,12 +10,14 @@
                 </svg>
                 <span class="ml-4">Cargar Clase  de Items</span>
             </a>
+            {{--
             <a href="{{ route('item-class.create') }}" class="flex items-center justify-between px-4 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
                 </svg>
                 <span class="ml-4">Agregar Clase de Item</span>
             </a>
+            --}}
         </div>
         <div class="w-full overflow-hidden rounded-lg shadow-xs">
             <div class="w-full overflow-x-auto">
@@ -26,7 +28,7 @@
                             <th class="px-4 py-3">Nombre</th>
                             <th class="px-4 py-3">Fecha de Creación</th>
                             <th class="px-4 py-3">Fecha de Actualizacion</th>
-                            <th class="px-4 py-3">Acciones</th>
+                            <!-- <th class="px-4 py-3">Acciones</th> -->
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y dark:divide-gray-700 dark:bg-gray-800">
@@ -44,6 +46,7 @@
                             <td class="px-4 py-3 text-sm">
                                 {{ $itemClases->updated_at }}
                             </td>
+                            {{--
                             <td class="px-4 py-3">
                                 <div class="flex items-center space-x-4 text-sm">
                                     <a href="{{ route('item-class.edit', $itemClases->id) }}" class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray" aria-label="Edit">
@@ -63,6 +66,7 @@
                                     </form>
                                 </div>
                             </td>
+                            --}}
                         </tr>
                         @endforeach
                     </tbody>
