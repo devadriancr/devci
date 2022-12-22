@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Inventory;
 use App\Models\order;
+use App\Models\input;
 use App\Models\OrderInformation;
 use Illuminate\Support\Facades\Auth;
 use App\Exports\OrderDetailExport;
@@ -18,12 +19,16 @@ class RequestListController extends Controller
         $reg = array();
         $repor = inventory::with('item')->where('location_id', 328)->get();
         foreach ($repor as $reports) {
+            $snp=input::where([['location_id', 328],
+            ['delivery_production_id',null],['item_id', $reports->item_id],['serial','!=',null]])->count();
+
             $reportext = inventory::with('item')->where([['location_id', 329], ['item_id', $reports->item_id]])->first();
             $reg = [
                 'item_id' => $reports->item->id,
                 'item' => $reports->item->item_number,
                 'quantity' => $reports->quantity,
                 'opening' => $reports->opening_balance,
+                'boxes'=>$snp,
                 'safety' => $reports->item->safety_stock,
                 'qtyexterno' => $reportext->quantity ?? 0
             ];
@@ -35,7 +40,6 @@ class RequestListController extends Controller
 
     public function create_order(Request $request)
     {
-
 
         $numerOrder = OrderInformation::create(
             ['user_id' => Auth::user()->id, 'order_type' => 'O']
@@ -63,9 +67,9 @@ class RequestListController extends Controller
         );
         return redirect()->action([RequestListController::class, 'order_detail']);
     }
-    public function order_detail()
+    public function order_detail(Request $request)
     {
-        $order = order::with('item')->where('orden_information_id', null)->paginate(10);
+        $order = order::with('item')->where('orden_information_id', $request->order_id)->paginate(10);
         return view('Requestlist.order', ['order' => $order]);
     }
 
@@ -73,7 +77,7 @@ class RequestListController extends Controller
     public function Quitorder(Request $request)
     {
         order::find($request->item_id)->delete();
-        return redirect()->action([RequestListController::class, 'index']);
+        return redirect()->route('RequestList.list_order');
     }
 
 

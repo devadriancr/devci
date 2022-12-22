@@ -56,6 +56,7 @@
                                     <form method="POST" action="{{ route('RequestList.quitorder') }}">
                                         @csrf
                                         <input name="item_id" value={{ $inventory->id }} hidden>
+                                        <input name="order_id" value={{ $inventory->orden_information_id }} hidden>
                                         <button
                                             class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
                                             aria-label="Delete">
