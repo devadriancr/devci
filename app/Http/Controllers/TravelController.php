@@ -28,9 +28,8 @@ class TravelController extends Controller
         if ($ordernumber == 0) {
             $locations = location::where('code', 'like', '%L60%')->orwhere('code', 'like', '%L61%')->get();
         } else {
-            $info_order = orderinformation::find($ordernumber)->first();
-
-            if ($info_order->order_type == 'O') {
+            $info_order = orderinformation::where('id',$ordernumber)->first();
+            if ($info_order->order_type ==  "O") {
                 $locations = location::where('code', 'like', '%L61%')->get();
             } else {
                 $locations = location::where('code', 'like', '%L60%')->get();

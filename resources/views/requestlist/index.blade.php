@@ -54,6 +54,7 @@
                             <th class="px-4 py-3">Item</th>
                             <th class="px-4 py-3">Quantity</th>
                             <th class="px-4 py-3">Opening balance</th>
+                            <th class="px-4 py-3">Total Inv</th>
                             <th class="px-4 py-3">Safety Stok</th>
                             <th class="px-4 py-3">Almacen Ext</th>
                             <th class="px-4 py-3">Diferencia</th>
@@ -70,6 +71,9 @@
                                 </td>
                                 <td class="px-4 py-3 text-sm">
                                     {{ $inventory['opening'] }}
+                                </td>
+                                <td class="px-4 py-3 text-sm">
+                                    {{ $inventory['quantity']+$inventory['opening']}} ({{$inventory['boxes']}})
                                 </td>
                                 <td class="px-4 py-3 text-sm">
                                     {{ $inventory['safety'] }}
