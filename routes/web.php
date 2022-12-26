@@ -18,6 +18,7 @@ use App\Http\Controllers\TravelController;
 use App\Http\Controllers\DeiveryProductionController;
 use App\Http\Controllers\OutputController;
 use App\Http\Controllers\RequestListController;
+use App\Http\Controllers\SupplierController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -164,6 +165,7 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function () {
      * Route Input
      */
     Route::resource('input', InputController::class);
+
     /**
      * Route report request list
      *
@@ -178,6 +180,9 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function () {
     Route::Post('Requestlist-create', [RequestListController::class, 'create_order'])->name('RequestList.create_order');
     Route::Post('Requestlist-export', [RequestListController::class, 'export'])->name('RequestList.export');
 
-
+    /**
+     * Route Supplier
+     */
+    Route::resource('supplier', SupplierController::class);
 });
 

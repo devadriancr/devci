@@ -24,7 +24,8 @@ class Input extends Model
         'delivery_production_id',
         'location_id',
         'travel_id',
-        'user_id'
+        'user_id',
+        'purchase_order'
     ];
 
     public function item(): BelongsTo
