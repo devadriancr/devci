@@ -36,10 +36,11 @@ class SupplierOrderMigrationJob implements ShouldQueue
         $orders = RYT1::select('R1ORN', 'R1SQN', 'R1SNP', 'R1DAT', 'R1TIM', 'R1USR')
             ->orderByRaw('R1DAT DESC, R1ORN DESC, R1SQN ASC')
             ->distinct('R1ORN')
+            ->limit(200)
             ->get();
 
         foreach ($orders as $key => $order) {
-            $po = Input::where('purchase order', $order->R1ORN)->first();
+            $po = Input::where('purchase_order', $order->R1ORN)->first();
 
             if ($po === null) {
                 $ord = floatval(substr($order->R1ORN, 0, 8));
@@ -52,8 +53,9 @@ class SupplierOrderMigrationJob implements ShouldQueue
                         ['PQREC', '>', 0]
                     ]
                 )->first();
+
                 if ($hpo !== null) {
-                    StoreSupplierOrderJob::dispatch($hpo);
+                    StoreSupplierOrderJob::dispatch($hpo, $order->R1ORN);
                 }
             }
         }
