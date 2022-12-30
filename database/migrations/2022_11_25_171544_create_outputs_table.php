@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('outputs', function (Blueprint $table) {
             $table->id();
-            $table->string('supplier')->nullable();;
+            $table->string('supplier')->nullable();
             $table->string('serial')->nullable();
             $table->unsignedBigInteger('item_id')->nullable();
             $table->double('item_quantity');

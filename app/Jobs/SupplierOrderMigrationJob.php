@@ -36,7 +36,7 @@ class SupplierOrderMigrationJob implements ShouldQueue
         $orders = RYT1::select('R1ORN', 'R1SQN', 'R1SNP', 'R1DAT', 'R1TIM', 'R1USR')
             ->orderByRaw('R1DAT DESC, R1ORN DESC, R1SQN ASC')
             ->distinct('R1ORN')
-            ->limit(200)
+            ->limit(10)
             ->get();
 
         foreach ($orders as $key => $order) {
