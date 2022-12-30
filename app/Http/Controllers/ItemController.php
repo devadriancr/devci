@@ -18,15 +18,15 @@ class ItemController extends Controller
     public function upload()
     {
         $items = IIM::query()
-            ->select(['IID', 'IPROD', 'IDESC', 'IOPB', 'IMIN', 'IITYP', 'ICLAS', 'IUMS', 'IMENDT', 'IMENTM',])
+            ->select(
+                [
+                    'IID', 'IPROD', 'IDESC', 'IOPB', 'IMIN', 'IITYP', 'ICLAS', 'IUMS', 'IMENDT', 'IMENTM'
+                ]
+            )
             ->orderBy('IMENDT', 'ASC')
             ->get();
 
-        // echo count($items) . "<br>";
-
         foreach ($items as $key => $value) {
-            // echo "$key &nbsp &nbsp $value->IID &nbsp &nbsp $value->IPROD &nbsp &nbsp $value->IDESC &nbsp &nbsp $value->IOPB &nbsp &nbsp $value->IMIN &nbsp &nbsp $value->IITYP &nbsp &nbsp $value->ICLAS &nbsp &nbsp $value->IUMS <br>";
-
             $itemType = ItemType::where('code', '=', $value->IITYP)->first();
             $itemClass = ItemClass::where('code', '=', $value->ICLAS)->first();
             $measurementType = MeasurementType::where('code', '=', $value->IUMS)->first();

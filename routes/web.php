@@ -154,6 +154,10 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function () {
     Route::post('consignment-instruction-report-found', [ConsignmentInstructionController::class, 'reportFount'])->name('consigment-instruction.found');
     Route::post('consignment-instruction-finish', [ConsignmentInstructionController::class, 'consignment_finish'])->name('consigment-instruction.finish');
 
+    Route::get('data-upload-index', [ConsignmentInstructionController::class, 'data_upload_index'])->name('consigment-instruction.data-upload-index');
+    Route::post('data-upload-store', [ConsignmentInstructionController::class, 'data_upload_store'])->name('consigment-instruction.data-upload-store');
+    Route::get('data-upload-inventory', [ConsignmentInstructionController::class, 'data_upload_inventory'])->name('consigment-instruction.data-upload-inventory');
+
     /**
      * Route Inventory
      */

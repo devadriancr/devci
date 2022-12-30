@@ -14,7 +14,7 @@ class ConsignmentInstruction extends Model
     protected $dateFormat = 'Ymd H:i:s.v';
 
     protected $fillable = [
-        'supplier', 'serial', 'part_no', 'part_qty', 'container_id', 'user_id'
+        'supplier', 'serial', 'part_no', 'part_qty', 'flag', 'location', 'container_id', 'user_id'
     ];
 
     public function container(): BelongsTo
