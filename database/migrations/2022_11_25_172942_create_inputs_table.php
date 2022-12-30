@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('serial')->nullable();
             $table->unsignedBigInteger('item_id')->nullable();
             $table->double('item_quantity');
+            $table->string('purchase_order')->nullable();
             $table->unsignedBigInteger('container_id')->nullable();
             $table->unsignedBigInteger('transaction_type_id')->nullable();
             $table->unsignedBigInteger('location_id')->nullable();

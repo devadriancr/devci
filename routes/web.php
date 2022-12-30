@@ -18,6 +18,7 @@ use App\Http\Controllers\TravelController;
 use App\Http\Controllers\DeiveryProductionController;
 use App\Http\Controllers\OutputController;
 use App\Http\Controllers\RequestListController;
+use App\Http\Controllers\SupplierController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -153,6 +154,10 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function () {
     Route::post('consignment-instruction-report-found', [ConsignmentInstructionController::class, 'reportFount'])->name('consigment-instruction.found');
     Route::post('consignment-instruction-finish', [ConsignmentInstructionController::class, 'consignment_finish'])->name('consigment-instruction.finish');
 
+    Route::get('data-upload-index', [ConsignmentInstructionController::class, 'data_upload_index'])->name('consigment-instruction.data-upload-index');
+    Route::post('data-upload-store', [ConsignmentInstructionController::class, 'data_upload_store'])->name('consigment-instruction.data-upload-store');
+    Route::get('data-upload-inventory', [ConsignmentInstructionController::class, 'data_upload_inventory'])->name('consigment-instruction.data-upload-inventory');
+
     /**
      * Route Inventory
      */
@@ -164,6 +169,7 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function () {
      * Route Input
      */
     Route::resource('input', InputController::class);
+
     /**
      * Route report request list
      *
@@ -178,6 +184,9 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function () {
     Route::Post('Requestlist-create', [RequestListController::class, 'create_order'])->name('RequestList.create_order');
     Route::Post('Requestlist-export', [RequestListController::class, 'export'])->name('RequestList.export');
 
-
+    /**
+     * Route Supplier
+     */
+    Route::resource('supplier', SupplierController::class);
 });
 

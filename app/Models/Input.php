@@ -24,7 +24,8 @@ class Input extends Model
         'delivery_production_id',
         'location_id',
         'travel_id',
-        'user_id'
+        'user_id',
+        'purchase_order'
     ];
 
     public function item(): BelongsTo
@@ -64,14 +65,24 @@ class Input extends Model
     /**
      *
      */
-    public  static function storeInput(int $item, string $quantity, int $transaction, int $location)
-    {
+    public  static function storeInput(
+        string $supplier,
+        string $serial,
+        int $itemId,
+        float $quantity,
+        string $purchaseOrder,
+        int $transactionTypeId,
+        int $locationId
+    ) {
         Input::create(
             [
-                'item_id' => $item,
+                'supplier' => $supplier,
+                'serial' => $serial,
+                'item_id' => $itemId,
                 'item_quantity' => $quantity,
-                'transaction_type_id' => $transaction,
-                'location_id' => $location,
+                'purchase_order' => $purchaseOrder,
+                'transaction_type_id' => $transactionTypeId,
+                'location_id' => $locationId,
                 'user_id' => Auth::id()
             ]
         );

@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Auth;
 
 class ConsignmentInstruction extends Model
 {
@@ -14,7 +15,7 @@ class ConsignmentInstruction extends Model
     protected $dateFormat = 'Ymd H:i:s.v';
 
     protected $fillable = [
-        'supplier', 'serial', 'part_no', 'part_qty', 'container_id', 'user_id'
+        'supplier', 'serial', 'part_qty', 'part_no', 'location', 'flag', 'container_id', 'user_id'
     ];
 
     public function container(): BelongsTo
@@ -25,5 +26,27 @@ class ConsignmentInstruction extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public static function storeConsignment(
+        string $serial,
+        string $supplier,
+        int $part_qty,
+        string $part_no,
+        string $location,
+        int $container
+    ) {
+        ConsignmentInstruction::create(
+            [
+                'serial' => $serial,
+                'supplier' => $supplier,
+                'part_qty' => $part_qty,
+                'part_no' => $part_no,
+                'location' => $location,
+                'flag' => true,
+                'container_id' => $container,
+                'user_id' => Auth::id(),
+            ]
+        );
     }
 }

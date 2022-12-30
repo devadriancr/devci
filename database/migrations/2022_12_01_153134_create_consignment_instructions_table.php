@@ -15,10 +15,12 @@ return new class extends Migration
     {
         Schema::create('consignment_instructions', function (Blueprint $table) {
             $table->id();
-            $table->string('supplier');
-            $table->string('serial')->unique();
+            $table->string('supplier')->nullable();
+            $table->string('serial')->nullable();
             $table->integer('part_qty');
             $table->string('part_no');
+            $table->string('location')->nullable();
+            $table->boolean('flag')->default(false);
             $table->unsignedBigInteger('container_id')->nullable();
             $table->unsignedBigInteger('user_id')->nullable();
             $table->timestamps();

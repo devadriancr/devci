@@ -19,7 +19,11 @@ class InventoryController extends Controller
     public function upload()
     {
         $inventories = ILI::query()
-            ->select(['LID', 'LPROD', 'LWHS', 'LLOC', 'LOPB'])
+            ->select(
+                [
+                    'LID', 'LPROD', 'LWHS', 'LLOC', 'LOPB'
+                ]
+            )
             ->where('LID', 'LI')
             ->orderBy('LOPB', 'DESC')
             ->get();
@@ -27,46 +31,63 @@ class InventoryController extends Controller
         foreach ($inventories as $key => $inventory) {
             $item = Item::where('item_number', $inventory->LPROD)->first();
             $location = Location::where('code', $inventory->LLOC)->first();
+            if ($item !== null && $location !== null) {
+                $inventoryItem = Inventory::where([
+                        ['item_id', $item->id],
+                        ['location_id', $location->id]
+                    ])
+                    ->first();
 
-            if ($item != null && $location != null) {
-
-                $data = Inventory::where([['item_id', $item->id], ['location_id', $location->id]])->first();
-                $transaction = TransactionType::where('code', 'LIKE', '%O%')->first();
-
-                if ($data !== null) {
-                    $sum = $data->opening_balance + $data->quantity;
-
-                    if ($inventory->LOPB > $sum) {
-                        $result = $inventory->LOPB - $sum;
-
-                        Input::storeInput($item->id,  $result, $transaction->id, $location->id);
-
-                        $data->update(['opening_balance' => $inventory->LOPB, 'quantity' => 0]);
-                    } elseif ($sum > $inventory->LOPB) {
-                        $result = $sum - $inventory->LOPB;
-
-                        output::storeOutput($item->id, $result, $transaction->id, $location->id);
-
-                        $data->update(['opening_balance' => $inventory->LOPB, 'quantity' => 0]);
-                    } else {
-                        $result = $inventory->LOPB - $sum;
-
-                        $data->update(['opening_balance' => $inventory->LOPB, 'quantity' => 0]);
-                    }
-                } else {
-                    Input::storeInput($item->id, $inventory->LOPB, $transaction->id, $location->id);
-
-                    $data = Inventory::create(
-                        [
-                            'item_id' => $item->id,
-                            'location_id' => $location->id,
-                            'opening_balance' => $inventory->LOPB,
-                            'quantity' => 0
-                        ]
-                    );
+                if ($inventoryItem === null) {
+                    Inventory::storeInventory($item->id, 0, $location->id, 0);
                 }
             }
         }
+
+        // foreach ($inventories as $key => $inventory) {
+        //     $item = Item::where('item_number', $inventory->LPROD)->first();
+        //     $location = Location::where('code', $inventory->LLOC)->first();
+
+        //     if ($item != null && $location != null) {
+
+        //         $data = Inventory::where([['item_id', $item->id], ['location_id', $location->id]])->first();
+        //         $transaction = TransactionType::where('code', 'LIKE', '%O%')->first();
+
+        //         if ($data !== null) {
+        //             $sum = $data->opening_balance + $data->quantity;
+
+        //             if ($inventory->LOPB > $sum) {
+        //                 $result = $inventory->LOPB - $sum;
+
+        //                 Input::storeInput($item->id,  $result, $transaction->id, $location->id);
+
+        //                 $data->update(['opening_balance' => $inventory->LOPB, 'quantity' => 0]);
+        //             } elseif ($sum > $inventory->LOPB) {
+        //                 $result = $sum - $inventory->LOPB;
+
+        //                 output::storeOutput($item->id, $result, $transaction->id, $location->id);
+
+        //                 $data->update(['opening_balance' => $inventory->LOPB, 'quantity' => 0]);
+        //             } else {
+        //                 $result = $inventory->LOPB - $sum;
+
+        //                 $data->update(['opening_balance' => $inventory->LOPB, 'quantity' => 0]);
+        //             }
+        //         } else {
+        //             Input::storeInput($item->id, $inventory->LOPB, $transaction->id, $location->id);
+
+        //             $data = Inventory::create(
+        //                 [
+        //                     'item_id' => $item->id,
+        //                     'location_id' => $location->id,
+        //                     'opening_balance' => $inventory->LOPB,
+        //                     'quantity' => 0
+        //                 ]
+        //             );
+        //         }
+        //     }
+        // }
+
         return redirect('inventory');
     }
 

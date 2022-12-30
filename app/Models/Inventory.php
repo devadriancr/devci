@@ -29,4 +29,16 @@ class Inventory extends Model
     {
         return $this->belongsTo(Location::class);
     }
+
+    public static function storeInventory(int $itemId, float $quantity, int $locationId, float $openingBalance)
+    {
+        $data = Inventory::create(
+            [
+                'item_id' => $itemId,
+                'quantity' => $quantity,
+                'location_id' => $locationId,
+                'opening_balance' => $openingBalance
+            ]
+        );
+    }
 }
