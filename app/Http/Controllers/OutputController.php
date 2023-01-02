@@ -45,6 +45,8 @@ class OutputController extends Controller
         $error = 0;
         $location = location::find($request->location_id);
         $cadena = explode(",", $request->serial);
+
+
         if (count($cadena) != 27) {
             $error = 8;
             $message = 'ESCANEO INCORRECTO';
@@ -57,14 +59,14 @@ class OutputController extends Controller
             }
         }
         if ($error == 0) {
-            $serial_exist = input::where('serial', $cadena[13],)->where('travel_id', null)->first();
+            $serial_exist = input::where([['serial', $cadena[13]], ['supplier', $cadena[11]], ['travel_id', null]])->first();
             if ($serial_exist == null) {
                 $error = 5;
                 $message = 'Serial no encontrado en shipping';
             }
         }
         if ($error == 0) {
-            $serial_exist = input::where('serial', $cadena[13],)->where('delivery_production_id', '!=', null)->first();
+            $serial_exist = input::where([['serial', $cadena[13]], ['supplier', $cadena[11]]])->where('delivery_production_id', '!=', null)->first();
             if ($serial_exist == true) {
                 $error = 11;
                 $message = 'Serial ya fue entregado a linea de produccion ';
@@ -72,7 +74,7 @@ class OutputController extends Controller
         }
 
         if ($error == 0) {
-            $serial_exist = input::where('serial', $cadena[13])->where('travel_id', $request->travel_id)->first();
+            $serial_exist = input::where([['serial', $cadena[13]], ['supplier', $cadena[11]]])->where('travel_id', $request->travel_id)->first();
             if ($serial_exist != false) {
                 $error = 3;
                 $message = 'serial ya fue  escaneado';
@@ -80,39 +82,34 @@ class OutputController extends Controller
         }
 
         if ($error == 0) {
-                $ultimaEnt = input::where([['serial', $cadena[13]]])->orderby('id', 'desc')->first();
-                if($ultimaEnt!=null)
-                {
-                    if ($ultimaEnt->location_id == $request->location_id) {
-                        $error = 4;
-                        $message = 'serial ya existente en el almacen actual ';
-                    }
+            $ultimaEnt = input::where([['serial', $cadena[13]], ['supplier', $cadena[11]]])->orderby('id', 'desc')->first();
+            if ($ultimaEnt != null) {
+                if ($ultimaEnt->location_id == $request->location_id) {
+                    $error = 4;
+                    $message = 'serial ya existente en el almacen actual ';
                 }
-
-
+            }
         }
 
         if ($error == 0) {
+
             $location = location::where('code', 'like', '%L60%')->first();
-            $safetystock = item::whereraw("TRIM(item_number)='".end($cadena)."'") ->first();
+            $safetystock = item::whereraw("TRIM(item_number)='" . end($cadena) . "'")->first();
 
-            $invenoti=inventory::where([['item_id', $safetystock->id],['location_id', $location->id]])->first();
-
-            $total=$invenoti->opening_balance+$invenoti->quantity;
-
-
-            if($safetystock->safety_stock>$total)
-            {
-                $error=1;
-                $message='inventario menor a safety stock';
+            $invenoti = inventory::where([['item_id', $safetystock->id], ['location_id', $location->id]])->first();
+            if ($invenoti != null) {
+                $total = $invenoti->opening_balance + $invenoti->quantity;
+            } else {
+                $total = 0;
             }
 
-
-
-
+            if ($safetystock->safety_stock > $total) {
+                $error = 1;
+                $message = 'inventario menor a safety stock';
+            }
         }
         $Transaction_type = transactiontype::where('code', 'like', '%T %')->first();
-        if ($error <=1) {
+        if ($error <= 1) {
             if ($location->code == 'L61       ') {
                 $location_old = location::where('code', 'like', '%L60%')->first();
             } else {
@@ -126,7 +123,7 @@ class OutputController extends Controller
                 'transaction_type_id' => $Transaction_type->id,
                 'travel_id' => $request->travel_id,
                 'location_id' => $location_old->id,
-                'user_id'=>     $use = Auth::user()->id
+                'user_id' =>     $use = Auth::user()->id
             ]);
             input::create([
                 'supplier' =>  $cadena[11],
@@ -136,13 +133,11 @@ class OutputController extends Controller
                 'transaction_type_id' => $Transaction_type->id,
                 'travel_id' => $request->travel_id,
                 'location_id' => $request->location_id,
-                'user_id'=>     $use = Auth::user()->id
+                'user_id' =>     $use = Auth::user()->id
             ]);
-            if($error==0)
-            {
+            if ($error == 0) {
                 $message = 'serial capturado exitosamente';
             }
-
         }
 
 
@@ -197,10 +192,9 @@ class OutputController extends Controller
             $serial = $request->serial ?? '0';
 
             $item = item::whereRaw("TRIM(item_number)= '" .  $serial . "'")->first();
-           $num=$item->id ?? '0';
+            $num = $item->id ?? '0';
             $regin = input::orderby('serial')->with('item', 'location', 'container')->where('item_id', $num)->orderby('id', 'desc')->simplePaginate(10);
         }
-
         // $regin = input::with('item', 'location', 'container')->where('serial', $serial)->orderby('id', 'desc')->simplePaginate(10);
         // $regout = output::with('item', 'location')->where('serial', $serial)->orderby('id', 'desc')->simplePaginate(10);
         return view('Output.search', ['in' => $regin]);
@@ -244,6 +238,8 @@ class OutputController extends Controller
         }
         $conn = odbc_connect("Driver={Client Access ODBC Driver (32-bit)};System=192.168.200.7;", "LXSECOFR;", "LXSECOFR;");
         $query = "CALL LX834OU02.YIN151C";
+        // live
+        // $query = "CALL LX834OU.YIN151C";
         $result = odbc_exec($conn, $query);
         Travel::updateOrCreate(
             ['id' => $request->travel_id],
@@ -332,7 +328,7 @@ class OutputController extends Controller
         $itemin = input::where([['travel_id', $request->travel_id], ['serial', $request->serial]])->delete();
         $itemout = output::where([['travel_id', $request->travel_id], ['serial', $request->serial]])->delete();
         $scan  = input::with('item')->where('travel_id', $request->travel_id)->simplePaginate(10);
-        $entrega = travel::with('location','orderinformation')->find($request->travel_id);
+        $entrega = travel::with('location', 'orderinformation')->find($request->travel_id);
         $error = 1;
         $message = 'serial eliminado del viaje actual ';
         return view('output.index', ['travels' => $entrega, 'scan' => $scan, 'error' => $error, 'msg' => $message,]);

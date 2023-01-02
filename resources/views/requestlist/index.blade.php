@@ -79,7 +79,7 @@
                                     {{ $inventory['safety'] }}
                                 </td>
                                 <td class="px-4 py-3 text-sm">
-                                    {{ $inventory['qtyexterno'] }}
+                                    {{ $inventory['qtyexterno'] }}({{$inventory['boxes_ext']}})
                                 </td>
                                 <td class="px-4 py-3 text-sm">
                                     @php
