@@ -327,25 +327,30 @@ class ConsignmentInstructionController extends Controller
             $transaccion = TransactionType::where('code', 'LIKE', 'U%')->first();
 
             if ($item !== null) {
-                $inventory = Inventory::where('item_id', $item->id)->first();
+                // $inventory = Inventory::where('item_id', $item->id)->first();
 
-                if ($inventory !== null) {
-                    $quantity = $inventory->opening_balance + $consignmentRecord->part_qty;
+                // if ($inventory !== null) {
+                //     $quantity = $inventory->opening_balance + $consignmentRecord->part_qty;
 
-                    $inventory->update(
-                        [
-                            'opening_balance' => $quantity, 'item_id' => $item->id, 'location_id' => $location->id
-                        ]
-                    );
+                //     $inventory->update(
+                //         [
+                //             'opening_balance' => $quantity,
+                //             'item_id' => $item->id,
+                //             'location_id' => $location->id
+                //         ]
+                //     );
 
-                    Input::storeInput($consignmentRecord->supplier, $consignmentRecord->serial, $item->id, $consignmentRecord->part_qty, '', $transaccion->id, $location->id);
+                //     Input::storeInput($consignmentRecord->supplier, $consignmentRecord->serial, $item->id, $consignmentRecord->part_qty, '', $transaccion->id, $location->id);
 
-                    $consignmentRecord->update(['flag' => true]);
-                } else {
-                    Inventory::storeInventory($item->id, 0, $location->id, $consignmentRecord->part_qty);
+                //     $consignmentRecord->update(['flag' => true]);
+                // } else {
+                //     Inventory::storeInventory($item->id, 0, $location->id, $consignmentRecord->part_qty);
 
-                    Input::storeInput($consignmentRecord->supplier, $consignmentRecord->serial, $item->id, $consignmentRecord->part_qty, '', $transaccion->id, $location->id);
-                }
+                //     Input::storeInput($consignmentRecord->supplier, $consignmentRecord->serial, $item->id, $consignmentRecord->part_qty, '', $transaccion->id, $location->id);
+                // }
+
+                Input::storeInput($consignmentRecord->supplier, $consignmentRecord->serial, $item->id, $consignmentRecord->part_qty, '', $transaccion->id, $location->id);
+
             }
         }
 

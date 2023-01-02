@@ -5,6 +5,7 @@
         </h2>
 
         <div class="px-4 py-3 gap-2 my-2 bg-white rounded-lg shadow-md dark:bg-gray-800">
+            @can('admin')
             <div class="flex justify-end mb-2">
                 <a href="{{ route('inventory.upload') }}" class="flex items-center justify-between px-4 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -13,6 +14,8 @@
                     <span class="ml-4">Cargar Información</span>
                 </a>
             </div>
+            @endcan
+
             <div>
                 <form method="GET" action="{{ route('inventory.index') }}">
                     <label class="text-sm">
