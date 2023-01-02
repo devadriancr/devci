@@ -89,6 +89,7 @@
                                     @endif
                                 </td>
                                 <td>
+
                                     <form method="POST" action="{{ route('RequestList.export') }}">
                                         @csrf
                                         <input name="order_id" value={{ $inventory->id }} hidden>
@@ -103,6 +104,25 @@
                                             </svg>
                                         </button>
                                     </form>
+                                </td>
+                                <td>
+                                    @if ($inventory->travel_id == null)
+
+                                        <form method="POST" action="{{ route('RequestList.Quitorderinformation') }}">
+                                            @csrf
+                                            <input name="order_id" value={{ $inventory->id }} hidden>
+                                            <button
+                                                class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
+                                                aria-label="Delete">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none"
+                                                    viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        d="M6 18L18 6M6 6l12 12" />
+                                                </svg>
+                                            </button>
+                                        </form>
+                                    @endif
+
                                 </td>
                             </tr>
                         @endforeach

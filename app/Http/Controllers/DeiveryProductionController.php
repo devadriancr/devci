@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\transactiontype;
 use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Facades\Excel;
+
 use App\Exports\DeliveryExport as ExportsDeliveryExport;
 
 class DeiveryProductionController extends Controller
@@ -56,15 +57,15 @@ class DeiveryProductionController extends Controller
     public function store(Request $request)
     {
         $scan  = input::with('item')->where('delivery_production_id', $request->Delivery_id)->get();
-
         $loc_ant_id = location::with('warehouse')->whereRaw("TRIM(code)='L60'")->first();
         $loc_act_id = location::with('warehouse')->whereRaw("TRIM(code)='L12'")->first();
         foreach ($scan as $scans) {
-
             self::inventario($scans->serial, $scans->item_id, $scans->item->item_number, $scans->location_id, $scans->item_quantity, $loc_ant_id->id, $scans->created_at, $loc_ant_id->warehouse->code, $loc_act_id->warehouse->code);
         }
         $conn = odbc_connect("Driver={Client Access ODBC Driver (32-bit)};System=192.168.200.7;", "LXSECOFR;", "LXSECOFR;");
         $query = "CALL LX834OU02.YIN151C";
+    //   live
+        // $query = "CALL LX834OU.YIN151C";
         $result = odbc_exec($conn, $query);
 
         return redirect()->action([DeiveryProductionController::class, 'index']);
@@ -172,6 +173,7 @@ class DeiveryProductionController extends Controller
             $error = 1;
             $message = 'ESCANEO INCORRECTO';
         }
+
         if ($error == 0) {
             $item = DB::table('items')->whereRaw("TRIM(item_number)= '" .  end($cadena) . "'")->first();
             if ($item == false) {
@@ -180,22 +182,22 @@ class DeiveryProductionController extends Controller
             }
         }
         if ($error == 0) {
-            $serial_exist = input::where('serial', $cadena[13],)->where('container_id', '!=', null)->first();
+            $serial_exist = input::where([['serial', $cadena[13]],['supplier',$cadena[11]]])->first();
             if ($serial_exist == null) {
                 $error = 5;
-                $message = 'Serial no encontrado en shipping';
+                $message = 'Serial no encontrado con ese proveedor';
             }
         }
         if ($error == 0) {
             $loc_act_id = location::with('warehouse')->whereRaw("TRIM(code)='L61'")->first();
-            $serial_exist = input::where('serial', $cadena[13])->orderby('id', 'desc')->first();
+            $serial_exist = input::where([['serial', $cadena[13]],['supplier',$cadena[11]]])->orderby('id', 'desc')->first();
             if ($serial_exist->location_id ==  $loc_act_id->id) {
                 $error = 12;
                 $message = 'Serial no se encuentra en almacen de YKM';
             }
         }
         if ($error == 0) {
-            $serial_exist = input::where('serial', $cadena[13])->where('delivery_production_id', $request->delivery_id)->first();
+            $serial_exist = input::where([['serial', $cadena[13]],['supplier',$cadena[11]]])->where('delivery_production_id', $request->delivery_id)->first();
             if ($serial_exist != false) {
                 $error = 3;
                 $message = 'serial ya fue escaneado';
@@ -203,13 +205,12 @@ class DeiveryProductionController extends Controller
         }
 
         if ($error == 0) {
-            $ultimaSal = input::where('serial', $cadena[13])->orderby('id', 'desc')->first();
+            $ultimaSal = input::where([['serial', $cadena[13]],['supplier',$cadena[11]]])->orderby('id', 'desc')->first();
             if ($ultimaSal->delivery_production_id != null) {
                 $error = 10;
                 $message = 'Serial ya se entrego anteriormente.';
             }
         }
-
 
 
 
@@ -245,7 +246,8 @@ class DeiveryProductionController extends Controller
     }
     public function export(Request $request)
     {
-        return Excel::download(new ExportsDeliveryExport($request->delivery_id), 'report.xlsx');
+        return Excel::download(new ExportsDeliveryExport($request->delivery_id), 'report.pdf', \Maatwebsite\Excel\Excel::DOMPDF);
+    //    return (new ExportsDeliveryExport($request->delivery_id),'invoices.pdf', \Maatwebsite\Excel\Excel::MPDF);
     }
     /**
      * Remove the specified resource from storage.
