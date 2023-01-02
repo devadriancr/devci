@@ -183,7 +183,7 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function () {
     Route::Post('Requestlist-Quitorder', [RequestListController::class, 'Quitorder'])->name('RequestList.quitorder');
     Route::Post('Requestlist-create', [RequestListController::class, 'create_order'])->name('RequestList.create_order');
     Route::Post('Requestlist-export', [RequestListController::class, 'export'])->name('RequestList.export');
-
+    Route::Post('Requestlist-Quitorder', [RequestListController::class, 'Quitorderinformation'])->name('RequestList.Quitorderinformation');
     /**
      * Route Supplier
      */

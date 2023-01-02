@@ -15,8 +15,8 @@ return new class extends Migration
     {
         Schema::create('travel', function (Blueprint $table) {
             $table->id();
-            $table->string('carta_porte')->unique();;
-            $table->string('invoice_number')->unique();;
+            $table->string('carta_porte')->nullable();
+            $table->string('invoice_number')->nullable();
             $table->string('name')->nullable();
             $table->string('car_plates')->nullable();
             $table->string('car_operator')->nullable();

@@ -86,6 +86,12 @@ class RequestListController extends Controller
         order::find($request->item_id)->delete();
         return redirect()->route('RequestList.list_order');
     }
+    public function Quitorderinformation(Request $request)
+    {
+
+        orderinformation::find($request->order_id)->delete();
+       return redirect()->action([RequestListController::class, 'list_order']);
+    }
 
 
 
