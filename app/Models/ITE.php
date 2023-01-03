@@ -9,8 +9,8 @@ class ITE extends Model
 {
     use HasFactory;
 
-    protected $connection = 'odbc-lx834f02';
-    protected $table = 'LX834F02.ITE';
+    protected $connection = 'odbc-lx834f01';
+    protected $table = 'LX834F01.ITE';
 
     protected $fillable = [
         'TID', 'TTYPE', 'TDESC'

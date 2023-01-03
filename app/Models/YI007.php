@@ -8,11 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 class YI007 extends Model
 {
     use HasFactory;
-    protected $connection = 'odbc-lx834fu02';
-    protected $table = 'LX834FU02.YI007';
-    // live
-    // protected $connection = 'odbc-lx834fu01';
-    // protected $table = 'LX834FU02.YI001';
+    protected $connection = 'odbc-lx834fu01';
+    protected $table = 'LX834FU01.YI007';
+
     protected $fillable = [
         'I7PROD',
         'I7SENO',
