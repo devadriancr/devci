@@ -21,10 +21,10 @@ class ShippingInstructionImport implements ToModel, WithHeadingRow, WithBatchIns
     {
         if ($row['delivery_date'] != '#N/D') {
             return new ShippingInstruction([
-                'container' => $row['ct_no'],
-                'invoice' => $row['invoice_no'],
-                'serial' => $row['module_no'],
-                'part_no' => $row['parts_no'],
+                'container' => strval($row['ct_no']),
+                'invoice' => strval($row['invoice_no']),
+                'serial' => strval($row['module_no']),
+                'part_no' => strval($row['parts_no']),
                 'part_qty' => $row['parts_qty'],
                 'arrival_date' => $row['delivery_date'],
                 'arrival_time' => $row['time'],
