@@ -351,6 +351,7 @@ class ConsignmentInstructionController extends Controller
 
                 Input::storeInput($consignmentRecord->supplier, $consignmentRecord->serial, $item->id, $consignmentRecord->part_qty, '', $transaccion->id, $location->id);
 
+                $consignmentRecord->update(['flag' => true]);
             }
         }
 
