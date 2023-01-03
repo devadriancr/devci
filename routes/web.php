@@ -123,7 +123,7 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function () {
     Route::post('travel-update', [TravelController::class, 'update'])->name('travel.update');
     Route::POST('travel-export', [TravelController::class, 'export'])->name('travel.export');
     Route::post('travel-new', [TravelController::class, 'index'])->name('travel.new');
-
+    Route::get('travel-show', [TravelController::class, 'show'])->name('travel.show');
     /**
      * Routes output external House
      */
@@ -189,4 +189,3 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function () {
      */
     Route::resource('supplier', SupplierController::class);
 });
-

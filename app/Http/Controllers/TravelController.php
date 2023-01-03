@@ -100,6 +100,12 @@ class TravelController extends Controller
      */
     public function show(Travel $travel)
     {
+        $travels = Travel::with('location')->orderby('id', 'desc')
+        ->simplePaginate(10);
+
+    return view('travel.list_travel', ['travels' => $travels]);
+
+
     }
 
     /**

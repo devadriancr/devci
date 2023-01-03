@@ -25,7 +25,7 @@ class RequestListController extends Controller
             $snp = input::where([
                 ['delivery_production_id', null], ['item_id', $reports->item_id], ['serial', '!=', null]
             ])->where('location_id', '=',  $loc->id)->first();
-            $total_boxes = ($reports->quantity + $reports->opening_balance) / $snp->item_quantity;
+            $total_boxes = 0;
             $reportext = inventory::with('item')->where([['location_id', $loc_ext->id], ['item_id', $reports->item_id]])->first();
             $total_boxes_ext = 0;
             $reg = [
