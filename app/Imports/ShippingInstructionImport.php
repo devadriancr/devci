@@ -35,11 +35,11 @@ class ShippingInstructionImport implements ToModel, WithHeadingRow, WithBatchIns
 
     public function batchSize(): int
     {
-        return 1000;
+        return 200;
     }
 
     public function chunkSize(): int
     {
-        return 1000;
+        return 200;
     }
 }

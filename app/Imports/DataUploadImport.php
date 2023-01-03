@@ -30,11 +30,11 @@ class DataUploadImport implements ToModel, WithHeadingRow, WithBatchInserts, Wit
 
     public function batchSize(): int
     {
-        return 1000;
+        return 200;
     }
 
     public function chunkSize(): int
     {
-        return 1000;
+        return 200;
     }
 }
