@@ -57,8 +57,8 @@ class DeiveryProductionController extends Controller
     public function store(Request $request)
     {
         $scan  = input::with('item')->where('delivery_production_id', $request->Delivery_id)->get();
-        $loc_ant_id = location::with('warehouse')->whereRaw("LTRIM(code)='L60'")->first();
-        $loc_act_id = location::with('warehouse')->whereRaw("LTRIM(code)='L12'")->first();
+        $loc_ant_id = location::with('warehouse')->whereRaw("code like 'L60%'")->first();
+        $loc_act_id = location::with('warehouse')->whereRaw("code like 'L12%'")->first();
         foreach ($scan as $scans) {
             self::inventario($scans->serial, $scans->item_id, $scans->item->item_number, $scans->location_id, $scans->item_quantity, $loc_ant_id->id, $scans->created_at, $loc_ant_id->warehouse->code, $loc_act_id->warehouse->code);
         }
@@ -175,7 +175,7 @@ class DeiveryProductionController extends Controller
         }
 
         if ($error == 0) {
-            $item = DB::table('items')->whereRaw("LTRIM(item_number)= '" .  end($cadena) . "'")->first();
+            $item = DB::table('items')->whereRaw("item_number like  '" .  end($cadena) . "%'")->first();
             if ($item == false) {
                 $error = 2;
                 $message = 'Item no existe';
@@ -189,7 +189,7 @@ class DeiveryProductionController extends Controller
             }
         }
         if ($error == 0) {
-            $loc_act_id = location::with('warehouse')->whereRaw("LTRIM(code)='L61'")->first();
+            $loc_act_id = location::with('warehouse')->whereRaw("code like'L61%'")->first();
             $serial_exist = input::where([['serial', $cadena[13]],['supplier',$cadena[11]]])->orderby('id', 'desc')->first();
             if ($serial_exist->location_id ==  $loc_act_id->id) {
                 $error = 12;
