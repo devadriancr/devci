@@ -9,8 +9,8 @@ class IIC extends Model
 {
     use HasFactory;
 
-    protected $connection = 'odbc-lx834f02';
-    protected $table = 'LX834F02.IIC';
+    protected $connection = 'odbc-lx834f01';
+    protected $table = 'LX834F01.IIC';
 
     protected $fillable = [
         'IID', 'ICLAS','ICDES'

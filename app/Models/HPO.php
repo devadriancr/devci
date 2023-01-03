@@ -9,8 +9,8 @@ class HPO extends Model
 {
     use HasFactory;
 
-    protected $connection = 'odbc-lx834f02';
-    protected $table = 'LX834F02.HPO';
+    protected $connection = 'odbc-lx834f01';
+    protected $table = 'LX834F01.HPO';
 
     // protected $fillable = [
     //     'TID', 'TTYPE', 'TDESC'

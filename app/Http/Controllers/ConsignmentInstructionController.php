@@ -287,7 +287,7 @@ class ConsignmentInstructionController extends Controller
         }
 
         $conn = odbc_connect("Driver={Client Access ODBC Driver (32-bit)};System=192.168.200.7;", "LXSECOFR;", "LXSECOFR;");
-        $query = "CALL LX834OU02.YPU180C";
+        $query = "CALL LX834OU.YPU180C";
         $result = odbc_exec($conn, $query);
 
         Container::where('id', $id)->update(['status' => false]);

@@ -9,8 +9,8 @@ class IWM extends Model
 {
     use HasFactory;
 
-    protected $connection = 'odbc-lx834f02';
-    protected $table = 'LX834F02.IWM';
+    protected $connection = 'odbc-lx834f01';
+    protected $table = 'LX834F01.IWM';
 
     protected $fillable = [
         'LID', 'LWHS', 'LDESC',

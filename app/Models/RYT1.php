@@ -9,8 +9,8 @@ class RYT1 extends Model
 {
     use HasFactory;
 
-    protected $connection = 'odbc-lx834fu02';
-    protected $table = 'LX834FU02.RYT1';
+    protected $connection = 'odbc-lx834fu01';
+    protected $table = 'LX834FU01.RYT1';
 
     // protected $fillable = [
     //     'TID', 'TTYPE', 'TDESC'
