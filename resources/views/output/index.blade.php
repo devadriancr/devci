@@ -1,9 +1,7 @@
 <x-app-layout title="Escaneo CI">
     <div class="container grid px-6 mx-auto">
-        <div
-            class="max-w-sm w-full lg:max-w-full mt-5 lg:flex border border-blue-500 border-opacity-100 rounded-lg  bg-white">
 
-            <div class="bg-blue-500 bg-opacity-75  py-8">
+            <div class="bg-blue-500 bg-opacity-75  py-2">
                 <div class="dark:text-gray-900 font-bold text-xl p-2 text-white">Información de viaje</div>
             </div>
             <div class="flex items-center bg-white">
@@ -35,7 +33,7 @@
 
 
             </div>
-        </div>
+
 
     </div>
 

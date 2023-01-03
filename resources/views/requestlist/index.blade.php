@@ -73,13 +73,13 @@
                                     {{ $inventory['opening'] }}
                                 </td>
                                 <td class="px-4 py-3 text-sm">
-                                    {{ $inventory['quantity']+$inventory['opening']}} ({{$inventory['boxes']}})
+                                    {{ $inventory['quantity'] + $inventory['opening'] }} ({{ $inventory['boxes'] }})
                                 </td>
                                 <td class="px-4 py-3 text-sm">
                                     {{ $inventory['safety'] }}
                                 </td>
                                 <td class="px-4 py-3 text-sm">
-                                    {{ $inventory['qtyexterno'] }}({{$inventory['boxes_ext']}})
+                                    {{ $inventory['qtyexterno'] }}({{ $inventory['boxes_ext'] }})
                                 </td>
                                 <td class="px-4 py-3 text-sm">
                                     @php
@@ -120,14 +120,14 @@
             <div
                 class="grid px-4 py-3 text-xs font-semibold tracking-wide text-gray-500 uppercase border-t dark:border-gray-700 bg-gray-50 sm:grid-cols-9 dark:text-gray-400 dark:bg-gray-800">
                 <span class="flex items-center col-span-3">
-                    {{-- Mostrando {{ $report->firstItem() }} - {{ $report->lastItem() }} de {{ $report->total() }} --}}
+                    Mostrando {{ $repor->firstItem() }} - {{ $repor->lastItem() }} de {{ $repor->total() }}
                 </span>
                 <span class="col-span-2"></span>
                 <!-- Pagination -->
                 <span class="flex col-span-4 mt-2 sm:mt-auto sm:justify-end">
                     <nav aria-label="Table navigation">
                         <ul class="inline-flex items-center">
-                            {{-- {{ $report->withQueryString()->links() }} --}}
+                            {{$repor->withQueryString()->links()}}
                         </ul>
                     </nav>
                 </span>

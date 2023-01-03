@@ -18,30 +18,29 @@ class RequestListController extends Controller
     {
         $info = array();
         $reg = array();
-        $loc=location::where('code','like','%L60%')->first();
-        $loc_ext=location::where('code','like','%L61%')->first();
-        $repor = inventory::with('item')->where('location_id', $loc->id)->get();
+        $loc = location::where('code', 'like', '%L60%')->first();
+        $loc_ext = location::where('code', 'like', '%L61%')->first();
+        $repor = inventory::with('item')->where('location_id', $loc->id)->paginate(10);
         foreach ($repor as $reports) {
-            $snp=input::where([
-            ['delivery_production_id',null],['item_id', $reports->item_id],['serial','!=',null]])->where('location_id','=',  $loc->id)->first();
-
-            $total_boxes= ($reports->quantity+$reports->opening_balance)/$snp->item_quantity;
-
+            $snp = input::where([
+                ['delivery_production_id', null], ['item_id', $reports->item_id], ['serial', '!=', null]
+            ])->where('location_id', '=',  $loc->id)->first();
+            $total_boxes = ($reports->quantity + $reports->opening_balance) / $snp->item_quantity;
             $reportext = inventory::with('item')->where([['location_id', $loc_ext->id], ['item_id', $reports->item_id]])->first();
-            $total_boxes_ext= ($reportext->quantity+ $reportext->opening_balance)/$snp->item_quantity;
+            $total_boxes_ext = 0;
             $reg = [
                 'item_id' => $reports->item->id,
                 'item' => $reports->item->item_number,
                 'quantity' => $reports->quantity,
                 'opening' => $reports->opening_balance,
-                'boxes'=> $total_boxes,
+                'boxes' => $total_boxes,
                 'safety' => $reports->item->safety_stock,
-                'qtyexterno' => $reportext->quantity+ $reportext->opening_balance ?? 0,
-                'boxes_ext'=> $total_boxes_ext,
+                'qtyexterno' => 0,
+                'boxes_ext' => $total_boxes_ext,
             ];
             $info += [$reports->item->item_number => $reg];
         }
-        return view('Requestlist.index', ['report' =>  $info]);
+        return view('Requestlist.index', ['report' =>  $info,'repor'=> $repor]);
     }
 
 
@@ -64,6 +63,7 @@ class RequestListController extends Controller
 
         return view('Requestlist.orderinformation', ['order' => $order]);
     }
+
     public function order(Request $request)
     {
         order::updateorcreate(
@@ -74,6 +74,7 @@ class RequestListController extends Controller
         );
         return redirect()->action([RequestListController::class, 'order_detail']);
     }
+
     public function order_detail(Request $request)
     {
         $order = order::with('item')->where('orden_information_id', $request->order_id)->paginate(10);
@@ -81,7 +82,7 @@ class RequestListController extends Controller
     }
 
 
-    public function Quitorder(Request $request)
+    public function quitorder(Request $request)
     {
         order::find($request->item_id)->delete();
         return redirect()->route('RequestList.list_order');
@@ -90,7 +91,7 @@ class RequestListController extends Controller
     {
 
         orderinformation::find($request->order_id)->delete();
-       return redirect()->action([RequestListController::class, 'list_order']);
+        return redirect()->action([RequestListController::class, 'list_order']);
     }
 
 
@@ -108,8 +109,8 @@ class RequestListController extends Controller
         );
         $info = array();
         $reg = array();
-        $loc=location::where('code','like','%L60%')->first();
-        $loc_ext=location::where('code','like','%L61%')->first();
+        $loc = location::where('code', 'like', '%L60%')->first();
+        $loc_ext = location::where('code', 'like', '%L61%')->first();
         $repor = inventory::with('item')->where('location_id', $loc->id)->get();
 
         foreach ($repor as $repors) {
@@ -129,11 +130,11 @@ class RequestListController extends Controller
         );
         $info = array();
         $reg = array();
-        $loc=location::where('code','like','%L60%')->first();
-        $loc_ext=location::where('code','like','%L61%')->first();
+        $loc = location::where('code', 'like', '%L60%')->first();
+        $loc_ext = location::where('code', 'like', '%L61%')->first();
         $repor = inventory::with('item')->where('location_id', $loc->id)->get();
         foreach ($repor as $repors) {
-            $suma = ($repors->quantity + $repors->opening_balance) ;
+            $suma = ($repors->quantity + $repors->opening_balance);
             if ($suma < $repors->item->safety_stock) {
                 $reportext = inventory::with('item')->where([['location_id', $loc_ext->id], ['item_id', $repors->item_id]])->first();
                 if ($reportext != null) {
@@ -152,6 +153,5 @@ class RequestListController extends Controller
             }
         }
         return redirect()->action([RequestListController::class, 'list_order']);
-
     }
 }

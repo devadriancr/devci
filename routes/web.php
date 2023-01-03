@@ -180,7 +180,7 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function () {
     Route::get('Requestlist-receipt', [RequestListController::class, 'receipt'])->name('RequestList.receipt');
     Route::get('Requestlist-orderdetail', [RequestListController::class, 'order_detail'])->name('RequestList.order_detail');
     Route::Post('Requestlist-order', [RequestListController::class, 'order_detail'])->name('RequestList.order');
-    Route::Post('Requestlist-Quitorder', [RequestListController::class, 'Quitorder'])->name('RequestList.quitorder');
+    Route::Post('Requestlist-quitorder', [RequestListController::class, 'quitorder'])->name('RequestList.quit');
     Route::Post('Requestlist-create', [RequestListController::class, 'create_order'])->name('RequestList.create_order');
     Route::Post('Requestlist-export', [RequestListController::class, 'export'])->name('RequestList.export');
     Route::Post('Requestlist-Quitorder', [RequestListController::class, 'Quitorderinformation'])->name('RequestList.Quitorderinformation');
