@@ -6,7 +6,7 @@
         <a href="{{ route('Requestlist.index') }}"
             class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-blue-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
             aria-label="Edit">
-            <div class="flex justify-end mt-2 gap-2">
+            {{-- <div class="flex justify-end mt-2 gap-2">
                 <button
                     class="flex items-center justify-between px-4 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
@@ -16,9 +16,9 @@
                     </svg>
                     <span class="ml-2">Agregar Materiales</span>
                 </button>
-            </div>
+            </div> --}}
         </a>
-        <form method="POST" action={{ route('RequestList.create_order') }}>
+        {{-- <form method="POST" action={{ route('RequestList.create_order') }}>
             @csrf
             <div class="flex justify-end mt-2 gap-2">
                 <button
@@ -31,7 +31,7 @@
                     <span class="ml-2">Crear Orden de material</span>
                 </button>
             </div>
-        </form>
+        </form> --}}
         <div class="w-full overflow-hidden rounded-lg shadow-xs">
             <div class="w-full overflow-x-auto">
                 <table class="w-full whitespace-no-wrap">
@@ -53,7 +53,7 @@
                                     {{ $inventory->item_quantity }}
                                 </td>
                                 <td>
-                                    <form method="POST" action="{{ route('RequestList.quitorder') }}">
+                                    <form method="post" action="{{ route('RequestList.quit') }}">
                                         @csrf
                                         <input name="item_id" value={{ $inventory->id }} hidden>
                                         <input name="order_id" value={{ $inventory->orden_information_id }} hidden>

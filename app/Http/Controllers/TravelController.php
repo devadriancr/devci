@@ -124,8 +124,7 @@ class TravelController extends Controller
         $travel->Update([
             'departure_date' => $request->departure_date
         ]);
-        $travels = Travel::orderby('id', 'desc')
-            ->paginate(10);
+        $travels = Travel::orderby('id', 'desc')->paginate(10);
         $locations = location::get();
         return view('Travel.index', ['travels' => $travels, 'locations' => $locations]);
     }
