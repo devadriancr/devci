@@ -28,7 +28,7 @@ class ConsignmentInstructionController extends Controller
         ])
             ->orderBy('arrival_date', 'ASC')
             ->orderBy('arrival_time', 'ASC')
-            ->paginate(10);
+            ->get();
 
         return view('consignment-instruction.container', ['containers' => $containers]);
     }

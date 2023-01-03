@@ -4,7 +4,7 @@
             Consigna
         </h2>
         <div class="flex flew-row justify-end my-2 gap-x-2">
-            <!-- <div>
+            <div>
                 <form method="POST" action="{{ route('consigment-instruction.check') }}">
                     @csrf
                     <input name="container_id" value="{{ $container->id }}" hidden>
@@ -18,8 +18,8 @@
                         <span class="ml-2">Validar</span>
                     </button>
                 </form>
-            </div> -->
-            <div>
+            </div>
+            <!-- <div>
                 <form method="POST" action="{{ route('consigment-instruction.found') }}">
                     @csrf
                     <input name="container_id" value="{{ $container->id }}" hidden>
@@ -48,7 +48,7 @@
                         <span class="ml-2">Terminar</span>
                     </button>
                 </form>
-            </div>
+            </div> -->
         </div>
 
         <div class="px-4 py-3 my-2 bg-white rounded-lg shadow-md dark:bg-gray-800">

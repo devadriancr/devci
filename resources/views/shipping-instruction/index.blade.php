@@ -46,8 +46,8 @@
                             <th class="px-4 py-3">Serial</th>
                             <th class="px-4 py-3">No. Parte</th>
                             <th class="px-4 py-3">No. Parte</th>
-                            <th class="px-4 py-3">Date</th>
-                            <th class="px-4 py-3">Time</th>
+                            <th class="px-4 py-3">Fecha</th>
+                            <th class="px-4 py-3">Hora</th>
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y dark:divide-gray-700 dark:bg-gray-800">
