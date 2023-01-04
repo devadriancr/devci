@@ -62,11 +62,12 @@ class DeiveryProductionController extends Controller
         foreach ($scan as $scans) {
             self::inventario($scans->serial, $scans->item_id, $scans->item->item_number, $scans->location_id, $scans->item_quantity, $loc_ant_id->id, $scans->created_at, $loc_ant_id->warehouse->code, $loc_act_id->warehouse->code);
         }
-        $conn = odbc_connect("Driver={Client Access ODBC Driver (32-bit)};System=192.168.200.7;", "LXSECOFR;", "LXSECOFR;");
-        $query = "CALL LX834OU.YIN151C";
-    //   live
+        // $conn = odbc_connect("Driver={Client Access ODBC Driver (32-bit)};System=192.168.200.7;", "LXSECOFR;", "LXSECOFR;");
         // $query = "CALL LX834OU.YIN151C";
-        $result = odbc_exec($conn, $query);
+        //   live
+        // $query = "CALL LX834OU.YIN151C";
+
+
 
         return redirect()->action([DeiveryProductionController::class, 'index']);
     }

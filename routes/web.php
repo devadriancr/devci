@@ -16,9 +16,11 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\WarehouseController;
 use App\Http\Controllers\TravelController;
 use App\Http\Controllers\DeiveryProductionController;
+use App\Http\Controllers\ManualAdjustments;
 use App\Http\Controllers\OutputController;
 use App\Http\Controllers\RequestListController;
 use App\Http\Controllers\SupplierController;
+use App\Http\Controllers\ManualAdjustment;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -188,4 +190,8 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function () {
      * Route Supplier
      */
     Route::resource('supplier', SupplierController::class);
+     /**
+     * Route Supplier
+     */
+    Route::resource('ManualAdjustment', ManualAdjustments::class);
 });
