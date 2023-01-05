@@ -46,13 +46,12 @@ class OutputController extends Controller
         $location = location::find($request->location_id);
         $cadena = explode(",", $request->serial);
 
-
         if (count($cadena) != 27) {
             $error = 8;
             $message = 'ESCANEO INCORRECTO';
         }
         if ($error == 0) {
-            $item = DB::table('items')->whereRaw("TRIM(item_number)= '" .  end($cadena) . "'")->first();
+            $item = DB::table('items')->whereRaw("item_number like '" .  end($cadena) . "%'")->first();
             if ($item == false) {
                 $error = 2;
                 $message = 'Item no existe';
@@ -94,7 +93,7 @@ class OutputController extends Controller
         if ($error == 0) {
 
             $location = location::where('code', 'like', '%L60%')->first();
-            $safetystock = item::whereraw("TRIM(item_number)='" . end($cadena) . "'")->first();
+            $safetystock = item::whereraw("item_number like '" . end($cadena) . "%'")->first();
 
             $invenoti = inventory::where([['item_id', $safetystock->id], ['location_id', $location->id]])->first();
             if ($invenoti != null) {
@@ -191,7 +190,7 @@ class OutputController extends Controller
         } else {
             $serial = $request->serial ?? '0';
 
-            $item = item::whereRaw("TRIM(item_number)= '" .  $serial . "'")->first();
+            $item = item::whereRaw("item_number like '" .  $serial . "%'")->first();
             $num = $item->id ?? '0';
             $regin = input::orderby('serial')->with('item', 'location', 'container')->where('item_id', $num)->orderby('id', 'desc')->simplePaginate(10);
         }
@@ -236,11 +235,11 @@ class OutputController extends Controller
         foreach ($scan as $scans) {
             self::inventario($scans->serial, $scans->item_id, $scans->item->item_number, $scans->location_id, $operador, $scans->item_quantity, $loc_ant_id->id, $scans->created_at, $loc_ant_id->warehouse->code, $loc_act_id->warehouse->code);
         }
-        $conn = odbc_connect("Driver={Client Access ODBC Driver (32-bit)};System=192.168.200.7;", "LXSECOFR;", "LXSECOFR;");
-        $query = "CALL LX834OU02.YIN151C";
+        // $conn = odbc_connect("Driver={Client Access ODBC Driver (32-bit)};System=192.168.200.7;", "LXSECOFR;", "LXSECOFR;");
+        // $query = "CALL LX834OU02.YIN151C";
         // live
         // $query = "CALL LX834OU.YIN151C";
-        $result = odbc_exec($conn, $query);
+        // $result = odbc_exec($conn, $query);
         Travel::updateOrCreate(
             ['id' => $request->travel_id],
             ['finish' => 1]
