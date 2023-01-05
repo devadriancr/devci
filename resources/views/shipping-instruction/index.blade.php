@@ -4,37 +4,55 @@
             Shipping Instruction
         </h2>
 
+        @if ($errors->any())
+        <div class="mb-4">
+            <div class="font-medium text-red-600">¡Oh no! Algo salió mal.</div>
+            <ul class="mt-3 text-sm text-red-600 list-disc list-inside">
+                @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+        @endif
+
+        @if (session('success'))
+        <div class="mb-4 font-medium text-green-600">
+            {{ session('success') }}
+        </div>
+        @endif
+
         <!-- <h4 class="mb-4 text-lg font-semibold text-gray-600 dark:text-gray-300">
             Table with actions
         </h4> -->
         <div class="px-4 py-3 mt-2 mb-4 bg-white rounded-lg shadow-md dark:bg-gray-800">
-            @if ($errors->any())
-            <div class="mb-4">
-                <div class="font-medium text-red-600">¡Oh no! Algo salió mal.</div>
-                <ul class="mt-3 text-sm text-red-600 list-disc list-inside">
-                    @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-            @endif
+            <div class="grid grid-cols-12 gap-4">
 
-            @if (session('success'))
-            <div class="mb-4 font-medium text-green-600">
-                {{ session('success') }}
-            </div>
-            @endif
-            <form method="POST" action="{{ route('shipping-instruction.store') }}" enctype="multipart/form-data">
-                @csrf
-                <label class="block text-sm">
-                    <div class="relative text-gray-500 focus-within:text-purple-600">
-                        <input type="file" name="import_file" class="block w-full pr-20 text-sm text-black dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:focus:shadow-outline-gray form-input" placeholder="Jane Doe" />
-                        <button class="absolute inset-y-0 right-0 px-4 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-r-md active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple">
-                            Cargar
-                        </button>
+                <div class="col-span-10">
+                    <form method="POST" action="{{ route('shipping-instruction.store') }}" enctype="multipart/form-data">
+                        @csrf
+                        <label class="block text-sm">
+                            <div class="relative text-gray-500 focus-within:text-purple-600">
+                                <input type="file" name="import_file" class="block w-full pr-20 text-sm text-black dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:focus:shadow-outline-gray form-input" placeholder="Jane Doe" />
+                                <button class="absolute inset-y-0 right-0 px-4 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-r-md active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple">
+                                    Cargar
+                                </button>
+                            </div>
+                        </label>
+                    </form>
+                </div>
+                @can('admin')
+                <div class="col-span-2">
+                    <div class="flex justify-end">
+                        <a href="{{ route('shipping-instruction.report-si') }}" class="flex items-center justify-between px-4 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4" />
+                            </svg>
+                            <span class="ml-4">Reportes</span>
+                        </a>
                     </div>
-                </label>
-            </form>
+                </div>
+                @endcan
+            </div>
         </div>
         <div class="w-full overflow-hidden rounded-lg shadow-xs">
             <div class="w-full overflow-x-auto">

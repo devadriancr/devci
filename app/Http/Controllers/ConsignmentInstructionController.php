@@ -7,14 +7,11 @@ use App\Imports\DataUploadImport;
 use App\Models\ConsignmentInstruction;
 use App\Models\Container;
 use App\Models\Input;
-use App\Models\Inventory;
 use App\Models\Item;
 use App\Models\Location;
 use App\Models\ShippingInstruction;
 use App\Models\TransactionType;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Facades\Excel;
 
 class ConsignmentInstructionController extends Controller
@@ -22,10 +19,7 @@ class ConsignmentInstructionController extends Controller
 
     public function consignment_container()
     {
-        $containers = Container::where([
-            ['status', '=', 1],
-            ['arrival_date', '=', Carbon::now()]
-        ])
+        $containers = Container::where('status', '=', 1)
             ->orderBy('arrival_date', 'ASC')
             ->orderBy('arrival_time', 'ASC')
             ->get();
@@ -126,27 +120,6 @@ class ConsignmentInstructionController extends Controller
 
     public function search(array $arr, $start, $end, $x)
     {
-        // if (count($arr) === 0) return false;
-
-        // $low = 0;
-        // $high = count($arr) - 1;
-
-        // while ($low <= $high) {
-        //     $mid = floor(($low + $high) / 2);
-
-        //     if ($arr[$mid] == $x) {
-        //         return true;
-        //     }
-
-        //     if ($x < $arr[$mid]) {
-        //         $high = $mid - 1;
-        //     } else {
-        //         $low = $mid + 1;
-        //     }
-        // }
-
-        // return false;
-
         if ($end < $start)
             return false;
 

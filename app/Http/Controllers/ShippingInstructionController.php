@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\ConsignmentInstructionExport;
 use App\Imports\ShippingInstructionImport;
+use App\Models\ConsignmentInstruction;
 use App\Models\Container;
 use App\Models\ShippingInstruction;
 use Illuminate\Http\Request;
@@ -10,6 +12,45 @@ use Maatwebsite\Excel\Facades\Excel;
 
 class ShippingInstructionController extends Controller
 {
+    public function reportShipping()
+    {
+        $containers = Container::orderByRaw('arrival_date DESC, arrival_time DESC')->paginate(10);
+
+        return view('shipping-instruction.report', ['containers' => $containers]);
+    }
+
+    public function downloadShipping(Request $request)
+    {
+        $container = Container::find($request->id);
+
+        $consignments = ConsignmentInstruction::query()
+            ->join('containers', 'consignment_instructions.container_id', '=', 'containers.id')
+            ->where([
+                ['containers.code', '=', $container->code],
+                ['containers.arrival_date', '=', $container->arrival_date],
+                ['containers.arrival_time', '=', $container->arrival_time],
+            ])
+            ->orderBy('supplier', 'ASC')
+            ->orderBy('serial', 'ASC')
+            ->get();
+
+        $array_consignment = [];
+        foreach ($consignments as $key => $consignment) {
+            $serial = $consignment->supplier . $consignment->serial;
+            array_push($array_consignment, [
+                'container' => $consignment->container->code,
+                // 'invoice' => $consignment->invoice,
+                'serial' => $serial,
+                'part_no' => $consignment->part_no,
+                'part_qty' => $consignment->part_qty,
+                'arrival_date' => $consignment->arrival_date,
+                'arrival_time' => $consignment->arrival_time,
+            ]);
+        }
+
+        return Excel::download(new ConsignmentInstructionExport($array_consignment), 'Scanned.xlsx');
+    }
+
     /**
      * Display a listing of the resource.
      *

@@ -5,9 +5,10 @@ namespace App\Exports;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithHeadings;
+use Maatwebsite\Excel\Concerns\WithStyles;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
-class ConsignmentInstructionExport implements FromCollection, WithHeadings, ShouldAutoSize
+class ConsignmentInstructionExport implements FromCollection, WithHeadings, ShouldAutoSize, WithStyles
 {
     protected $data;
 
@@ -25,7 +26,6 @@ class ConsignmentInstructionExport implements FromCollection, WithHeadings, Shou
     {
         return [
             'CONTENEDOR',
-            // 'FACTURA',
             'SERIAL',
             'NO PARTE',
             'CANTIDAD',
@@ -33,6 +33,7 @@ class ConsignmentInstructionExport implements FromCollection, WithHeadings, Shou
             'HORA DE LLEGADA',
         ];
     }
+
     public function styles(Worksheet $sheet)
     {
         return [

@@ -14,7 +14,7 @@ class ContainerController extends Controller
      */
     public function index()
     {
-        $containers = Container::where('status', '=', 1)->orderBy('arrival_date', 'DESC')->orderBy('arrival_time', 'DESC')->paginate(10);
+        $containers = Container::orderBy('arrival_date', 'DESC')->orderBy('arrival_time', 'DESC')->paginate(10);
 
         return view('container.index', ['containers' => $containers]);
     }

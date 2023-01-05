@@ -19,6 +19,7 @@ use App\Http\Controllers\DeiveryProductionController;
 use App\Http\Controllers\OutputController;
 use App\Http\Controllers\RequestListController;
 use App\Http\Controllers\SupplierController;
+use App\Models\ShippingInstruction;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -114,6 +115,8 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function () {
      * Routes Shipping Instructions
      */
     Route::resource('shipping-instruction', ShippingInstructionController::class);
+    Route::get('report-si', [ShippingInstructionController::class, 'reportShipping'])->name('shipping-instruction.report-si');
+    Route::post('download-si', [ShippingInstructionController::class, 'downloadShipping'])->name('shipping-instruction.download-si');
 
     /**
      * Routes Travel
