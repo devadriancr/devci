@@ -19,7 +19,7 @@
 
                     <label class="block text-sm m-3">
                         <span class="text-gray-700 dark:text-gray-400">No de Nomina </span>
-                        <input id='number_control' name='number_control'
+                        <input id='number_control' name='number_control' maxlength='5' max='5' type='number'
                             class="block w-30 mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input"
                             required />
                     </label>
