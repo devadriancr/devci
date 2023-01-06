@@ -24,10 +24,20 @@ class Container extends Model
 
     public static function storeContainer(string $container, string $arrival_date, string $arrival_time)
     {
-        Container::create([
-            'code' => strtoupper($container),
-            'arrival_date' => strtoupper($arrival_date),
-            'arrival_time' => strtoupper($arrival_time),
-        ]);
+        $cont =  Container::where(
+            [
+                ['code', $container],
+                ['arrival_date', $arrival_date],
+                ['arrival_time', $arrival_time]
+            ]
+        )->first();
+
+        if ($cont === null) {
+            Container::create([
+                'code' => strtoupper($container),
+                'arrival_date' => strtoupper($arrival_date),
+                'arrival_time' => strtoupper($arrival_time),
+            ]);
+        }
     }
 }

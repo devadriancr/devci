@@ -12,6 +12,7 @@ use App\Models\Location;
 use App\Models\ShippingInstruction;
 use App\Models\TransactionType;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Facades\Excel;
 
 class ConsignmentInstructionController extends Controller
@@ -248,15 +249,20 @@ class ConsignmentInstructionController extends Controller
             $item = Item::where('item_number', 'LIKE', '%' . $consignment->part_no . '%')->firstOrFail();
             $transaccion = TransactionType::where('code', '=', 'U3')->firstOrFail();
             $location = Location::where('code', 'LIKE', 'L60%')->firstOrFail();
-            Input::storeInputConsignment(
-                $consignment->supplier,
-                $consignment->serial,
-                $item->id,
-                $consignment->part_qty,
-                $consignment->container_id,
-                $transaccion->id,
-                $location->id,
-            );
+
+            $input = Input::where([['supplier', $consignment->supplier], ['serial', $consignment->serial]])->first();
+
+            if ($input === null) {
+                Input::storeInputConsignment(
+                    $consignment->supplier,
+                    $consignment->serial,
+                    $item->id,
+                    $consignment->part_qty,
+                    $consignment->container_id,
+                    $transaccion->id,
+                    $location->id,
+                );
+            }
         }
 
         $conn = odbc_connect("Driver={Client Access ODBC Driver (32-bit)};System=192.168.200.7;", "LXSECOFR;", "LXSECOFR;");
@@ -264,6 +270,7 @@ class ConsignmentInstructionController extends Controller
         $result = odbc_exec($conn, $query);
 
         Container::where('id', $id)->update(['status' => false]);
+
         ShippingInstruction::query()
             ->where([
                 ['container', '=', $container],

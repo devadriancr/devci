@@ -92,7 +92,8 @@ class ContainerController extends Controller
      */
     public function destroy(Container $container)
     {
-        $container->update(['status' => 0]);
+        // $container->update(['status' => 0]);
+        $container->delete();
         return redirect()->back();
     }
 }

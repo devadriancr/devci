@@ -20,16 +20,21 @@ class ShippingInstructionImport implements ToModel, WithHeadingRow, WithBatchIns
     public function model(array $row)
     {
         if ($row['delivery_date'] != '#N/D') {
-            return new ShippingInstruction([
-                'container' => strval($row['ct_no']),
-                'invoice' => strval($row['invoice_no']),
-                'serial' => strval($row['module_no']),
-                'part_no' => strval($row['parts_no']),
-                'part_qty' => $row['parts_qty'],
-                'arrival_date' => $row['delivery_date'],
-                'arrival_time' => $row['time'],
-                'user_id' => Auth::id()
-            ]);
+
+            $shipping = ShippingInstruction::where('serial', $row['module_no'])->first();
+
+            if ($shipping === null) {
+                return new ShippingInstruction([
+                    'container' => strval($row['ct_no']),
+                    'invoice' => strval($row['invoice_no']),
+                    'serial' => strval($row['module_no']),
+                    'part_no' => strval($row['parts_no']),
+                    'part_qty' => intval($row['parts_qty']),
+                    'arrival_date' => $row['delivery_date'],
+                    'arrival_time' => $row['time'],
+                    'user_id' => Auth::id()
+                ]);
+            }
         }
     }
 
