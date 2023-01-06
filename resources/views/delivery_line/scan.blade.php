@@ -12,7 +12,6 @@
             <div class="text-basem-5 bg-white">
                 <p class="font-semibold">No de nomina: </p>
                 <p class="font-normal">{{ $entrega->control_number }}<br></p>
-
             </div>
         </div>
 
@@ -29,7 +28,24 @@
                     <path stroke-linecap="round" stroke-linejoin="round"
                         d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                 </svg>
-                <span class="ml-2">finalizar escaneo</span>
+                <span class="ml-2">Finalizar escaneo</span>
+            </button>
+        </div>
+    </form>
+    <form method="POST" action={{ route('Delivery.scanbar') }}>
+        @csrf
+
+        <input name="Delivery_id" value={{ $entrega->id }} hidden>
+        <input name="location_id" value={{  $entrega->location_id}} hidden>
+        <div class="flex justify-end mt-2 gap-2">
+            <button
+                class="flex items-center justify-between px-4 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 013.75 9.375v-4.5zM3.75 14.625c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5a1.125 1.125 0 01-1.125-1.125v-4.5zM13.5 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 0113.5 9.375v-4.5z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 6.75h.75v.75h-.75v-.75zM6.75 16.5h.75v.75h-.75v-.75zM16.5 6.75h.75v.75h-.75v-.75zM13.5 13.5h.75v.75h-.75v-.75zM13.5 19.5h.75v.75h-.75v-.75zM19.5 13.5h.75v.75h-.75v-.75zM19.5 19.5h.75v.75h-.75v-.75zM16.5 16.5h.75v.75h-.75v-.75z" />
+                  </svg>
+
+                <span class="ml-2">Escaneo con codigo de barras</span>
             </button>
         </div>
     </form>
@@ -47,19 +63,35 @@
                     autofocus='enable'>
                 @if (isset($error))
                     @if ($error != 0)
-                        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative"
-                            role="alert">
-                            <strong class="font-bold">Alerta!</strong>
-                            <span class="block sm:inline">{{ $msg }}</span>
-                            <span class="absolute top-0 bottom-0 right-0 px-4 py-3">
-                                <svg class="fill-current h-6 w-6 text-red-500" role="button"
-                                    xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                                    <title>Close</title>
-                                    <path
-                                        d="M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z" />
-                                </svg>
-                            </span>
-                        </div>
+                        @if ($error == 5)
+                            <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative"
+                                role="alert">
+                                <strong class="font-bold">Mensaje informativo!</strong>
+                                <span class="block sm:inline">{{ $msg }}</span>
+                                <span class="absolute top-0 bottom-0 right-0 px-4 py-3">
+                                    <svg class="fill-current h-6 w-6 text-red-500" role="button"
+                                        xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                                        <title>Close</title>
+                                        <path
+                                            d="M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z" />
+                                    </svg>
+                                </span>
+                            </div>
+                        @else
+                            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative"
+                                role="alert">
+                                <strong class="font-bold">Alerta!</strong>
+                                <span class="block sm:inline">{{ $msg }}</span>
+                                <span class="absolute top-0 bottom-0 right-0 px-4 py-3">
+                                    <svg class="fill-current h-6 w-6 text-red-500" role="button"
+                                        xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                                        <title>Close</title>
+                                        <path
+                                            d="M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z" />
+                                    </svg>
+                                </span>
+                            </div>
+                        @endif
                     @else
                         <div class="bg-blue-100 border-t border-b border-blue-500 text-blue-700 px-4 py-3"
                             role="alert">
