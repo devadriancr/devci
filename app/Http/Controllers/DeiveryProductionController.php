@@ -26,7 +26,7 @@ class DeiveryProductionController extends Controller
      */
     public function index()
     {
-        $travels = DeliveryProduction::orderby('id','desc')->paginate(10);
+        $travels = DeliveryProduction::orderby('id', 'desc')->paginate(10);
         return view('delivery_line.index', ['travels' => $travels]);
     }
 
@@ -41,9 +41,9 @@ class DeiveryProductionController extends Controller
         $No = DeliveryProduction::create([
             'control_number' => $request->number_control,
             'location_id' => $location->id,
-            'finish'=>1
+            'finish' => 1
         ]);
-        $scan =  input::where('delivery_production_id',$No->id)->simplePaginate(10);
+        $scan =  input::where('delivery_production_id', $No->id)->simplePaginate(10);
         return view('delivery_line.scan', ['entrega' => $No, 'scan' => $scan]);
     }
 
@@ -183,7 +183,7 @@ class DeiveryProductionController extends Controller
             }
         }
         if ($error == 0) {
-            $serial_exist = input::where([['serial', $cadena[13]],['supplier',$cadena[11]]])->first();
+            $serial_exist = input::where([['serial', $cadena[13]], ['supplier', $cadena[11]]])->first();
             if ($serial_exist == null) {
                 $error = 5;
                 $message = 'Serial no encontrado con ese proveedor';
@@ -191,14 +191,14 @@ class DeiveryProductionController extends Controller
         }
         if ($error == 0) {
             $loc_act_id = location::with('warehouse')->whereRaw("code like'L61%'")->first();
-            $serial_exist = input::where([['serial', $cadena[13]],['supplier',$cadena[11]]])->orderby('id', 'desc')->first();
+            $serial_exist = input::where([['serial', $cadena[13]], ['supplier', $cadena[11]]])->orderby('id', 'desc')->first();
             if ($serial_exist->location_id ==  $loc_act_id->id) {
                 $error = 12;
                 $message = 'Serial no se encuentra en almacen de YKM';
             }
         }
         if ($error == 0) {
-            $serial_exist = input::where([['serial', $cadena[13]],['supplier',$cadena[11]]])->where('delivery_production_id', $request->delivery_id)->first();
+            $serial_exist = input::where([['serial', $cadena[13]], ['supplier', $cadena[11]]])->where('delivery_production_id', $request->delivery_id)->first();
             if ($serial_exist != false) {
                 $error = 3;
                 $message = 'serial ya fue escaneado';
@@ -206,7 +206,7 @@ class DeiveryProductionController extends Controller
         }
 
         if ($error == 0) {
-            $ultimaSal = input::where([['serial', $cadena[13]],['supplier',$cadena[11]]])->orderby('id', 'desc')->first();
+            $ultimaSal = input::where([['serial', $cadena[13]], ['supplier', $cadena[11]]])->orderby('id', 'desc')->first();
             if ($ultimaSal->delivery_production_id != null) {
                 $error = 10;
                 $message = 'Serial ya se entrego anteriormente.';
@@ -217,6 +217,7 @@ class DeiveryProductionController extends Controller
 
 
         if ($error == 0) {
+            $location_old = location::where('code', 'like', '%L60%')->first();
             $Transaction_type = transactiontype::where('code', 'like', '%T %')->first();
             $re = Output::create([
                 'supplier' =>  $cadena[11],
@@ -225,8 +226,8 @@ class DeiveryProductionController extends Controller
                 'item_quantity' =>  $cadena[10],
                 'transaction_type_id' => $Transaction_type->id,
                 'delivery_production_id' => $request->delivery_id,
-                'location_id' => $request->location_id,
-                'user_id'=>     $use = Auth::user()->id
+                'location_id' => $location_old->location_id,
+                'user_id' =>     $use = Auth::user()->id
             ]);
             $re = input::create([
                 'supplier' =>  $cadena[11],
@@ -236,22 +237,239 @@ class DeiveryProductionController extends Controller
                 'transaction_type_id' => $Transaction_type->id,
                 'delivery_production_id' => $request->delivery_id,
                 'location_id' => $request->location_id,
-                'user_id'=>     $use = Auth::user()->id
+                'user_id' =>     $use = Auth::user()->id
             ]);
             $message = 'Serial capturado exitosamente';
+        } else {
+            if ($error == 5) {
+
+                $location_old = location::where('code', 'like', '%L60%')->first();
+
+                $Transaction_type = transactiontype::where('code', 'like', '%T %')->first();
+                $re = input::create([
+                    'supplier' =>  $cadena[11],
+                    'serial' => $cadena[13],
+                    'item_id' => $item->id,
+                    'item_quantity' =>  $cadena[10],
+                    'transaction_type_id' => $Transaction_type->id,
+                    'location_id' => $location_old->id,
+                    'user_id' =>     $use = Auth::user()->id
+                ]);
+
+                $fechascan = date('Ymd', strtotime($re->created_at));
+                $horascan = date('His', strtotime($re->created_at));
+                $fechainfor = date('Ymd', strtotime('now'));
+                $hora = date('His', time());
+                $use = Auth::user()->user_infor ?? 'ykms';
+                $loc_ant_id = location::with('warehouse')->whereRaw("code like 'L60%'")->first();
+
+                $infor = YI007::Query()->insert(
+                    [
+                        'I7PROD' => $item->item_number,
+                        'I7SENO' => $cadena[13],
+                        'I7TFLG' => 'I',
+                        'I7TDTE' => $fechascan,
+                        'I7TTIM' => $horascan,
+                        'I7TQTY' => $cadena[10],
+                        'I7WHS' => $loc_ant_id->warehouse->code,
+                        'I7CUSR' => 'YKMS',
+                        'I7CCDT' => $fechainfor,
+                        'I7CCTM' => $hora,
+                    ]
+
+                );
+                $re = Output::create([
+                    'supplier' =>  $cadena[11],
+                    'serial' => $cadena[13],
+                    'item_id' => $item->id,
+                    'item_quantity' =>  $cadena[10],
+                    'transaction_type_id' => $Transaction_type->id,
+                    'delivery_production_id' => $request->delivery_id,
+                    'location_id' => $location_old->id,
+                    'user_id' =>     $use = Auth::user()->id
+                ]);
+                $re = input::create([
+                    'supplier' =>  $cadena[11],
+                    'serial' => $cadena[13],
+                    'item_id' => $item->id,
+                    'item_quantity' =>  $cadena[10],
+                    'transaction_type_id' => $Transaction_type->id,
+                    'delivery_production_id' => $request->delivery_id,
+                    'location_id' => $request->location_id,
+                    'user_id' =>     $use = Auth::user()->id
+                ]);
+                $message = ' Serial dado de alta exitosamente ';
+            }
         }
         $scan  = input::with('item')->where('delivery_production_id', $request->delivery_id)->simplePaginate(10);
         $travels = array();
         $entrega = DeliveryProduction::find($request->delivery_id);
         return view('delivery_line.scan', ['entrega' => $entrega, 'scan' => $scan, 'error' => $error, 'msg' => $message, 'location_id' => $location->id]);
     }
+    public function updatebar(Request $request)
+    {
+        $error = 0;
+        $location = location::find($request->location_id);
+        $serial = $request->serial;
+        $quantity = $request->quantity;
+        $suppier = $request->supplier;
+        $item = $request->item;
+        $serial = substr($serial, 1);
+        $suppier = substr($suppier, 1);
+        $item = substr($item, 1);
+        if ($error == 0) {
+            $item = DB::table('items')->whereRaw("item_number like  '" .   $item . "%'")->first();
+            if ($item == false) {
+                $error = 2;
+                $message = 'Item no existe';
+            }
+        }
+        if ($error == 0) {
+            $serial_exist = input::where([['serial', $serial], ['supplier', $suppier]])->first();
+            if ($serial_exist == null) {
+                $error = 5;
+                $message = 'Serial no encontrado con ese proveedor';
+            }
+        }
+        if ($error == 0) {
+            $loc_act_id = location::with('warehouse')->whereRaw("code like'L61%'")->first();
+            $serial_exist = input::where([['serial', $serial], ['supplier', $suppier]])->orderby('id', 'desc')->first();
+            if ($serial_exist->location_id ==  $loc_act_id->id) {
+                $error = 12;
+                $message = 'Serial no se encuentra en almacen de YKM';
+            }
+        }
+        if ($error == 0) {
+            $serial_exist = input::where([['serial', $serial], ['supplier', $suppier]])->where('delivery_production_id', $request->delivery_id)->first();
+            if ($serial_exist != false) {
+                $error = 3;
+                $message = 'serial ya fue escaneado';
+            }
+        }
+        if ($error == 0) {
+            $ultimaSal = input::where([['serial', $serial], ['supplier', $suppier]])->orderby('id', 'desc')->first();
+            if ($ultimaSal->delivery_production_id != null) {
+                $error = 10;
+                $message = 'Serial ya se entrego anteriormente.';
+            }
+        }
+        if ($error == 0) {
+            $location_old = location::where('code', 'like', '%L60%')->first();
+            $Transaction_type = transactiontype::where('code', 'like', '%T %')->first();
+            $re = Output::create([
+                'supplier' =>  $suppier,
+                'serial' => $serial,
+                'item_id' => $item->id,
+                'item_quantity' =>  $quantity,
+                'transaction_type_id' => $Transaction_type->id,
+                'delivery_production_id' => $request->delivery_id,
+                'location_id' => $location_old->location_id,
+                'user_id' =>     $use = Auth::user()->id
+            ]);
+            $re = input::create([
+                'supplier' =>  $suppier,
+                'serial' => $serial,
+                'item_id' => $item->id,
+                'item_quantity' =>  $quantity,
+                'transaction_type_id' => $Transaction_type->id,
+                'delivery_production_id' => $request->delivery_id,
+                'location_id' => $request->location_id,
+                'user_id' =>     $use = Auth::user()->id
+            ]);
+            $message = 'Serial capturado exitosamente';
+        } else {
+            if ($error == 5) {
+                $location_old = location::where('code', 'like', '%L60%')->first();
+                $Transaction_type = transactiontype::where('code', 'like', '%T %')->first();
+                $re = input::create([
+                    'supplier' => $suppier,
+                    'serial' => $serial,
+                    'item_id' => $item->id,
+                    'item_quantity' =>  $quantity,
+                    'transaction_type_id' => $Transaction_type->id,
+                    'location_id' => $location_old->id,
+                    'user_id' =>     $use = Auth::user()->id
+                ]);
+                $fechascan = date('Ymd', strtotime($re->created_at));
+                $horascan = date('His', strtotime($re->created_at));
+                $fechainfor = date('Ymd', strtotime('now'));
+                $hora = date('His', time());
+                $use = Auth::user()->user_infor ?? 'ykms';
+                $loc_ant_id = location::with('warehouse')->whereRaw("code like 'L60%'")->first();
+
+                $infor = YI007::Query()->insert(
+                    [
+                        'I7PROD' => $item->item_number,
+                        'I7SENO' => $serial,
+                        'I7TFLG' => 'I',
+                        'I7TDTE' => $fechascan,
+                        'I7TTIM' => $horascan,
+                        'I7TQTY' =>$quantity,
+                        'I7WHS' => $loc_ant_id->warehouse->code,
+                        'I7CUSR' => 'YKMS',
+                        'I7CCDT' => $fechainfor,
+                        'I7CCTM' => $hora,
+                    ]
+
+                );
+
+
+
+                $re = Output::create([
+                    'supplier' =>  $suppier,
+                    'serial' => $serial,
+                    'item_id' => $item->id,
+                    'item_quantity' =>  $quantity,
+                    'transaction_type_id' => $Transaction_type->id,
+                    'delivery_production_id' => $request->delivery_id,
+                    'location_id' => $location_old->id,
+                    'user_id' =>     $use = Auth::user()->id
+                ]);
+                $re = input::create([
+                    'supplier' =>  $suppier,
+                    'serial' => $serial,
+                    'item_id' => $item->id,
+                    'item_quantity' => $quantity,
+                    'transaction_type_id' => $Transaction_type->id,
+                    'delivery_production_id' => $request->delivery_id,
+                    'location_id' => $request->location_id,
+                    'user_id' =>     $use = Auth::user()->id
+                ]);
+                $message = ' Serial dado de alta exitosamente ';
+            }
+        }
+        $scan  = input::with('item')->where('delivery_production_id', $request->delivery_id)->orderby('id','desc')->get();
+        $travels = array();
+        $entrega = DeliveryProduction::find($request->delivery_id);
+
+        return view('delivery_line.scanbar', ['entrega' => $entrega, 'scan' => $scan, 'error' => $error, 'msg' => $message, 'location_id' => $location->id]);
+    }
+    public function scanbar(Request $request)
+    {
+
+        $location = location::find($request->location_id);
+        $scan  = input::with('item')->where('delivery_production_id', $request->delivery_id)->simplePaginate(10);
+        $entrega = DeliveryProduction::find($request->Delivery_id);
+
+        return view('delivery_line.scanbar', ['entrega' => $entrega, 'scan' => $scan, 'location_id' => $location->id]);
+    }
+    public function scanqr(Request $request)
+    {
+
+        $location = location::find($request->location_id);
+        $scan  = input::with('item')->where('delivery_production_id', $request->delivery_id)->simplePaginate(10);
+        $entrega = DeliveryProduction::find($request->Delivery_id);
+
+        return view('delivery_line.scan', ['entrega' => $entrega, 'scan' => $scan, 'location_id' => $location->id]);
+    }
+
     public function export(Request $request)
     {
 
-        $doc=new ExportsDeliveryExport($request->delivery_id);
+        $doc = new ExportsDeliveryExport($request->delivery_id);
 
         return Excel::download($doc, 'report.pdf', \Maatwebsite\Excel\Excel::DOMPDF);
-    //    return (new ExportsDeliveryExport($request->delivery_id),'invoices.pdf', \Maatwebsite\Excel\Excel::MPDF);
+        //    return (new ExportsDeliveryExport($request->delivery_id),'invoices.pdf', \Maatwebsite\Excel\Excel::MPDF);
     }
     /**
      * Remove the specified resource from storage.
@@ -261,15 +479,15 @@ class DeiveryProductionController extends Controller
      */
     public function destroy(Request $request)
     {
-        $itemin=input::find($request->serial_id);
+        $itemin = input::find($request->serial_id);
         $itemin->delete();
-        $itemout=output::where([['delivery_production_id', $request->delivery_id], ['serial', $request->serial]])->delete();
+        $itemout = output::where([['delivery_production_id', $request->delivery_id], ['serial', $request->serial]])->delete();
 
         $scan  = input::with('item')->where('delivery_production_id', $request->delivery_id)->simplePaginate(10);
         $travels = array();
         $entrega = DeliveryProduction::find($request->delivery_id);
         $error = 1;
         $message = 'serial eliminado de la entrega actual ';
-        return view('delivery_line.scan', ['entrega' => $entrega, 'scan' => $scan, 'error' => $error, 'msg' => $message, ]);
+        return view('delivery_line.scan', ['entrega' => $entrega, 'scan' => $scan, 'error' => $error, 'msg' => $message,]);
     }
 }

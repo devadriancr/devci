@@ -28,7 +28,7 @@ class DeliveryExport implements FromView, ShouldAutoSize
 
     public function view(): View
     {
-        $scan = Input::with('item')->where('delivery_production_id', $this->id)->get();
+        $scan = Input::with('item')->where('delivery_production_id', $this->id)->orderby('item_id')->get();
         $travel = DeliveryProduction::with('location')->find($this->id);
 
         return view('WhereHouse_In_Out.ReportScanDelivery', [

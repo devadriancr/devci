@@ -133,8 +133,10 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function () {
     Route::get('output-search', [OutputController::class, 'search'])->name('output.search');
     Route::POST('output-store', [OutputController::class, 'store'])->name('output.store');
     Route::POST('output-create', [OutputController::class, 'create'])->name('output.create');
+    Route::POST('output-createacan', [OutputController::class, 'createscan'])->name('output.createscan');
     Route::POST('output-update', [OutputController::class, 'update'])->name('output.update');
     Route::POST('output-destroy', [OutputController::class, 'destroy'])->name('output.destroy');
+    Route::POST('output-scanbar', [OutputController::class, 'scanbar'])->name('output.scanbar');
     Route::get('output', [OutputController::class, 'index'])->name('output.index');
     /**
      * Routes output Delivery line
@@ -143,8 +145,11 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function () {
     Route::POST('DeliveryProduction-store', [DeiveryProductionController::class, 'store'])->name('Delivery.store');
     Route::POST('DeliveryProduction-create', [DeiveryProductionController::class, 'create'])->name('Delivery.create');
     Route::POST('DeliveryProduction-update', [DeiveryProductionController::class, 'update'])->name('Delivery.update');
+    Route::POST('DeliveryProduction-updatebar', [DeiveryProductionController::class, 'updatebar'])->name('Delivery.updatebar');
     Route::POST('Delivery-export', [DeiveryProductionController::class, 'export'])->name('Delivery.export');
     Route::POST('Delivery-destroy', [DeiveryProductionController::class, 'destroy'])->name('Delivery.destroy');
+    Route::POST('Delivery-scanbar', [DeiveryProductionController::class, 'scanbar'])->name('Delivery.scanbar');
+    Route::POST('Delivery-scanqr', [DeiveryProductionController::class, 'scanqr'])->name('Delivery.scanqr');
     /**
      * Routes Consignment Instructions
      */

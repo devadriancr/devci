@@ -53,7 +53,7 @@
             </button>
         </div>
     </form>
-    <form method="POST" action={{ route('output.scanbar') }}>
+    <form method="POST" action={{ route('output.store') }}>
         @csrf
 
         <input name="travel_id" value={{ $travels->id }} hidden>
@@ -68,25 +68,36 @@
                     <path stroke-linecap="round" stroke-linejoin="round"
                         d="M6.75 6.75h.75v.75h-.75v-.75zM6.75 16.5h.75v.75h-.75v-.75zM16.5 6.75h.75v.75h-.75v-.75zM13.5 13.5h.75v.75h-.75v-.75zM13.5 19.5h.75v.75h-.75v-.75zM19.5 13.5h.75v.75h-.75v-.75zM19.5 19.5h.75v.75h-.75v-.75zM16.5 16.5h.75v.75h-.75v-.75z" />
                 </svg>
-
-                <span class="ml-2">Escaneo con codigo de barras</span>
+                <span class="ml-2">Escaneo con QR</span>
             </button>
         </div>
     </form>
-
     <div class="px-4 py-3 my-2 bg-white rounded-lg shadow-md dark:bg-gray-800">
-        <form method="POST" action={{ route('output.create') }}>
+        <form method="POST" action={{ route('output.createscan') }}>
             <h4 class="my-2 text-center text-lg font-semibold text-gray-600 dark:text-gray-300">
             </h4>
             @csrf
             <input name="travel_id" value={{ $travels->id }} hidden>
             <input name="location_id" value={{ $travels->location->id }} hidden>
             <label class="block text-sm">
-                <span class="text-gray-700 dark:text-gray-400">Serial</span>
-                <input name="serial" id="serial"
+                <span class="text-gray-700 dark:text-gray-400">Numero de parte</span>
+                <input name="item" id="item" minlength='9'
                     class="block w-full my-2 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input"
-                    autofocus='enable'>
-                    @if (isset($error))
+                    autofocus='enable' required>
+                <span class="text-gray-700 dark:text-gray-400">Cantidad</span>
+                <input name="quantity" id="quantity" type="number"
+                    class="block w-full my-2 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input"
+                    autofocus='enable' required>
+                <span class="text-gray-700 dark:text-gray-400">Supplier</span>
+                <input name="supplier" id="supplier"
+                    class="block w-full my-2 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input"
+                    autofocus='enable' required>
+                <span class="text-gray-700 dark:text-gray-400">Serial</span>
+                <input name="serial" id="serial" minlength='9' maxlength='10'
+                    class="block w-full my-2 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input"
+                    autofocus='enable' required>
+
+                @if (isset($error))
                     @if ($error > 1)
                         @if ($error == 5)
                             <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative"
