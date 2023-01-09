@@ -338,6 +338,47 @@ class ConsignmentInstructionController extends Controller
         return redirect()->route('consigment-instruction.data-upload-index')->with('success', 'Datos Guardados Correctamente');
     }
 
+    public function barcode(Request $request)
+    {
+        $container = Container::find($request->container_id);
+
+        return view('consignment-instruction.barcode', ['container' => $container]);
+    }
+
+    public function storeBarcode(Request $request)
+    {
+        $request->validate([
+            'part' => ['required', 'string'],
+            'quantity' => ['required', 'string'],
+            'supplier' => ['required', 'string'],
+            'serial' => ['required', 'string'],
+        ]);
+
+        $container = Container::find($request->container);
+
+        $data = ConsignmentInstruction::where(
+            [
+                ['serial', '=', strtoupper(substr($request->serial, 1))],
+                ['supplier', '=', strtoupper(substr($request->supplier, 1))]
+            ]
+        )->first();
+
+        if ($data === null) {
+            ConsignmentInstruction::storeConsignment(
+                strtoupper(substr($request->serial, 1)),
+                strtoupper(substr($request->supplier, 1)),
+                strtoupper(substr($request->quantity, 1)),
+                strtoupper(substr($request->part, 1)),
+                'L60',
+                $request->container
+            );
+
+            return view('consignment-instruction.barcode', ['container' => $container])->with('success', 'Registro Exitoso');
+        } else {
+            return view('consignment-instruction.barcode', ['container' => $container])->with('warning', 'Registro Duplicado');
+        }
+    }
+
     /**
      * Display a listing of the resource.
      *
