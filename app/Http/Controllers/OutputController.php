@@ -28,7 +28,8 @@ class OutputController extends Controller
 
         $outputs = Output::query()
             ->join('items', 'outputs.item_id', '=', 'items.id')
-            ->where('items.item_number', 'LIKE', '%' . $search . '%')
+            ->where('outputs.serial', 'LIKE', '%' . $search . '%')
+            ->orWhere('items.item_number', 'LIKE', '%' . $search . '%')
             ->orderBy('items.created_at', 'DESC')
             ->paginate(10);
 
@@ -225,7 +226,7 @@ class OutputController extends Controller
         $location = location::find($request->location_id);
 
         if ($error == 0) {
-            $item= DB::table('items')->whereRaw("item_number like '" . $item_n . "%'")->first();
+            $item = DB::table('items')->whereRaw("item_number like '" . $item_n . "%'")->first();
 
             if ($item == false) {
                 $error = 2;
@@ -268,7 +269,7 @@ class OutputController extends Controller
         if ($error == 0) {
 
             $location = location::where('code', 'like', '%L60%')->first();
-            $safetystock = item::whereraw("item_number like '" .$item . "%'")->first();
+            $safetystock = item::whereraw("item_number like '" . $item . "%'")->first();
 
             $invenoti = inventory::where([['item_id', $safetystock->id], ['location_id', $location->id]])->first();
             if ($invenoti != null) {
@@ -316,7 +317,7 @@ class OutputController extends Controller
             if ($error == 5) {
                 $location_old = location::where('code', 'like', '%L60%')->first();
                 $Transaction_type = transactiontype::where('code', 'like', '%T %')->first();
-                $re=input::create([
+                $re = input::create([
                     'supplier' => $suppier,
                     'serial' => $serial,
                     'item_id' => $item->id,
