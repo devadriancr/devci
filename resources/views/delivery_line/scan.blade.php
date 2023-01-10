@@ -123,6 +123,7 @@
                 <thead>
                     <tr
                         class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b dark:border-gray-700 bg-gray-50 dark:text-gray-400 dark:bg-gray-800">
+                        <th class="px-4 py-3"></th>
                         <th class="px-4 py-3">Serial</th>
                         <th class="px-4 py-3">Numero de Parte</th>
                         <th class="px-4 py-3">Cantidad </th>
@@ -132,8 +133,14 @@
                 </thead>
 
                 <tbody class="bg-white divide-y dark:divide-gray-700 dark:bg-gray-800">
+                    @php
+                    $CONT=0;
+                    @endphp
                     @foreach ($scan as $consignment)
                         <tr class="text-gray-700 dark:text-gray-400">
+                            <td class="px-4 py-3 text-sm">
+                                {{ $CONT=$CONT+1; }}
+                            </td>
                             <td class="px-4 py-3 text-sm">
                                 {{ $consignment->serial }}
                             </td>
@@ -173,7 +180,7 @@
             </table>
         </div>
     </div>
-    <div
+    {{-- <div
         class="grid px-4 py-3 text-xs font-semibold tracking-wide text-gray-500 uppercase border-t dark:border-gray-700 bg-gray-50 sm:grid-cols-9 dark:text-gray-400 dark:bg-gray-800">
         <span class="flex items-center col-span-3">
             Mostrando {{ $scan->firstItem() }} - {{ $scan->lastItem() }}
@@ -187,7 +194,7 @@
                 </ul>
             </nav>
         </span>
-    </div>
+    </div> --}}
     </div>
     </div>
 </x-app-layout>
