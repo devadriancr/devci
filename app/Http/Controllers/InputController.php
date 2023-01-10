@@ -20,7 +20,8 @@ class InputController extends Controller
 
         $inputs = Input::query()
             ->join('items', 'inputs.item_id', '=', 'items.id')
-            ->where('items.item_number', 'LIKE', '%' . $search . '%')
+            ->where('inputs.serial', 'LIKE', '%' . $search . '%')
+            ->orWhere('items.item_number', 'LIKE', '%' . $search . '%')
             ->orderBy('inputs.created_at', 'DESC')
             ->paginate(10);
 

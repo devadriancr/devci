@@ -5,6 +5,21 @@
         </h2>
         <div class="flex flew-row justify-end my-2 gap-x-2">
             <div>
+                <form method="POST" action="{{ route('consigment-instruction.barcode') }}">
+                    @csrf
+                    <input name="container_id" value="{{ $container->id }}" hidden>
+                    <input name="container_code" value="{{ $container->code }}" hidden>
+                    <input name="container_date" value="{{ $container->arrival_date }}" hidden>
+                    <input name="container_time" value="{{ $container->arrival_time }}" hidden>
+                    <button class="flex items-center justify-between px-4 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                        <span class="ml-2">Codigo de Barras</span>
+                    </button>
+                </form>
+            </div>
+            <div>
                 <form method="POST" action="{{ route('consigment-instruction.check') }}">
                     @csrf
                     <input name="container_id" value="{{ $container->id }}" hidden>
@@ -54,7 +69,7 @@
         <div class="px-4 py-3 my-2 bg-white rounded-lg shadow-md dark:bg-gray-800">
             <form method="POST" action="{{ route('consigment-instruction.store') }}">
                 <h4 class="my-2 text-center text-lg font-semibold text-gray-600 dark:text-gray-300">
-                    Recibó de Consigna
+                    Recibo de Consigna
                 </h4>
                 @csrf
                 <div class="grid grid-cols-12 gap-4 my-2 uppercase font-bold md:font-medium md:text-base sm:text-base sm:font-normal text-gray-600 dark:text-gray-300">
@@ -72,7 +87,7 @@
                 </div>
 
                 <label class="block text-sm">
-                    <span class="text-gray-700 dark:text-gray-400">Serial</span>
+                    <span class="text-gray-700 dark:text-gray-400">Código QR</span>
                     <input name="code_qr" id="code_qr" class="block w-full my-2 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input" autofocus autocomplete="off" />
                 </label>
 

@@ -151,6 +151,7 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function () {
     Route::POST('Delivery-destroy', [DeiveryProductionController::class, 'destroy'])->name('Delivery.destroy');
     Route::POST('Delivery-scanbar', [DeiveryProductionController::class, 'scanbar'])->name('Delivery.scanbar');
     Route::POST('Delivery-scanqr', [DeiveryProductionController::class, 'scanqr'])->name('Delivery.scanqr');
+
     /**
      * Routes Consignment Instructions
      */
@@ -165,6 +166,9 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function () {
     Route::get('data-upload-index', [ConsignmentInstructionController::class, 'data_upload_index'])->name('consigment-instruction.data-upload-index');
     Route::post('data-upload-store', [ConsignmentInstructionController::class, 'data_upload_store'])->name('consigment-instruction.data-upload-store');
     Route::get('data-upload-inventory', [ConsignmentInstructionController::class, 'data_upload_inventory'])->name('consigment-instruction.data-upload-inventory');
+
+    Route::post('barcode', [ConsignmentInstructionController::class, 'barcode'])->name('consigment-instruction.barcode');
+    Route::post('store-barcode', [ConsignmentInstructionController::class, 'storeBarcode'])->name('consigment-instruction.store-barcode');
 
     /**
      * Route Inventory
@@ -192,10 +196,12 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function () {
     Route::Post('Requestlist-create', [RequestListController::class, 'create_order'])->name('RequestList.create_order');
     Route::Post('Requestlist-export', [RequestListController::class, 'export'])->name('RequestList.export');
     Route::Post('Requestlist-Quitorder', [RequestListController::class, 'Quitorderinformation'])->name('RequestList.Quitorderinformation');
+
     /**
      * Route Supplier
      */
     Route::resource('supplier', SupplierController::class);
+
      /**
      * Route Supplier
      */
