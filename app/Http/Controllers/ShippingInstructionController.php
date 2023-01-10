@@ -144,6 +144,14 @@ class ShippingInstructionController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $container = Container::find($id);
+
+        if ($container->status === true) {
+            $shipping = ShippingInstruction::where('container', $container->code)->delete();
+            $container->delete();
+        }
+        $containers = Container::orderByRaw('arrival_date DESC, arrival_time DESC')->paginate(10);
+
+        return view('shipping-instruction.report', ['containers' => $containers]);
     }
 }

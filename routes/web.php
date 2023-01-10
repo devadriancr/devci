@@ -20,7 +20,6 @@ use App\Http\Controllers\ManualAdjustments;
 use App\Http\Controllers\OutputController;
 use App\Http\Controllers\RequestListController;
 use App\Http\Controllers\SupplierController;
-use App\Models\ConsignmentInstruction;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -152,6 +151,7 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function () {
     Route::POST('Delivery-destroy', [DeiveryProductionController::class, 'destroy'])->name('Delivery.destroy');
     Route::POST('Delivery-scanbar', [DeiveryProductionController::class, 'scanbar'])->name('Delivery.scanbar');
     Route::POST('Delivery-scanqr', [DeiveryProductionController::class, 'scanqr'])->name('Delivery.scanqr');
+
     /**
      * Routes Consignment Instructions
      */
@@ -196,10 +196,12 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function () {
     Route::Post('Requestlist-create', [RequestListController::class, 'create_order'])->name('RequestList.create_order');
     Route::Post('Requestlist-export', [RequestListController::class, 'export'])->name('RequestList.export');
     Route::Post('Requestlist-Quitorder', [RequestListController::class, 'Quitorderinformation'])->name('RequestList.Quitorderinformation');
+
     /**
      * Route Supplier
      */
     Route::resource('supplier', SupplierController::class);
+
      /**
      * Route Supplier
      */
