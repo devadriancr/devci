@@ -301,7 +301,7 @@ class DeiveryProductionController extends Controller
                 $message = ' Serial dado de alta exitosamente ';
             }
         }
-        $scan  = input::with('item')->where('delivery_production_id', $request->delivery_id)->simplePaginate(10);
+        $scan  = input::with('item')->where('delivery_production_id', $request->delivery_id)->get();
         $travels = array();
         $entrega = DeliveryProduction::find($request->delivery_id);
         return view('delivery_line.scan', ['entrega' => $entrega, 'scan' => $scan, 'error' => $error, 'msg' => $message, 'location_id' => $location->id]);
@@ -448,21 +448,19 @@ class DeiveryProductionController extends Controller
     {
 
         $location = location::find($request->location_id);
-        $scan  = input::with('item')->where('delivery_production_id', $request->delivery_id)->simplePaginate(10);
+        $scan  = input::with('item')->where('delivery_production_id', $request->delivery_id)->get();
         $entrega = DeliveryProduction::find($request->Delivery_id);
 
         return view('delivery_line.scanbar', ['entrega' => $entrega, 'scan' => $scan, 'location_id' => $location->id]);
     }
     public function scanqr(Request $request)
     {
-
         $location = location::find($request->location_id);
-        $scan  = input::with('item')->where('delivery_production_id', $request->delivery_id)->simplePaginate(10);
+        $scan  = input::with('item')->where('delivery_production_id', $request->delivery_id)->get();
         $entrega = DeliveryProduction::find($request->Delivery_id);
 
         return view('delivery_line.scan', ['entrega' => $entrega, 'scan' => $scan, 'location_id' => $location->id]);
     }
-
     public function export(Request $request)
     {
 

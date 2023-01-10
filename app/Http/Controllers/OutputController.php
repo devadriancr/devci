@@ -422,22 +422,34 @@ class OutputController extends Controller
     }
     public function search(Request $request)
     {
-
-        $buscar = $request->buscar ?? 'serial';
-
-        if ($buscar == 'serial') {
-            $serial = $request->serial ?? '0';
-            $regin = input::with('item', 'location', 'container')->where('serial', $serial)->orderby('id', 'desc')->simplePaginate(10);
-        } else {
-            $serial = $request->serial ?? '0';
-
-            $item = item::whereRaw("item_number like '" .  $serial . "%'")->first();
-            $num = $item->id ?? '0';
-            $regin = input::orderby('serial')->with('item', 'location', 'container')->where('item_id', $num)->orderby('id', 'desc')->simplePaginate(10);
+        $cont = strlen($request->serial);
+        $error = 0;
+        $msg = '';
+        switch ($cont) {
+            case 10:
+                $serial = substr($request->serial, 1);
+                break;
+            case 9:
+                $serial = $request->serial;
+                break;
+            default:
+                if ($cont < 9) {
+                    $serial = 0;
+                    $error = 1;
+                    $msg = 'Escaneo incorrecto';
+                } else {
+                    $cadena = explode(",", $request->serial);
+                    $serial = $cadena[13];
+                }
+                break;
         }
-        // $regin = input::with('item', 'location', 'container')->where('serial', $serial)->orderby('id', 'desc')->simplePaginate(10);
-        // $regout = output::with('item', 'location')->where('serial', $serial)->orderby('id', 'desc')->simplePaginate(10);
-        return view('Output.search', ['in' => $regin]);
+        $regin = input::with('item', 'location', 'container')->where('serial', $serial)->orderby('id', 'desc')->simplePaginate(10);
+        $total=count($regin);
+        if (count($regin) == 0) {
+            $error = 2;
+            $msg = 'Serial no encontrado';
+        }
+        return view('Output.search', ['in' => $regin, 'error' => $error, 'msg' => $msg,'total'=>$total]);
     }
 
     /**
@@ -446,9 +458,71 @@ class OutputController extends Controller
      * @param  \App\Models\Output  $output
      * @return \Illuminate\Http\Response
      */
-    public function edit(Output $output)
+    public function return(Request $request)
     {
-        //
+        $reg = input::with('item','location')->find($request->id);
+        $location_new = location::where('code', 'like', '%L60%')->first();
+        Output::create([
+            'supplier' =>   $reg-> suppier,
+            'serial' => $reg->serial,
+            'item_id' => $reg->item_id,
+            'item_quantity' =>  $reg->item_quantity,
+            'transaction_type_id' => $reg->transaction_type_id,
+            'location_id' =>  $reg->location_id,
+            'user_id' =>     $use = Auth::user()->id
+        ]);
+        input::create([
+            'supplier' =>   $reg-> suppier,
+            'serial' => $reg->serial,
+            'item_id' => $reg->item_id,
+            'item_quantity' =>  $reg->item_quantity,
+            'transaction_type_id' => $reg->transaction_type_id,
+            'location_id' =>  $location_new->id,
+            'user_id' => $use = Auth::user()->id
+        ]);
+        $fechascan = date('Ymd', strtotime($reg->created_at));
+        $horascan = date('His', strtotime($reg->created_at));
+        $fechainfor = date('Ymd', strtotime('now'));
+        $hora = date('His', time());
+        $use = Auth::user()->user_infor ?? 'ykms';
+        $loc_ant_id = location::with('warehouse')->whereRaw("code like 'L60%'")->first();
+        $loc_new_id = location::with('warehouse')->whereRaw("code like 'L12%'")->first();
+        $infor = YI007::Query()->insert(
+            [
+                'I7PROD' => $reg->item->item_number,
+                'I7SENO' => $reg->serial,
+                'I7TFLG' => 'I',
+                'I7TDTE' => $fechascan,
+                'I7TTIM' => $horascan,
+                'I7TQTY' => $reg->item_quantity,
+                'I7WHS' => $loc_new_id->warehouse->code,
+                'I7CUSR' => 'YKMS',
+                'I7CCDT' => $fechainfor,
+                'I7CCTM' => $hora,
+            ]
+
+        );
+        $infor = YI007::Query()->insert(
+            [
+                'I7PROD' => $reg->item->item_number,
+                'I7SENO' => $reg->serial,
+                'I7TFLG' => 'O',
+                'I7TDTE' => $fechascan,
+                'I7TTIM' => $horascan,
+                'I7TQTY' => $reg->item_quantity,
+                'I7WHS' => $loc_ant_id->warehouse->code,
+                'I7CUSR' => 'YKMS',
+                'I7CCDT' => $fechainfor,
+                'I7CCTM' => $hora,
+            ]
+
+        );
+
+        $regin = input::with('item', 'location', 'container')->where('serial', $reg->serial)->orderby('id', 'desc')->simplePaginate(10);
+        $error=1;
+        $msg='se a regresado el material a W60';
+        $total=count($regin);
+        return view('Output.search', ['in' => $regin, 'error' => $error, 'msg' => $msg,'total'=>$total]);
     }
 
     /**
