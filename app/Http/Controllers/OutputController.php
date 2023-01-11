@@ -428,6 +428,7 @@ class OutputController extends Controller
         $cont = strlen($serial);
         $error = 0;
         $msg = '';
+
         switch ($cont) {
             case 10:
                 $serial = substr($serial, 1);
