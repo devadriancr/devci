@@ -422,43 +422,51 @@ class OutputController extends Controller
     }
     public function search(Request $request)
     {
-
-        $serial=$request->serial??0;
-
-        $cont = strlen($serial);
-        $error = 0;
-        $msg = '';
-
-        switch ($cont) {
-            case 10:
-                $serial = substr($serial, 1);
-                break;
-            case 9:
-                $serial = $serial;
-                break;
-            default:
-                if ($cont < 9) {
-                    $serial = 0;
-                    $error = 1;
-                    $msg = 'Escaneo incorrecto';
-                } else {
-                    $cadena = explode(",", $serial);
-                    $serial = $cadena[13];
-                }
-                break;
-        }
-
-        $regin = input::with('item', 'location', 'container')->where('serial', $serial)->orderby('id', 'desc')->simplePaginate(10);
-        $total=count($regin);
-        if (count($regin) == 0) {
-            $error = 2;
-            $msg = 'Serial no encontrado';
-        }
-        if($serial==0)
+        if($request->serial!=null)
         {
+            $serial=$request->serial??0;
+
+            $cont = strlen($serial);
             $error = 0;
             $msg = '';
+
+            switch ($cont) {
+                case 10:
+                    $serial = substr($serial, 1);
+                    break;
+                case 9:
+                    $serial = $serial;
+                    break;
+                default:
+                    if ($cont < 9) {
+                        $serial = 0;
+                        $error = 1;
+                        $msg = 'Escaneo incorrecto';
+                    } else {
+                        $cadena = explode(",", $serial);
+                        $serial = $cadena[13];
+                    }
+                    break;
+            }
+
+            $regin = input::with('item', 'location', 'container')->where('serial', $serial)->orderby('id', 'desc')->simplePaginate(10);
+            $total=count($regin);
+            if (count($regin) == 0) {
+                $error = 2;
+                $msg = 'Serial no encontrado';
+            }
+            if($serial==0)
+            {
+                $error = 0;
+                $msg = '';
+            }
+        }else{
+            $regin=null;
+            $error = 0;
+                $msg = '';
+                $total=0;
         }
+
         return view('Output.search', ['in' => $regin, 'error' => $error, 'msg' => $msg,'total'=>$total]);
     }
 

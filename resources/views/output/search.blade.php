@@ -80,63 +80,66 @@
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y dark:divide-gray-700 dark:bg-gray-800">
-                    @php
-                        $cont=$total+1;
-                    @endphp
-                    @foreach ($in as $consignment)
-                    @php
-                        $cont=$cont-1;
-                    @endphp
-                        <tr class="text-gray-700 dark:text-gray-400">
-                            <td class="px-4 py-3 text-sm">
-                                {{ $consignment->serial }}
-                            </td>
-                            <td class="px-4 py-3 text-sm">
-                                {{ $consignment->item->item_number }}
-                            </td>
-                            <td class="px-4 py-3 text-sm">
-                                {{ $consignment->item_quantity }}
-                            </td>
-                            <td class="px-4 py-3 text-sm">
-                                {{ $consignment->location->code ?? ''}} {{ $consignment->location->name ?? '' }}
-                            </td>
-                            <td class="px-4 py-3 text-sm">
-                                {{ $consignment->created_at }}
-                            </td>
-                            <td class="px-4 py-3 text-sm">
-                                {{ $consignment->travel_id ?? '' }}
-                            </td>
-                            <td class="px-4 py-3 text-sm">
-                                {{ $consignment->container->code ?? ' ' }}
-                            </td>
-                            <td class="px-4 py-3 text-sm">
+                    @if ($in != null)
+                        @php
+                            $cont = $total + 1;
+                        @endphp
+                        @foreach ($in as $consignment)
+                            @php
+                                $cont = $cont - 1;
+                            @endphp
+                            <tr class="text-gray-700 dark:text-gray-400">
+                                <td class="px-4 py-3 text-sm">
+                                    {{ $consignment->serial }}
+                                </td>
+                                <td class="px-4 py-3 text-sm">
+                                    {{ $consignment->item->item_number }}
+                                </td>
+                                <td class="px-4 py-3 text-sm">
+                                    {{ $consignment->item_quantity }}
+                                </td>
+                                <td class="px-4 py-3 text-sm">
+                                    {{ $consignment->location->code ?? '' }} {{ $consignment->location->name ?? '' }}
+                                </td>
+                                <td class="px-4 py-3 text-sm">
+                                    {{ $consignment->created_at }}
+                                </td>
+                                <td class="px-4 py-3 text-sm">
+                                    {{ $consignment->travel_id ?? '' }}
+                                </td>
+                                <td class="px-4 py-3 text-sm">
+                                    {{ $consignment->container->code ?? ' ' }}
+                                </td>
+                                <td class="px-4 py-3 text-sm">
                                     @php
-                                        $loc=$consignment->location->code ?? '';
+                                        $loc = $consignment->location->code ?? '';
                                     @endphp
-                                @if ( trim($loc)=='L12' && $cont==$total)
-                                <div class="flex items-center space-x-4 text-sm">
-                                    <form method="POST" action="{{ route('output.return') }}">
-                                        @csrf
-                                        <input name="id" value='{{ $consignment->id }}' hidden>
-                                        {{-- <input name="travel_id" value='{{ $travels->id }}' hidden>
+                                    @if (trim($loc) == 'L12' && $cont == $total)
+                                        <div class="flex items-center space-x-4 text-sm">
+                                            <form method="POST" action="{{ route('output.return') }}">
+                                                @csrf
+                                                <input name="id" value='{{ $consignment->id }}' hidden>
+                                                {{-- <input name="travel_id" value='{{ $travels->id }}' hidden>
                                         <input name="serial" value='{{ $consignment->serial }}' hidden> --}}
-                                        <button
-                                            class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
-                                            aria-label="Delete">
-                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                                stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-                                                <path stroke-linecap="round" stroke-linejoin="round"
-                                                    d="M9 15L3 9m0 0l6-6M3 9h12a6 6 0 010 12h-3" />
-                                            </svg>
+                                                <button
+                                                    class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
+                                                    aria-label="Delete">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none"
+                                                        viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+                                                        class="w-6 h-6">
+                                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                                            d="M9 15L3 9m0 0l6-6M3 9h12a6 6 0 010 12h-3" />
+                                                    </svg>
 
-                                        </button>
-                                    </form>
-                                </div>
-                                @endif
+                                                </button>
+                                            </form>
+                                        </div>
+                                    @endif
 
-                            </td>
-                        </tr>
-                    @endforeach
+                                </td>
+                            </tr>
+                        @endforeach
+                    @endif
                 </tbody>
             </table>
         </div>
