@@ -422,15 +422,18 @@ class OutputController extends Controller
     }
     public function search(Request $request)
     {
-        $cont = strlen($request->serial);
+
+        $serial=$request->serial??0;
+
+        $cont = strlen($serial);
         $error = 0;
         $msg = '';
         switch ($cont) {
             case 10:
-                $serial = substr($request->serial, 1);
+                $serial = substr($serial, 1);
                 break;
             case 9:
-                $serial = $request->serial;
+                $serial = $serial;
                 break;
             default:
                 if ($cont < 9) {
@@ -438,16 +441,22 @@ class OutputController extends Controller
                     $error = 1;
                     $msg = 'Escaneo incorrecto';
                 } else {
-                    $cadena = explode(",", $request->serial);
+                    $cadena = explode(",", $serial);
                     $serial = $cadena[13];
                 }
                 break;
         }
+
         $regin = input::with('item', 'location', 'container')->where('serial', $serial)->orderby('id', 'desc')->simplePaginate(10);
         $total=count($regin);
         if (count($regin) == 0) {
             $error = 2;
             $msg = 'Serial no encontrado';
+        }
+        if($serial==0)
+        {
+            $error = 0;
+            $msg = '';
         }
         return view('Output.search', ['in' => $regin, 'error' => $error, 'msg' => $msg,'total'=>$total]);
     }
