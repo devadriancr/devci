@@ -147,8 +147,11 @@ class ShippingInstructionController extends Controller
         $container = Container::find($id);
 
         if ($container->status === true) {
-            $shipping = ShippingInstruction::where('container', $container->code)->delete();
-            $container->delete();
+            $consignment = ConsignmentInstruction::where('container_id', $container->id)->count();
+            if ($consignment <= 0) {
+                $shipping = ShippingInstruction::where('container', $container->code)->delete();
+                $container->delete();
+            }
         }
         $containers = Container::orderByRaw('arrival_date DESC, arrival_time DESC')->paginate(10);
 
