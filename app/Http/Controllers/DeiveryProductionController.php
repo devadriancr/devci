@@ -41,7 +41,7 @@ class DeiveryProductionController extends Controller
         $No = DeliveryProduction::create([
             'control_number' => $request->number_control,
             'location_id' => $location->id,
-            'finish' => 1
+            'finish' => 0
         ]);
         $scan =  input::where('delivery_production_id', $No->id)->simplePaginate(10);
         return view('delivery_line.scan', ['entrega' => $No, 'scan' => $scan]);
@@ -62,6 +62,9 @@ class DeiveryProductionController extends Controller
         foreach ($scan as $scans) {
             self::inventario($scans->serial, $scans->item_id, $scans->item->item_number, $scans->location_id, $scans->item_quantity, $loc_ant_id->id, $scans->created_at, $loc_ant_id->warehouse->code, $loc_act_id->warehouse->code);
         }
+        DeliveryProduction::where('id',$request->Delivery_id )
+        ->update(['finish' => 1]);
+
         // $conn = odbc_connect("Driver={Client Access ODBC Driver (32-bit)};System=192.168.200.7;", "LXSECOFR;", "LXSECOFR;");
         // $query = "CALL LX834OU.YIN151C";
         //   live
@@ -448,15 +451,14 @@ class DeiveryProductionController extends Controller
     {
 
         $location = location::find($request->location_id);
-        $scan  = input::with('item')->where('delivery_production_id', $request->delivery_id)->get();
+        $scan  = input::with('item')->where('delivery_production_id', $request->Delivery_id)->get();
         $entrega = DeliveryProduction::find($request->Delivery_id);
-
         return view('delivery_line.scanbar', ['entrega' => $entrega, 'scan' => $scan, 'location_id' => $location->id]);
     }
     public function scanqr(Request $request)
     {
         $location = location::find($request->location_id);
-        $scan  = input::with('item')->where('delivery_production_id', $request->delivery_id)->get();
+        $scan  = input::with('item')->where('delivery_production_id', $request->Delivery_id)->get();
         $entrega = DeliveryProduction::find($request->Delivery_id);
 
         return view('delivery_line.scan', ['entrega' => $entrega, 'scan' => $scan, 'location_id' => $location->id]);

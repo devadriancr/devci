@@ -98,7 +98,7 @@
                                 {{ $consignment->item_quantity }}
                             </td>
                             <td class="px-4 py-3 text-sm">
-                                {{ $consignment->location->code }} {{ $consignment->location->name }}
+                                {{ $consignment->location->code ?? ''}} {{ $consignment->location->name ?? '' }}
                             </td>
                             <td class="px-4 py-3 text-sm">
                                 {{ $consignment->created_at }}
@@ -110,8 +110,10 @@
                                 {{ $consignment->container->code ?? ' ' }}
                             </td>
                             <td class="px-4 py-3 text-sm">
-
-                                @if ( trim($consignment->location->code)=='L12' && $cont==$total)
+                                    @php
+                                        $loc=$consignment->location->code ?? '';
+                                    @endphp
+                                @if ( trim($loc)=='L12' && $cont==$total)
                                 <div class="flex items-center space-x-4 text-sm">
                                     <form method="POST" action="{{ route('output.return') }}">
                                         @csrf
