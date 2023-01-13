@@ -69,23 +69,60 @@ class Input extends Model
         string $supplier,
         string $serial,
         int $itemId,
+        string $item,
         float $quantity,
-        string $purchaseOrder,
+        int $containerId,
         int $transactionTypeId,
         int $locationId
     ) {
-        Input::create(
+        $input = Input::create(
             [
                 'supplier' => $supplier,
                 'serial' => $serial,
                 'item_id' => $itemId,
                 'item_quantity' => $quantity,
-                'purchase_order' => $purchaseOrder,
+                'container_id' => $containerId,
                 'transaction_type_id' => $transactionTypeId,
                 'location_id' => $locationId,
                 'user_id' => Auth::id()
             ]
         );
+
+        $info_cont = Container::where('id', '=', $containerId)->firstOrFail();
+
+        YH003::insert([
+            'H3CONO' => $$info_cont->code,
+            'H3DDTE' => Carbon::parse($info_cont->arrival_date)->format('Ymd') ?? '',
+            'H3DTIM' => Carbon::parse($info_cont->arrival_time)->format('His') ?? '',
+            'H3PROD' => $item,
+            'H3SUCD' => $supplier,
+            'H3SENO' => $serial,
+            'H3RQTY' => $quantity,
+            'H3CUSR' => Auth::user()->user_infor ?? '',
+            'H3RDTE' => Carbon::parse($input->created_at)->format('Ymd'),
+            'H3RTIM' => Carbon::parse($input->created_at)->format('His')
+        ]);
+
+        $inventory = Inventory::where([
+            ['item_id', '=', $itemId],
+            ['location_id', '=', $locationId]
+        ])->first();
+
+        $quantity = $inventory->quantity ?? 0;
+
+        $sum = 0;
+        $sum = $quantity + $quantity;
+
+        Inventory::updateOrCreate(
+            [
+                'item_id' => $itemId,
+                'location_id' => $locationId,
+            ],
+            [
+                'quantity' => $sum
+            ]
+        );
+
     }
 
     /**

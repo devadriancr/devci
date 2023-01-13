@@ -6,12 +6,19 @@ use App\Exports\ConsignmentInstructionExport;
 use App\Imports\ShippingInstructionImport;
 use App\Models\ConsignmentInstruction;
 use App\Models\Container;
+use App\Models\Input;
+use App\Models\Item;
+use App\Models\Location;
 use App\Models\ShippingInstruction;
+use App\Models\TransactionType;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
 
 class ShippingInstructionController extends Controller
 {
+    /**
+     *
+     */
     public function reportShipping()
     {
         $containers = Container::orderByRaw('arrival_date DESC, arrival_time DESC')->paginate(10);
@@ -19,6 +26,9 @@ class ShippingInstructionController extends Controller
         return view('shipping-instruction.report', ['containers' => $containers]);
     }
 
+    /**
+     *
+     */
     public function downloadShipping(Request $request)
     {
         $container = Container::find($request->id);
@@ -156,5 +166,39 @@ class ShippingInstructionController extends Controller
         $containers = Container::orderByRaw('arrival_date DESC, arrival_time DESC')->paginate(10);
 
         return view('shipping-instruction.report', ['containers' => $containers]);
+    }
+
+    public function scan()
+    {
+        return view('shipping-instruction.scan');
+    }
+
+    public function storeScan(Request $request)
+    {
+        $data = strtoupper($request->qr);
+
+        list($a, $b, $c, $d, $e, $f, $g, $h, $i, $j, $part_qty, $supplier, $m, $serial, $o, $p, $q, $r, $s, $t, $u, $v, $w, $x, $y, $z, $part_no) = explode(',', $data);
+
+        $shipping = ShippingInstruction::where([
+            ['serial', '=', $supplier . $serial],
+            ['search', '=', false]
+        ])->first();
+
+        if ($shipping !== null) {
+            $item = Item::where('item_number', 'LIKE', $part_no . '%')->first();
+            $container = Container::where('code', 'LIKE', '%' . $shipping->container . '%')->first();
+            $transaccion = TransactionType::where('code', '=', 'U3')->first();
+            $location = Location::where('code', 'LIKE', 'L60%')->first();
+
+            ConsignmentInstruction::storeConsignment($serial, $supplier, $part_qty, $part_no, 'L60', $container->id);
+
+            Input::storeInput($supplier, $serial, $item->id, $item->item_number, $part_qty, $container->id, $transaccion->id, $location->id);
+
+           $shipping->update(['search' => true]);
+        } else {
+            return redirect()->back()->with('warning', 'Serial No Encontrado O Anteriormente Registrado');
+        }
+
+        return redirect()->back()->with('success', 'Registro Exitoso');
     }
 }

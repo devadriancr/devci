@@ -34,36 +34,6 @@
                     </button>
                 </form>
             </div>
-            <!-- <div>
-                <form method="POST" action="{{ route('consigment-instruction.found') }}">
-                    @csrf
-                    <input name="container_id" value="{{ $container->id }}" hidden>
-                    <input name="container_code" value="{{ $container->code }}" hidden>
-                    <input name="container_date" value="{{ $container->arrival_date }}" hidden>
-                    <input name="container_time" value="{{ $container->arrival_time }}" hidden>
-                    <button class="flex items-center justify-between px-4 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                        </svg>
-                        <span class="ml-2">Reporte de Registrados</span>
-                    </button>
-                </form>
-            </div>
-            <div>
-                <form method="POST" action="{{ route('consigment-instruction.finish') }}">
-                    @csrf
-                    <input name="container_id" value="{{ $container->id }}" hidden>
-                    <input name="container_code" value="{{ $container->code }}" hidden>
-                    <input name="container_date" value="{{ $container->arrival_date }}" hidden>
-                    <input name="container_time" value="{{ $container->arrival_time }}" hidden>
-                    <button class="flex items-center justify-between px-4 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
-                        </svg>
-                        <span class="ml-2">Terminar</span>
-                    </button>
-                </form>
-            </div> -->
         </div>
 
         <div class="px-4 py-3 my-2 bg-white rounded-lg shadow-md dark:bg-gray-800">
@@ -88,7 +58,7 @@
 
                 <label class="block text-sm">
                     <span class="text-gray-700 dark:text-gray-400">Código QR</span>
-                    <input name="code_qr" id="code_qr" class="block w-full my-2 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input" autofocus autocomplete="off" />
+                    <input name="code_qr" id="code_qr" class="block w-full my-2 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input" autocomplete="off" />
                 </label>
 
                 <div class="flex justify-end mt-2 gap-2">
@@ -100,17 +70,6 @@
                     </button>
                 </div>
             </form>
-
-            @if ($errors->any())
-            <div class="mb-4">
-                <div class="font-medium text-red-600">¡Oh no! Algo salió mal.</div>
-                <ul class="mt-3 text-sm text-red-600 list-disc list-inside">
-                    @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-            @endif
 
             @if (session('success'))
             <div class="mb-4 font-medium text-green-600">
@@ -179,12 +138,8 @@
         </div>
     </div>
     <script>
-        // window.onload = function() {
-        //     document.getElementById("code_qr").focus();
-        // };
-
-        // function setFocusToTextBox() {
-        //     document.getElementById("serial").focus();
-        // }
+        window.onload = function() {
+            document.getElementById("code_qr").focus();
+        };
     </script>
 </x-app-layout>
