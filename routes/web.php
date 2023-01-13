@@ -115,8 +115,13 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function () {
      * Routes Shipping Instructions
      */
     Route::resource('shipping-instruction', ShippingInstructionController::class);
+
     Route::get('report-si', [ShippingInstructionController::class, 'reportShipping'])->name('shipping-instruction.report-si');
     Route::post('download-si', [ShippingInstructionController::class, 'downloadShipping'])->name('shipping-instruction.download-si');
+    Route::post('not-found-si', [ShippingInstructionController::class, 'noFound'])->name('shipping-instruction.not-found-si');
+
+    Route::get('scan', [ShippingInstructionController::class, 'scan'])->name('shipping-instruction.scan');
+    Route::post('store-scan', [ShippingInstructionController::class, 'storeScan'])->name('shipping-instruction.store-scan');
 
     /**
      * Routes Travel

@@ -14,7 +14,7 @@ class ShippingInstruction extends Model
     protected $dateFormat = 'Ymd H:i:s.v';
 
     protected $fillable = [
-        'container', 'invoice', 'serial', 'part_no', 'part_qty', 'arrival_date', 'arrival_time', 'user_id'
+        'container', 'invoice', 'serial', 'part_no', 'part_qty', 'arrival_date', 'arrival_time', 'user_id', 'search'
     ];
 
     public function user(): BelongsTo

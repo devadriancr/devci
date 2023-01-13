@@ -278,65 +278,65 @@ class ConsignmentInstructionController extends Controller
                 ['arrival_time', '=', $time],
                 ['status', '=', true]
             ])
-            ->update(['status' => false]);
+            ->update(['status' => false, 'search' => true]);
 
         return redirect('consignment-instruction-container');
     }
 
-    public function data_upload_index()
-    {
-        return view('data-upload.index');
-    }
+    // public function data_upload_index()
+    // {
+    //     return view('data-upload.index');
+    // }
 
-    public function data_upload_store(Request $request)
-    {
-        $file = $request->file('import_file');
+    // public function data_upload_store(Request $request)
+    // {
+    //     $file = $request->file('import_file');
 
-        Excel::import(new DataUploadImport, $file);
+    //     Excel::import(new DataUploadImport, $file);
 
-        return redirect()->route('consigment-instruction.data-upload-index')->with('success', 'Datos Importados Correctamente');
-    }
+    //     return redirect()->route('consigment-instruction.data-upload-index')->with('success', 'Datos Importados Correctamente');
+    // }
 
-    public function data_upload_inventory()
-    {
-        $consignmentRecords = ConsignmentInstruction::where('flag', false)->get();
+    // public function data_upload_inventory()
+    // {
+    //     $consignmentRecords = ConsignmentInstruction::where('flag', false)->get();
 
-        foreach ($consignmentRecords as $key => $consignmentRecord) {
-            $item = Item::where('item_number', 'LIKE', '%' . $consignmentRecord->part_no . '%')->first();
-            $location = Location::where('code', 'LIKE', '%' . $consignmentRecord->location . '%')->first();
-            $transaccion = TransactionType::where('code', 'LIKE', 'U%')->first();
+    //     foreach ($consignmentRecords as $key => $consignmentRecord) {
+    //         $item = Item::where('item_number', 'LIKE', '%' . $consignmentRecord->part_no . '%')->first();
+    //         $location = Location::where('code', 'LIKE', '%' . $consignmentRecord->location . '%')->first();
+    //         $transaccion = TransactionType::where('code', 'LIKE', 'U%')->first();
 
-            if ($item !== null) {
-                // $inventory = Inventory::where('item_id', $item->id)->first();
+    //         if ($item !== null) {
+    //             // $inventory = Inventory::where('item_id', $item->id)->first();
 
-                // if ($inventory !== null) {
-                //     $quantity = $inventory->opening_balance + $consignmentRecord->part_qty;
+    //             // if ($inventory !== null) {
+    //             //     $quantity = $inventory->opening_balance + $consignmentRecord->part_qty;
 
-                //     $inventory->update(
-                //         [
-                //             'opening_balance' => $quantity,
-                //             'item_id' => $item->id,
-                //             'location_id' => $location->id
-                //         ]
-                //     );
+    //             //     $inventory->update(
+    //             //         [
+    //             //             'opening_balance' => $quantity,
+    //             //             'item_id' => $item->id,
+    //             //             'location_id' => $location->id
+    //             //         ]
+    //             //     );
 
-                //     Input::storeInput($consignmentRecord->supplier, $consignmentRecord->serial, $item->id, $consignmentRecord->part_qty, '', $transaccion->id, $location->id);
+    //             //     Input::storeInput($consignmentRecord->supplier, $consignmentRecord->serial, $item->id, $consignmentRecord->part_qty, '', $transaccion->id, $location->id);
 
-                //     $consignmentRecord->update(['flag' => true]);
-                // } else {
-                //     Inventory::storeInventory($item->id, 0, $location->id, $consignmentRecord->part_qty);
+    //             //     $consignmentRecord->update(['flag' => true]);
+    //             // } else {
+    //             //     Inventory::storeInventory($item->id, 0, $location->id, $consignmentRecord->part_qty);
 
-                //     Input::storeInput($consignmentRecord->supplier, $consignmentRecord->serial, $item->id, $consignmentRecord->part_qty, '', $transaccion->id, $location->id);
-                // }
+    //             //     Input::storeInput($consignmentRecord->supplier, $consignmentRecord->serial, $item->id, $consignmentRecord->part_qty, '', $transaccion->id, $location->id);
+    //             // }
 
-                Input::storeInput($consignmentRecord->supplier, $consignmentRecord->serial, $item->id, $consignmentRecord->part_qty, '', $transaccion->id, $location->id);
+    //             Input::storeInput($consignmentRecord->supplier, $consignmentRecord->serial, $item->id, $consignmentRecord->part_qty, '', $transaccion->id, $location->id);
 
-                $consignmentRecord->update(['flag' => true]);
-            }
-        }
+    //             $consignmentRecord->update(['flag' => true]);
+    //         }
+    //     }
 
-        return redirect()->route('consigment-instruction.data-upload-index')->with('success', 'Datos Guardados Correctamente');
-    }
+    //     return redirect()->route('consigment-instruction.data-upload-index')->with('success', 'Datos Guardados Correctamente');
+    // }
 
     public function barcode(Request $request)
     {
