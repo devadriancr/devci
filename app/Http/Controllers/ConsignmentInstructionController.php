@@ -278,7 +278,7 @@ class ConsignmentInstructionController extends Controller
                 ['arrival_time', '=', $time],
                 ['status', '=', true]
             ])
-            ->update(['status' => false]);
+            ->update(['status' => false, 'search' => true]);
 
         return redirect('consignment-instruction-container');
     }

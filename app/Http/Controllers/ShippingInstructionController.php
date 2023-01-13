@@ -61,6 +61,67 @@ class ShippingInstructionController extends Controller
         return Excel::download(new ConsignmentInstructionExport($array_consignment), 'Scanned.xlsx');
     }
 
+    public function noFound(Request $request)
+    {
+        $container = Container::find($request->id);
+
+        $consignments = ConsignmentInstruction::where('container_id', $container->id)
+            ->orderBy('supplier', 'ASC')
+            ->orderBy('serial', 'ASC')
+            ->get();
+
+        $shipments = ShippingInstruction::query()
+            ->where([
+                ['container', '=', $container->code],
+                ['arrival_date', '=', $container->arrival_date],
+                ['arrival_time', '=', $container->arrival_time],
+                ['status', '=', true]
+            ])
+            ->orderBy('serial', 'ASC')
+            ->get();
+
+        $array_consignment = [];
+        foreach ($consignments as $key => $consignment) {
+            $serial = $consignment->supplier . $consignment->serial;
+            array_push($array_consignment, $serial);
+        }
+
+        $arrayNotFound = [];
+        foreach ($shipments as $key => $shipping) {
+            if (self::search($array_consignment, 0, count($array_consignment) - 1, $shipping->serial) === false) {
+                array_push($arrayNotFound, [
+                    'container' => $shipping->container,
+                    // 'invoice' => $shipping->invoice,
+                    'serial' => $shipping->serial,
+                    'part_no' => $shipping->part_no,
+                    'part_qty' => $shipping->part_qty,
+                    'arrival_date' => $shipping->arrival_date,
+                    'arrival_time' => $shipping->arrival_time,
+                ]);
+            }
+        }
+
+        return Excel::download(new ConsignmentInstructionExport($arrayNotFound), 'NotFound.xlsx');
+    }
+
+    public function search(array $arr, $start, $end, $x)
+    {
+        if ($end < $start)
+            return false;
+
+        $mid = floor(($end + $start) / 2);
+        if ($arr[$mid] == $x)
+            return true;
+
+        elseif ($arr[$mid] > $x) {
+
+            return self::search($arr, $start, $mid - 1, $x);
+        } else {
+
+            return self::search($arr, $mid + 1, $end, $x);
+        }
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -168,11 +229,17 @@ class ShippingInstructionController extends Controller
         return view('shipping-instruction.report', ['containers' => $containers]);
     }
 
+    /**
+     *
+     */
     public function scan()
     {
         return view('shipping-instruction.scan');
     }
 
+    /**
+     *
+     */
     public function storeScan(Request $request)
     {
         $data = strtoupper($request->qr);
@@ -194,7 +261,7 @@ class ShippingInstructionController extends Controller
 
             Input::storeInput($supplier, $serial, $item->id, $item->item_number, $part_qty, $container->id, $transaccion->id, $location->id);
 
-           $shipping->update(['search' => true]);
+            $shipping->update(['search' => true]);
         } else {
             return redirect()->back()->with('warning', 'Serial No Encontrado O Anteriormente Registrado');
         }
