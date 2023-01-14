@@ -18,6 +18,9 @@ use Maatwebsite\Excel\Facades\Excel;
 class ConsignmentInstructionController extends Controller
 {
 
+    /**
+     *
+     */
     public function consignment_container()
     {
         $containers = Container::where('status', '=', 1)
@@ -28,6 +31,9 @@ class ConsignmentInstructionController extends Controller
         return view('consignment-instruction.container', ['containers' => $containers]);
     }
 
+    /**
+     *
+     */
     public function consignment_create(Request $request)
     {
         $container = Container::findOrFail($request->container);
@@ -36,6 +42,9 @@ class ConsignmentInstructionController extends Controller
         return view('consignment-instruction.create', ['container' => $container, 'consignments' => $consignments]);
     }
 
+    /**
+     *
+     */
     public function consignment_store(Request $request)
     {
         $request->validate([
@@ -58,6 +67,9 @@ class ConsignmentInstructionController extends Controller
         }
     }
 
+    /**
+     *
+     */
     public function consignment_check(Request $request)
     {
         $id = $request->container_id;
@@ -119,6 +131,9 @@ class ConsignmentInstructionController extends Controller
         ]);
     }
 
+    /**
+     *
+     */
     public function search(array $arr, $start, $end, $x)
     {
         if ($end < $start)
@@ -137,6 +152,9 @@ class ConsignmentInstructionController extends Controller
         }
     }
 
+    /**
+     *
+     */
     public function reportFount(Request $request)
     {
         $id = $request->container_id;
@@ -173,6 +191,9 @@ class ConsignmentInstructionController extends Controller
         return Excel::download(new ConsignmentInstructionExport($array_consignment), 'Scanned.xlsx');
     }
 
+    /**
+     *
+     */
     public function reportNotFount(Request $request)
     {
         $id = $request->container_id;
@@ -226,6 +247,9 @@ class ConsignmentInstructionController extends Controller
         return Excel::download(new ConsignmentInstructionExport($arrayNotFound), 'NotFound.xlsx');
     }
 
+    /**
+     *
+     */
     public function consignment_finish(Request $request)
     {
         $id = $request->container_id;
@@ -338,6 +362,9 @@ class ConsignmentInstructionController extends Controller
     //     return redirect()->route('consigment-instruction.data-upload-index')->with('success', 'Datos Guardados Correctamente');
     // }
 
+    /**
+     *
+     */
     public function barcode(Request $request)
     {
         $container = Container::find($request->container_id);
@@ -345,6 +372,9 @@ class ConsignmentInstructionController extends Controller
         return view('consignment-instruction.barcode', ['container' => $container]);
     }
 
+    /**
+     *
+     */
     public function storeBarcode(Request $request)
     {
         $request->validate([
