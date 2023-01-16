@@ -42,46 +42,51 @@
                     Recibo de Consigna
                 </h4> -->
                 @csrf
-                <div class="grid grid-cols-12 gap-2 my-2 uppercase font-medium md:text-base sm:text-base sm:font-normal text-gray-600 dark:text-gray-300">
-                    <div class="col-span-6">
-                        <input name="container_id" value="{{ $container->id }}" hidden>
-                        <span>
-                            {{ $container->code }}
-                        </span>
+                <div>
+                    <div class="grid grid-cols-12 gap-2 my-2 uppercase font-medium md:text-base sm:text-base sm:font-normal text-gray-600 dark:text-gray-300">
+                        <div class="col-span-6">
+                            <input name="container_id" value="{{ $container->id }}" hidden>
+                            <span>
+                                {{ $container->code }}
+                            </span>
+                        </div>
+                        <div class="col-span-6 text-right">
+                            <span>
+                                {{ $container->arrival_date }} {{ $container->arrival_time }}
+                            </span>
+                        </div>
                     </div>
-                    <div class="col-span-6 text-right">
-                        <span>
-                            {{ $container->arrival_date }} {{ $container->arrival_time }}
-                        </span>
+                </div>
+                <div>
+                    <div>
+                        <label class="block text-xs">
+                            <span class="text-gray-700 dark:text-gray-400">Código QR</span>
+                            <input id="code_qr" name="code_qr" class="block w-full my-2 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input" autocomplete="off" />
+                        </label>
+                    </div>
+                    <div class="flex justify-end mt-2 gap-2">
+                        <button class="flex items-center justify-between px-4 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                            </svg>
+                            <span class="ml-2 text-xs">Guardar</span>
+                        </button>
                     </div>
                 </div>
 
-                <label class="block text-xs">
-                    <span class="text-gray-700 dark:text-gray-400">Código QR</span>
-                    <input name="code_qr" id="code_qr" class="block w-full my-2 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input" autocomplete="off" />
-                </label>
-
-                <div class="flex justify-end mt-2 gap-2">
-                    <button class="flex items-center justify-between px-4 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                        </svg>
-                        <span class="ml-2 text-xs">Guardar</span>
-                    </button>
+                @if (session('success'))
+                <div class="mb-4 font-medium text-green-600">
+                    {{ session('success') }}
                 </div>
+                @endif
+
+                @if (session('warning'))
+                <div class="mb-4 font-medium text-yellow-600">
+                    {{ session('warning') }}
+                </div>
+                @endif
+
             </form>
-
-            @if (session('success'))
-            <div class="mb-4 font-medium text-green-600">
-                {{ session('success') }}
-            </div>
-            @endif
-
-            @if (session('warning'))
-            <div class="mb-4 font-medium text-yellow-600">
-                {{ session('warning') }}
-            </div>
-            @endif
         </div>
 
         <div class="w-full overflow-hidden rounded-lg shadow-xs">
