@@ -107,7 +107,7 @@ class InventoryController extends Controller
             ->join('warehouses', 'locations.warehouse_id', '=', 'warehouses.id')
             ->where(
                 [
-                    ['item_classes.code', 'LIKE', '%S1%'],
+                    // ['item_classes.code', 'LIKE', '%S1%'],
                     ['items.item_number', 'LIKE', '%' . $search . '%'],
                 ]
             )

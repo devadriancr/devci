@@ -17,7 +17,6 @@ use Maatwebsite\Excel\Facades\Excel;
 
 class ConsignmentInstructionController extends Controller
 {
-
     /**
      *
      */
@@ -255,38 +254,6 @@ class ConsignmentInstructionController extends Controller
         $container = $request->container_code;
         $date = $request->container_date;
         $time = $request->container_time;
-
-        // $consignments = ConsignmentInstruction::query()
-        //     ->join('containers', 'consignment_instructions.container_id', '=', 'containers.id')
-        //     ->where([
-        //         ['containers.code', '=', $container],
-        //         ['containers.arrival_date', '=', $date],
-        //         ['containers.arrival_time', '=', $time],
-        //         ['containers.status', '=', true]
-        //     ])
-        //     ->orderBy('supplier', 'ASC')
-        //     ->orderBy('serial', 'ASC')
-        //     ->get();
-
-        // foreach ($consignments as $key => $consignment) {
-        //     $item = Item::where('item_number', 'LIKE', '%' . $consignment->part_no . '%')->firstOrFail();
-        //     $transaccion = TransactionType::where('code', '=', 'U3')->firstOrFail();
-        //     $location = Location::where('code', 'LIKE', 'L60%')->firstOrFail();
-
-        //     $input = Input::where([['supplier', $consignment->supplier], ['serial', $consignment->serial]])->first();
-
-        //     if ($input === null) {
-        //         Input::storeInputConsignment(
-        //             $consignment->supplier,
-        //             $consignment->serial,
-        //             $item->id,
-        //             $consignment->part_qty,
-        //             $consignment->container_id,
-        //             $transaccion->id,
-        //             $location->id,
-        //         );
-        //     }
-        // }
 
         // $conn = odbc_connect("Driver={Client Access ODBC Driver (32-bit)};System=192.168.200.7;", "LXSECOFR;", "LXSECOFR;");
         // $query = "CALL LX834OU.YPU180C";

@@ -75,10 +75,9 @@ class ShippingInstructionController extends Controller
 
         $shipments = ShippingInstruction::query()
             ->where([
-                ['container', '=', $container->code],
+                ['container', 'LIKE', $container->code],
                 ['arrival_date', '=', $container->arrival_date],
                 ['arrival_time', '=', $container->arrival_time],
-                ['status', '=', true]
             ])
             ->orderBy('serial', 'ASC')
             ->get();
@@ -251,21 +250,73 @@ class ShippingInstructionController extends Controller
 
         list($a, $b, $c, $d, $e, $f, $g, $h, $i, $j, $part_qty, $supplier, $m, $serial, $o, $p, $q, $r, $s, $t, $u, $v, $w, $x, $y, $z, $part_no) = explode(',', $data);
 
+        $dataConsigement = ConsignmentInstruction::where([
+            ['serial', '=', $serial],
+            ['supplier', '=', $supplier]
+        ])->first();
+
         $shipping = ShippingInstruction::where([
             ['serial', '=', $supplier . $serial],
             ['search', '=', false]
         ])->first();
 
-        if ($shipping !== null) {
-            $container = Container::where('code', 'LIKE', '%' . $shipping->container . '%')->first();
+        if ($dataConsigement === null) {
+            if ($shipping !== null) {
+                $container = Container::where('code', 'LIKE', '%' . $shipping->container . '%')->first();
+                ConsignmentInstruction::storeConsignment($serial, $supplier, $part_qty, $part_no, 'L60', $container->id);
+                $shipping->update(['search' => true]);
+            } else {
+                return redirect()->back()->with('warning', 'Serial No Encontrado O Anteriormente Registrado');
+            }
+        }
+        return redirect()->back()->with('success', 'Registro Exitoso');
+    }
 
-            ConsignmentInstruction::storeConsignment($serial, $supplier, $part_qty, $part_no, 'L60', $container->id);
+    /**
+     *
+     */
+    public function scanBarCode()
+    {
+        return view('shipping-instruction.scanBarCode');
+    }
 
-            $shipping->update(['search' => true]);
-        } else {
-            return redirect()->back()->with('warning', 'Serial No Encontrado O Anteriormente Registrado');
+    /**
+     *
+     */
+    public function storeBarCode(Request $request)
+    {
+        $request->validate([
+            'part' => ['required', 'string'],
+            'quantity' => ['required', 'string'],
+            'supplier' => ['required', 'string'],
+            'serial' => ['required', 'string'],
+        ]);
+
+        $supplier =  strtoupper(substr($request->supplier, 1));
+        $serial = strtoupper(substr($request->serial, 1));
+        $part = strtoupper(substr($request->part, 1));
+        $quantity = strtoupper(substr($request->quantity, 1));
+
+        $dataConsigement = ConsignmentInstruction::where([
+            ['serial', '=', $serial],
+            ['supplier', '=', $supplier]
+        ])->first();
+
+        $dataShipping = ShippingInstruction::where([
+            ['serial', '=', $supplier . $serial],
+            ['search', '=', false]
+        ])->first();
+
+        if ($dataConsigement === null) {
+            if ($dataShipping !== null) {
+                $container = Container::where('code', 'LIKE', '%' . $dataShipping->container . '%')->first();
+                ConsignmentInstruction::storeConsignment($serial, $supplier, $quantity, $part, 'L60', $container->id);
+                $dataShipping->update(['search' => true]);
+            } else {
+                return redirect()->back();
+            }
         }
 
-        return redirect()->back()->with('success', 'Registro Exitoso');
+        return redirect()->back();
     }
 }

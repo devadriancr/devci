@@ -122,6 +122,8 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function () {
 
     Route::get('scan', [ShippingInstructionController::class, 'scan'])->name('shipping-instruction.scan');
     Route::post('store-scan', [ShippingInstructionController::class, 'storeScan'])->name('shipping-instruction.store-scan');
+    Route::get('scan-barcode', [ShippingInstructionController::class, 'scanBarCode'])->name('shipping-instruction.scan-barcode');
+    Route::post('save-barcode', [ShippingInstructionController::class, 'storeBarCode'])->name('shipping-instruction.save-barcode');
 
     /**
      * Routes Travel
