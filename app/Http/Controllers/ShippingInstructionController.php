@@ -61,6 +61,9 @@ class ShippingInstructionController extends Controller
         return Excel::download(new ConsignmentInstructionExport($array_consignment), 'Scanned.xlsx');
     }
 
+    /**
+     *
+     */
     public function noFound(Request $request)
     {
         $container = Container::find($request->id);
@@ -104,6 +107,9 @@ class ShippingInstructionController extends Controller
         return Excel::download(new ConsignmentInstructionExport($arrayNotFound), 'NotFound.xlsx');
     }
 
+    /**
+     *
+     */
     public function search(array $arr, $start, $end, $x)
     {
         if ($end < $start)
@@ -224,9 +230,8 @@ class ShippingInstructionController extends Controller
                 $container->delete();
             }
         }
-        $containers = Container::orderByRaw('arrival_date DESC, arrival_time DESC')->paginate(10);
 
-        return view('shipping-instruction.report', ['containers' => $containers]);
+        return redirect()->back();
     }
 
     /**
@@ -252,14 +257,9 @@ class ShippingInstructionController extends Controller
         ])->first();
 
         if ($shipping !== null) {
-            $item = Item::where('item_number', 'LIKE', $part_no . '%')->first();
             $container = Container::where('code', 'LIKE', '%' . $shipping->container . '%')->first();
-            $transaccion = TransactionType::where('code', '=', 'U3')->first();
-            $location = Location::where('code', 'LIKE', 'L60%')->first();
 
             ConsignmentInstruction::storeConsignment($serial, $supplier, $part_qty, $part_no, 'L60', $container->id);
-
-            Input::storeInput($supplier, $serial, $item->id, $item->item_number, $part_qty, $container->id, $transaccion->id, $location->id);
 
             $shipping->update(['search' => true]);
         } else {

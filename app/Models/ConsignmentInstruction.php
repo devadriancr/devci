@@ -52,8 +52,8 @@ class ConsignmentInstruction extends Model
 
         ConsignmentInstruction::create(
             [
-                'serial' => $serial,
                 'supplier' => $supplier,
+                'serial' => $serial,
                 'part_qty' => $part_qty,
                 'part_no' => $part_no,
                 'location' => $location,
