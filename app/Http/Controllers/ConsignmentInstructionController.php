@@ -18,6 +18,9 @@ use Maatwebsite\Excel\Facades\Excel;
 class ConsignmentInstructionController extends Controller
 {
 
+    /**
+     *
+     */
     public function consignment_container()
     {
         $containers = Container::where('status', '=', 1)
@@ -28,6 +31,9 @@ class ConsignmentInstructionController extends Controller
         return view('consignment-instruction.container', ['containers' => $containers]);
     }
 
+    /**
+     *
+     */
     public function consignment_create(Request $request)
     {
         $container = Container::findOrFail($request->container);
@@ -36,6 +42,9 @@ class ConsignmentInstructionController extends Controller
         return view('consignment-instruction.create', ['container' => $container, 'consignments' => $consignments]);
     }
 
+    /**
+     *
+     */
     public function consignment_store(Request $request)
     {
         $request->validate([
@@ -51,13 +60,15 @@ class ConsignmentInstructionController extends Controller
 
         if ($data === null) {
             ConsignmentInstruction::storeConsignment($serial, $supplier, $part_qty, $part_no, 'L60', $request->container_id);
-
             return redirect()->back()->with('success', 'Registro Exitoso');
         } else {
             return redirect()->back()->with('warning', 'Registro Duplicado');
         }
     }
 
+    /**
+     *
+     */
     public function consignment_check(Request $request)
     {
         $id = $request->container_id;
@@ -119,6 +130,9 @@ class ConsignmentInstructionController extends Controller
         ]);
     }
 
+    /**
+     *
+     */
     public function search(array $arr, $start, $end, $x)
     {
         if ($end < $start)
@@ -137,6 +151,9 @@ class ConsignmentInstructionController extends Controller
         }
     }
 
+    /**
+     *
+     */
     public function reportFount(Request $request)
     {
         $id = $request->container_id;
@@ -173,6 +190,9 @@ class ConsignmentInstructionController extends Controller
         return Excel::download(new ConsignmentInstructionExport($array_consignment), 'Scanned.xlsx');
     }
 
+    /**
+     *
+     */
     public function reportNotFount(Request $request)
     {
         $id = $request->container_id;
@@ -226,6 +246,9 @@ class ConsignmentInstructionController extends Controller
         return Excel::download(new ConsignmentInstructionExport($arrayNotFound), 'NotFound.xlsx');
     }
 
+    /**
+     *
+     */
     public function consignment_finish(Request $request)
     {
         $id = $request->container_id;
@@ -233,37 +256,37 @@ class ConsignmentInstructionController extends Controller
         $date = $request->container_date;
         $time = $request->container_time;
 
-        $consignments = ConsignmentInstruction::query()
-            ->join('containers', 'consignment_instructions.container_id', '=', 'containers.id')
-            ->where([
-                ['containers.code', '=', $container],
-                ['containers.arrival_date', '=', $date],
-                ['containers.arrival_time', '=', $time],
-                ['containers.status', '=', true]
-            ])
-            ->orderBy('supplier', 'ASC')
-            ->orderBy('serial', 'ASC')
-            ->get();
+        // $consignments = ConsignmentInstruction::query()
+        //     ->join('containers', 'consignment_instructions.container_id', '=', 'containers.id')
+        //     ->where([
+        //         ['containers.code', '=', $container],
+        //         ['containers.arrival_date', '=', $date],
+        //         ['containers.arrival_time', '=', $time],
+        //         ['containers.status', '=', true]
+        //     ])
+        //     ->orderBy('supplier', 'ASC')
+        //     ->orderBy('serial', 'ASC')
+        //     ->get();
 
-        foreach ($consignments as $key => $consignment) {
-            $item = Item::where('item_number', 'LIKE', '%' . $consignment->part_no . '%')->firstOrFail();
-            $transaccion = TransactionType::where('code', '=', 'U3')->firstOrFail();
-            $location = Location::where('code', 'LIKE', 'L60%')->firstOrFail();
+        // foreach ($consignments as $key => $consignment) {
+        //     $item = Item::where('item_number', 'LIKE', '%' . $consignment->part_no . '%')->firstOrFail();
+        //     $transaccion = TransactionType::where('code', '=', 'U3')->firstOrFail();
+        //     $location = Location::where('code', 'LIKE', 'L60%')->firstOrFail();
 
-            $input = Input::where([['supplier', $consignment->supplier], ['serial', $consignment->serial]])->first();
+        //     $input = Input::where([['supplier', $consignment->supplier], ['serial', $consignment->serial]])->first();
 
-            if ($input === null) {
-                Input::storeInputConsignment(
-                    $consignment->supplier,
-                    $consignment->serial,
-                    $item->id,
-                    $consignment->part_qty,
-                    $consignment->container_id,
-                    $transaccion->id,
-                    $location->id,
-                );
-            }
-        }
+        //     if ($input === null) {
+        //         Input::storeInputConsignment(
+        //             $consignment->supplier,
+        //             $consignment->serial,
+        //             $item->id,
+        //             $consignment->part_qty,
+        //             $consignment->container_id,
+        //             $transaccion->id,
+        //             $location->id,
+        //         );
+        //     }
+        // }
 
         // $conn = odbc_connect("Driver={Client Access ODBC Driver (32-bit)};System=192.168.200.7;", "LXSECOFR;", "LXSECOFR;");
         // $query = "CALL LX834OU.YPU180C";
@@ -338,6 +361,9 @@ class ConsignmentInstructionController extends Controller
     //     return redirect()->route('consigment-instruction.data-upload-index')->with('success', 'Datos Guardados Correctamente');
     // }
 
+    /**
+     *
+     */
     public function barcode(Request $request)
     {
         $container = Container::find($request->container_id);
@@ -345,6 +371,9 @@ class ConsignmentInstructionController extends Controller
         return view('consignment-instruction.barcode', ['container' => $container]);
     }
 
+    /**
+     *
+     */
     public function storeBarcode(Request $request)
     {
         $request->validate([

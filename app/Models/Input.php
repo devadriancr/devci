@@ -28,35 +28,57 @@ class Input extends Model
         'purchase_order'
     ];
 
+    /**
+     *
+     */
     public function item(): BelongsTo
     {
         return $this->belongsTo(Item::class);
     }
 
+    /**
+     *
+     */
     public function container(): BelongsTo
     {
         return $this->belongsTo(Container::class);
     }
 
+    /**
+     *
+     */
     public function transaction(): BelongsTo
     {
         return $this->belongsTo(Transactiontype::class, 'transaction_type_id');
     }
 
+    /**
+     *
+     */
     public function location(): BelongsTo
     {
         return $this->belongsTo(Location::class);
     }
 
+    /**
+     *
+     */
     public function travel(): BelongsTo
     {
         return $this->belongsTo(Travel::class);
     }
+
+    /**
+     *
+     */
     public function deliveryproduction(): BelongsTo
     {
         return $this->belongsTo(delveryproduction::class);
     }
 
+    /**
+     *
+     */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
@@ -65,14 +87,15 @@ class Input extends Model
     /**
      *
      */
-    public  static function storeInput(
+    public static function storeInputConsignment(
         string $supplier,
         string $serial,
         int $itemId,
         string $item,
-        float $quantity,
+        int $quantity,
         int $containerId,
-        int $transactionTypeId,
+        string $container,
+        int $transactionId,
         int $locationId
     ) {
         $input = Input::create(
@@ -82,18 +105,18 @@ class Input extends Model
                 'item_id' => $itemId,
                 'item_quantity' => $quantity,
                 'container_id' => $containerId,
-                'transaction_type_id' => $transactionTypeId,
+                'transaction_type_id' => $transactionId,
                 'location_id' => $locationId,
                 'user_id' => Auth::id()
             ]
         );
 
-        $info_cont = Container::where('id', '=', $containerId)->firstOrFail();
+        $cont = Container::where('id', '=', $containerId)->firstOrFail();
 
-        YH003::insert([
-            'H3CONO' => $$info_cont->code,
-            'H3DDTE' => Carbon::parse($info_cont->arrival_date)->format('Ymd') ?? '',
-            'H3DTIM' => Carbon::parse($info_cont->arrival_time)->format('His') ?? '',
+        YH003::query()->insert([
+            'H3CONO' => $container ?? '',
+            'H3DDTE' => Carbon::parse($cont->arrival_date)->format('Ymd') ?? '',
+            'H3DTIM' => Carbon::parse($cont->arrival_time)->format('His') ?? '',
             'H3PROD' => $item,
             'H3SUCD' => $supplier,
             'H3SENO' => $serial,
@@ -103,65 +126,9 @@ class Input extends Model
             'H3RTIM' => Carbon::parse($input->created_at)->format('His')
         ]);
 
-        $inventory = Inventory::where([
+        $itemInventory = Inventory::where([
             ['item_id', '=', $itemId],
             ['location_id', '=', $locationId]
-        ])->first();
-
-        $quantity = $inventory->quantity ?? 0;
-
-        $sum = 0;
-        $sum = $quantity + $quantity;
-
-        Inventory::updateOrCreate(
-            [
-                'item_id' => $itemId,
-                'location_id' => $locationId,
-            ],
-            [
-                'quantity' => $sum
-            ]
-        );
-
-    }
-
-    /**
-     *
-     */
-    public static function storeInputConsignment(string $supplier, string $serial, int $item, int $quantity, int $container, int $transaction, int $location)
-    {
-        $info_cont = Container::where('id', '=', $container)->firstOrFail();
-        $part_no = Item::where('id', '=', $item)->firstOrFail();
-
-        $input = Input::create(
-            [
-                'serial' => $serial,
-                'supplier' => $supplier,
-                'item_id' => $item,
-                'item_quantity' => $quantity,
-                'container_id' => $container,
-                'transaction_type_id' => $transaction,
-                'location_id' => $location,
-                'user_id' => Auth::id()
-            ]
-        );
-
-        YH003::query()->insert([
-            'H3CONO' => $info_cont->code ?? '',
-            'H3DDTE' => Carbon::parse($info_cont->arrival_date)->format('Ymd') ?? '',
-            'H3DTIM' => Carbon::parse($info_cont->arrival_time)->format('His') ?? '',
-            'H3PROD' => $part_no->item_number,
-            'H3SUCD' => $supplier,
-            'H3SENO' => $serial,
-            'H3RQTY' => $quantity,
-            'H3CUSR' => Auth::user()->user_infor ?? '',
-            'H3RDTE' => Carbon::parse($input->created_at)->format('Ymd'),
-            'H3RTIM' => Carbon::parse($input->created_at)->format('His')
-        ]);
-
-        $itemInventory = Inventory::where([
-            ['item_id', '=', $item],
-            ['location_id', '=', $location]
         ])->first();
 
         $itemQuantity = $itemInventory->quantity ?? 0;
@@ -171,8 +138,8 @@ class Input extends Model
 
         Inventory::updateOrCreate(
             [
-                'item_id' => $item,
-                'location_id' => $location,
+                'item_id' => $itemId,
+                'location_id' => $locationId,
             ],
             [
                 'quantity' => $sum
