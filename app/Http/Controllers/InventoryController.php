@@ -6,10 +6,12 @@ use App\Models\ILI;
 use App\Models\Input;
 use App\Models\Inventory;
 use App\Models\Item;
+use App\Models\ItemClass;
 use App\Models\Location;
 use App\Models\output;
 use App\Models\TransactionType;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class InventoryController extends Controller
 {
@@ -18,76 +20,65 @@ class InventoryController extends Controller
      */
     public function upload()
     {
-        $inventories = ILI::query()
-            ->select(
-                [
-                    'LID', 'LPROD', 'LWHS', 'LLOC', 'LOPB'
-                ]
-            )
+        $ili = ILI::select(
+            [
+                'LID', 'LPROD', 'LWHS', 'LLOC', 'LOPB'
+            ]
+        )
             ->where('LID', 'LI')
             ->orderBy('LOPB', 'DESC')
             ->get();
 
-        foreach ($inventories as $key => $inventory) {
-            $item = Item::where('item_number', $inventory->LPROD)->first();
-            $location = Location::where('code', $inventory->LLOC)->first();
-            if ($item !== null && $location !== null) {
-                $inventoryItem = Inventory::where([
-                        ['item_id', $item->id],
-                        ['location_id', $location->id]
-                    ])
-                    ->first();
+        // foreach ($ili as $key => $iliVaue) {
+        //     $item = Item::where('item_number', $iliVaue->LPROD)->first();
+        //     $location = Location::where('code', $iliVaue->LLOC)->first();
+        //     if ($item !== null && $location !== null) {
 
-                if ($inventoryItem === null) {
-                    Inventory::storeInventory($item->id, 0, $location->id, 0);
-                }
-            }
-        }
+        //         $inventoryItem = Inventory::where([
+        //             ['item_id', $item->id],
+        //             ['location_id', $location->id]
+        //         ])
+        //             ->first();
 
-        // foreach ($inventories as $key => $inventory) {
-        //     $item = Item::where('item_number', $inventory->LPROD)->first();
-        //     $location = Location::where('code', $inventory->LLOC)->first();
-
-        //     if ($item != null && $location != null) {
-
-        //         $data = Inventory::where([['item_id', $item->id], ['location_id', $location->id]])->first();
-        //         $transaction = TransactionType::where('code', 'LIKE', '%O%')->first();
-
-        //         if ($data !== null) {
-        //             $sum = $data->opening_balance + $data->quantity;
-
-        //             if ($inventory->LOPB > $sum) {
-        //                 $result = $inventory->LOPB - $sum;
-
-        //                 Input::storeInput($item->id,  $result, $transaction->id, $location->id);
-
-        //                 $data->update(['opening_balance' => $inventory->LOPB, 'quantity' => 0]);
-        //             } elseif ($sum > $inventory->LOPB) {
-        //                 $result = $sum - $inventory->LOPB;
-
-        //                 output::storeOutput($item->id, $result, $transaction->id, $location->id);
-
-        //                 $data->update(['opening_balance' => $inventory->LOPB, 'quantity' => 0]);
-        //             } else {
-        //                 $result = $inventory->LOPB - $sum;
-
-        //                 $data->update(['opening_balance' => $inventory->LOPB, 'quantity' => 0]);
-        //             }
-        //         } else {
-        //             Input::storeInput($item->id, $inventory->LOPB, $transaction->id, $location->id);
-
-        //             $data = Inventory::create(
-        //                 [
-        //                     'item_id' => $item->id,
-        //                     'location_id' => $location->id,
-        //                     'opening_balance' => $inventory->LOPB,
-        //                     'quantity' => 0
-        //                 ]
-        //             );
+        //         if ($inventoryItem === null) {
+        //             Inventory::storeInventory($item->id, 0, $location->id, 0);
         //         }
         //     }
         // }
 
+        foreach ($ili as $key => $iliVaue) {
+            $item = Item::where('item_number', $iliVaue->LPROD)->first();
+            $location = Location::where('code', $iliVaue->LLOC)->first();
+
+            if ($item !== null && $location !== null) {
+                $transaction = TransactionType::where('code', 'LIKE', '%O%')->first();
+
+                $data = Inventory::where(
+                    [
+                        ['item_id', $item->id],
+                        ['location_id', $location->id]
+                    ]
+                )->first();
+
+                if ($data !== null) {
+                    Input::storeOpeningBalance($item->id,  $iliVaue->LOPB, $transaction->id, $location->id);
+
+                    $data->update(['opening_balance' => $iliVaue->LOPB]);
+                } else {
+                    $input = Input::storeOpeningBalance($item->id, $iliVaue->LOPB, $transaction->id, $location->id);
+
+                    $data = Inventory::create(
+                        [
+                            'item_id' => $item->id,
+                            'location_id' => $location->id,
+                            'opening_balance' => $iliVaue->LOPB,
+                        ]
+                    );
+                }
+            } else {
+                Log::info("Item: " . $iliVaue->LPROD . "Locación: " . $iliVaue->LLOC);
+            }
+        }
         return redirect('inventory');
     }
 
@@ -98,6 +89,8 @@ class InventoryController extends Controller
      */
     public function index(Request $request)
     {
+        $classes = ItemClass::orderBy('code', 'ASC')->get();
+
         $search = strtoupper($request->search) ?? '';
 
         $inventories = Inventory::query()
@@ -116,7 +109,7 @@ class InventoryController extends Controller
             ->orderByRaw('inventories.updated_at DESC, items.item_number ASC, warehouses.code ASC, locations.code ASC')
             ->paginate(10);
 
-        return view('inventory.index', ['inventories' => $inventories]);
+        return view('inventory.index', ['inventories' => $inventories, 'classes' => $classes]);
     }
 
     /**
