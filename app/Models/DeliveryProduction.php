@@ -21,6 +21,10 @@ class DeliveryProduction extends Model
     {
         return $this->hasMany(Output::class);
     }
+    public function outputsupplier(): HasMany
+    {
+        return $this->hasMany(outputsupplier::class);
+    }
     public function input(): HasMany
     {
         return $this->hasMany(Input::class);

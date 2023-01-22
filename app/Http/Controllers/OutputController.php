@@ -180,6 +180,7 @@ class OutputController extends Controller
                         'I7CCTM' => $hora,
                     ]
 
+
                 );
                 Output::create([
                     'supplier' =>  $cadena[11],

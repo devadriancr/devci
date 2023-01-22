@@ -38,10 +38,12 @@ class DeiveryProductionController extends Controller
     public function create(Request $request)
     {
         $location = location::where('code', 'like', '%L12%')->first();
+        $use = Auth::user()->id;
         $No = DeliveryProduction::create([
             'control_number' => $request->number_control,
             'location_id' => $location->id,
-            'finish' => 0
+            'finish' => 0,
+            'user_id' => $use
         ]);
         $scan =  input::where('delivery_production_id', $No->id)->simplePaginate(10);
         return view('delivery_line.scan', ['entrega' => $No, 'scan' => $scan]);
@@ -62,8 +64,8 @@ class DeiveryProductionController extends Controller
         foreach ($scan as $scans) {
             self::inventario($scans->serial, $scans->item_id, $scans->item->item_number, $scans->location_id, $scans->item_quantity, $loc_ant_id->id, $scans->created_at, $loc_ant_id->warehouse->code, $loc_act_id->warehouse->code);
         }
-        DeliveryProduction::where('id',$request->Delivery_id )
-        ->update(['finish' => 1]);
+        DeliveryProduction::where('id', $request->Delivery_id)
+            ->update(['finish' => 1]);
 
         // $conn = odbc_connect("Driver={Client Access ODBC Driver (32-bit)};System=192.168.200.7;", "LXSECOFR;", "LXSECOFR;");
         // $query = "CALL LX834OU.YIN151C";
@@ -98,6 +100,7 @@ class DeiveryProductionController extends Controller
     }
     public function inventario($serial, $item, $number_item, $loc, $cantidad, $loc_ant, $fechahora, $WH, $wh_act)
     {
+        $serial_18=$serial.'         ';
         $operacion = Inventory::where('location_id', $loc)->where('item_id', $item)->first();
         $operacion_ant = Inventory::where('location_id', $loc_ant)->where('item_id', $item)->first();
         if (is_null($operacion)) {
@@ -407,7 +410,7 @@ class DeiveryProductionController extends Controller
                         'I7TFLG' => 'I',
                         'I7TDTE' => $fechascan,
                         'I7TTIM' => $horascan,
-                        'I7TQTY' =>$quantity,
+                        'I7TQTY' => $quantity,
                         'I7WHS' => $loc_ant_id->warehouse->code,
                         'I7CUSR' => 'YKMS',
                         'I7CCDT' => $fechainfor,
@@ -441,7 +444,7 @@ class DeiveryProductionController extends Controller
                 $message = ' Serial dado de alta exitosamente ';
             }
         }
-        $scan  = input::with('item')->where('delivery_production_id', $request->delivery_id)->orderby('id','desc')->get();
+        $scan  = input::with('item')->where('delivery_production_id', $request->delivery_id)->orderby('id', 'desc')->get();
         $travels = array();
         $entrega = DeliveryProduction::find($request->delivery_id);
 
