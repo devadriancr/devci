@@ -89,7 +89,7 @@ class Input extends Model
         $input = Input::create(
             [
                 'item_id' => $itemId,
-                'opening_balance' => $quantity,
+                'item_quantity' => $quantity,
                 'transaction_type_id' => $transactionId,
                 'location_id' => $locationId,
                 'user_id' => Auth::id()
