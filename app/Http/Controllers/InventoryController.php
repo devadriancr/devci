@@ -89,8 +89,6 @@ class InventoryController extends Controller
      */
     public function index(Request $request)
     {
-        $classes = ItemClass::orderBy('code', 'ASC')->get();
-
         $search = strtoupper($request->search) ?? '';
 
         $inventories = Inventory::query()
@@ -100,7 +98,6 @@ class InventoryController extends Controller
             ->join('warehouses', 'locations.warehouse_id', '=', 'warehouses.id')
             ->where(
                 [
-                    // ['item_classes.code', 'LIKE', '%S1%'],
                     ['items.item_number', 'LIKE', '%' . $search . '%'],
                 ]
             )
@@ -109,7 +106,7 @@ class InventoryController extends Controller
             ->orderByRaw('inventories.updated_at DESC, items.item_number ASC, warehouses.code ASC, locations.code ASC')
             ->paginate(10);
 
-        return view('inventory.index', ['inventories' => $inventories, 'classes' => $classes]);
+        return view('inventory.index', ['inventories' => $inventories]);
     }
 
     /**

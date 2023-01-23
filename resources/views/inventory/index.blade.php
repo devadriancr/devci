@@ -18,39 +18,17 @@
 
             <div>
                 <form method="GET" action="{{ route('inventory.index') }}">
-                    <div class="grid grid-cols-12 gap-x-2">
-                        <div class="col-span-8">
-                            <label class="text-sm">
-                                <span class="text-gray-700 dark:text-gray-400">
-                                    No. Parte
-                                </span>
-                                <div class="relative text-gray-500 focus-within:text-purple-600">
-                                    <input name="search" class="block w-full pr-20 text-sm text-black dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:focus:shadow-outline-gray form-input" placeholder="" autocomplete="off" />
-                                    <button class="absolute inset-y-0 right-0 px-4 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-r-md active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple">
-                                        Buscar
-                                    </button>
-                                </div>
-                            </label>
+                    <label class="text-sm">
+                        <div class="relative text-gray-500 focus-within:text-purple-600">
+                            <input name="search" class="block w-full pr-20 text-sm text-black dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:focus:shadow-outline-gray form-input" placeholder="" autocomplete="off" />
+                            <button class="absolute inset-y-0 right-0 px-4 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-r-md active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple">
+                                Buscar
+                            </button>
                         </div>
-
-                        <div class="col-span-4">
-                            <label class="block text-sm">
-                                <span class="text-gray-700 dark:text-gray-400">
-                                    Clase
-                                </span>
-                                <select  name="class" class="block w-full mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-select focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:focus:shadow-outline-gray">
-                                    @foreach ($classes as $class)
-                                    <option value="{{ $class->id }}"> {{ $class->code }} - {{ $class->name }} </option>
-                                    @endforeach
-                                </select>
-                            </label>
-                        </div>
-                    </div>
+                    </label>
                 </form>
             </div>
         </div>
-
-
 
         <div class="w-full overflow-hidden rounded-lg shadow-xs">
             <div class="w-full overflow-x-auto">
