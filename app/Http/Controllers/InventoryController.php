@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Imports\InventoryAmountOpeningBalanceImport;
 use App\Models\ILI;
 use App\Models\Input;
 use App\Models\Inventory;
@@ -12,6 +13,7 @@ use App\Models\output;
 use App\Models\TransactionType;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Maatwebsite\Excel\Facades\Excel;
 
 class InventoryController extends Controller
 {
@@ -80,6 +82,19 @@ class InventoryController extends Controller
             }
         }
         return redirect('inventory');
+    }
+
+    public function uploadFile(Request $request)
+    {
+        $request->validate([
+            'import_file' => 'required', 'mimes:xls,xlsx,csv'
+        ]);
+
+        $file = $request->file('import_file');
+
+        Excel::import(new InventoryAmountOpeningBalanceImport, $file);
+
+        return redirect()->back()->with('success', 'Documento Importado Exitosamente');
     }
 
     /**
