@@ -16,6 +16,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\WarehouseController;
 use App\Http\Controllers\TravelController;
 use App\Http\Controllers\DeiveryProductionController;
+use App\Http\Controllers\DeliverySupplierController;
 use App\Http\Controllers\ManualAdjustments;
 use App\Http\Controllers\OutputController;
 use App\Http\Controllers\RequestListController;
@@ -214,4 +215,16 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function () {
      * Route Supplier
      */
     Route::resource('ManualAdjustment', ManualAdjustments::class);
+ /**
+     * Delivery Supplier
+     */
+    Route::resource('DeliverySupplier', DeliverySupplierController::class);
+    Route::POST('DeliverySupplier-store', [DeliverySupplierController::class, 'store'])->name('DeliverySupplier.store');
+    Route::POST('DeliverySupplier-create', [DeliverySupplierController::class, 'create'])->name('DeliverySupplier.create');
+    Route::POST('DeliverySupplier-update', [DeliverySupplierController::class, 'update'])->name('DeliverySupplier.update');
+    Route::POST('DeliverySupplier-updatebar', [DeliverySupplierController::class, 'updatebar'])->name('DeliverySupplier.updatebar');
+    Route::POST('DeliverySupplier-export', [DeliverySupplierController::class, 'export'])->name('DeliverySupplier.export');
+    Route::POST('DeliverySupplier-destroy', [DeliverySupplierController::class, 'destroy'])->name('DeliverySupplier.destroy');
+    Route::POST('DeliverySupplier-scanqr', [DeliverySupplierController::class, 'scanqr'])->name('DeliverySupplier.scanqr');
+
 });
