@@ -42,33 +42,22 @@ class InventoryAmountOpeningBalanceImport implements ToModel, WithHeadingRow, Wi
                     ['location_id', $loct->id],
                     ['transaction_type_id', $transaction->id]
                 ]
-            )
-                ->orderBy('id', 'DESC')
-                ->first();
-
-            dd($input->id, $row['item']);
+            )->orderBy('id', 'DESC')->first();
 
             if ($inventory !== null) {
                 $inventory->update(['opening_balance' => $qty]);
+            } else {
+                $inventory = Inventory::create([
+                    'opening_balance' => $qty,
+                    'item_id' => $item->id,
+                    'location_id' => $loct->id
+                ]);
+            }
 
+            if ($input !== null) {
                 $input->update(['item_quantity' => $qty]);
             } else {
-                if ($item->id !== null && $loct->id !== null) {
-                    $inventory = Inventory::create([
-                        'opening_balance' => $qty,
-                        'item_id' => $item->id,
-                        'location_id' => $loct->id
-                    ]);
-
-                    $input = Input::storeOpeningBalance($item->id, $qty, $transaction->id, $loct->id);
-
-                    // return new Inventory([
-                    //     'opening_balance' => $qty,
-                    //     'item_id' => $item->id,
-                    //     'location_id' => $loct->id
-                    // ]);
-
-                }
+                $input = Input::storeOpeningBalance($item->id, $qty, $transaction->id, $loct->id);
             }
         }
     }
