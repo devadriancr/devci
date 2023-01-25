@@ -223,7 +223,7 @@ class DeiveryProductionController extends Controller
 
 
         if ($error == 0) {
-            $location_old = location::where('code', 'like', '%L60%')->first();
+            $location_old = location::where('code', 'like', 'L60%')->first();
             $Transaction_type = transactiontype::where('code', 'like', '%T %')->first();
             $re = Output::create([
                 'supplier' =>  $cadena[11],
@@ -232,7 +232,7 @@ class DeiveryProductionController extends Controller
                 'item_quantity' =>  $cadena[10],
                 'transaction_type_id' => $Transaction_type->id,
                 'delivery_production_id' => $request->delivery_id,
-                'location_id' => $location_old->location_id,
+                'location_id' => $location_old->id,
                 'user_id' =>     $use = Auth::user()->id
             ]);
             $re = input::create([
@@ -249,7 +249,7 @@ class DeiveryProductionController extends Controller
         } else {
             if ($error == 5) {
 
-                $location_old = location::where('code', 'like', '%L60%')->first();
+                $location_old = location::where('code', 'like', 'L60%')->first();
 
                 $Transaction_type = transactiontype::where('code', 'like', '%T %')->first();
                 $re = input::create([
@@ -360,7 +360,7 @@ class DeiveryProductionController extends Controller
             }
         }
         if ($error == 0) {
-            $location_old = location::where('code', 'like', '%L60%')->first();
+            $location_old = location::where('code', 'like', 'L60%')->first();
             $Transaction_type = transactiontype::where('code', 'like', '%T %')->first();
             $re = Output::create([
                 'supplier' =>  $suppier,
@@ -369,7 +369,7 @@ class DeiveryProductionController extends Controller
                 'item_quantity' =>  $quantity,
                 'transaction_type_id' => $Transaction_type->id,
                 'delivery_production_id' => $request->delivery_id,
-                'location_id' => $location_old->location_id,
+                'location_id' => $location_old->id,
                 'user_id' =>     $use = Auth::user()->id
             ]);
             $re = input::create([
@@ -385,7 +385,7 @@ class DeiveryProductionController extends Controller
             $message = 'Serial capturado exitosamente';
         } else {
             if ($error == 5) {
-                $location_old = location::where('code', 'like', '%L60%')->first();
+                $location_old = location::where('code', 'like', 'L60%')->first();
                 $Transaction_type = transactiontype::where('code', 'like', '%T %')->first();
                 $re = input::create([
                     'supplier' => $suppier,
