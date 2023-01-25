@@ -17,13 +17,27 @@ class TransactionType extends Model
         'tid', 'code', 'name', 'description', 'status',
     ];
 
+    /**
+     *
+     */
     public function outputs(): HasMany
     {
         return $this->hasMany(Output::class);
     }
 
+    /**
+     *
+     */
     public function inputs(): HasMany
     {
         return $this->hasMany(Input::class);
+    }
+
+    /**
+     *
+     */
+    public function inputSupplier(): HasMany
+    {
+        return $this->hasMany(InputSupplier::class);
     }
 }

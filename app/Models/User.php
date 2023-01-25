@@ -66,33 +66,59 @@ class User extends Authenticatable
         'profile_photo_url',
     ];
 
+    /**
+     *
+     */
     public function containers(): HasMany
     {
         return $this->hasMany(Container::class);
     }
 
+    /**
+     *
+     */
     public function consignments(): HasMany
     {
         return $this->hasMany(ConsignmentInstruction::class);
     }
 
+    /**
+     *
+     */
     public function shipping(): HasMany
     {
         return $this->hasMany(ShippingInstruction::class);
     }
 
+    /**
+     *
+     */
     public function orderinformation(): BelongsTo
     {
         return $this->belongsTo(orderinformation::class);
     }
 
+    /**
+     *
+     */
     public function inputs(): HasMany
     {
         return $this->hasMany(Input::class);
     }
 
+    /**
+     *
+     */
     public function outputs(): HasMany
     {
         return $this->hasMany(output::class);
+    }
+
+    /**
+     *
+     */
+    public function inputSupplier(): HasMany
+    {
+        return $this->hasMany(InputSupplier::class);
     }
 }

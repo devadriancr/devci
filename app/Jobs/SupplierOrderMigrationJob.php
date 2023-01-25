@@ -4,6 +4,7 @@ namespace App\Jobs;
 
 use App\Models\HPO;
 use App\Models\Input;
+use App\Models\InputSupplier;
 use App\Models\RYT1;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
@@ -33,14 +34,13 @@ class SupplierOrderMigrationJob implements ShouldQueue
      */
     public function handle()
     {
-        $orders = RYT1::select('R1ORN', 'R1SQN', 'R1SNP', 'R1DAT', 'R1TIM', 'R1USR')
+        $orders = RYT1::select('R1ORN', 'R1SQN', 'R1SNP', 'R1DAT', 'R1TIM', 'R1PRO', 'R1USR')
             ->orderByRaw('R1DAT DESC, R1ORN DESC, R1SQN ASC')
             ->distinct('R1ORN')
-            ->limit(10)
             ->get();
 
         foreach ($orders as $key => $order) {
-            $po = Input::where('purchase_order', $order->R1ORN)->first();
+            $input = InputSupplier::where([['order_no', $order->R1ORN],['sequence', $order->R1SQN]])->first();
 
             if ($po === null) {
                 $ord = floatval(substr($order->R1ORN, 0, 8));
