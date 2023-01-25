@@ -20,42 +20,46 @@
                 <table class="w-full whitespace-no-wrap">
                     <thead>
                         <tr class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b dark:border-gray-700 bg-gray-50 dark:text-gray-400 dark:bg-gray-800">
+                            <th class="px-4 py-3">Proveedor</th>
+                            <th class="px-4 py-3">Serial</th>
                             <th class="px-4 py-3">Item</th>
                             <th class="px-4 py-3">Cantidad</th>
                             <th class="px-4 py-3">Transacción</th>
                             <th class="px-4 py-3">Almacen</th>
                             <th class="px-4 py-3">Locación</th>
-                            <th class="px-4 py-3">Proveedor</th>
-                            <th class="px-4 py-3">Serial</th>
                             <th class="px-4 py-3">Contenedor</th>
+                            <th class="px-4 py-3">Fecha de Salida</th>
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y dark:divide-gray-700 dark:bg-gray-800">
                         @foreach ($outputs as $output)
                         <tr class="text-gray-700 dark:text-gray-400">
                             <td class="px-4 py-3 text-sm">
-                                {{ $output->item->item_number ?? ''}}
+                                {{ $output->supplier ?? '' }}
+                            </td>
+                            <td class="px-4 py-3 text-sm">
+                                {{ $output->serial ?? '' }}
+                            </td>
+                            <td class="px-4 py-3 text-sm">
+                                {{ $output->item->item_number ?? '' }}
                             </td>
                             <td class="px-4 py-3 text-sm">
                                 {{ $output->item_quantity ?? ''}}
                             </td>
                             <td class="px-4 py-3 text-sm">
-                                {{ $output->transactiontype->code ?? ''}}
+                                {{ $output->transactiontype->code ?? '' }}
                             </td>
                             <td class="px-4 py-3 text-sm">
-                                {{ $output->location->warehouse->code ?? ''}}
+                                {{ $output->location->warehouse->code ?? '' }}
                             </td>
                             <td class="px-4 py-3 text-sm">
-                                {{ $output->location->code ?? ''}}
+                                {{ $output->location->code ?? '' }}
                             </td>
                             <td class="px-4 py-3 text-sm">
-                                {{ $output->supplier ?? ''}}
+                                {{ $output->container->code ?? '' }}
                             </td>
                             <td class="px-4 py-3 text-sm">
-                                {{ $output->serial ?? ''}}
-                            </td>
-                            <td class="px-4 py-3 text-sm">
-                                {{ $output->container->code ?? ''}}
+                                {{ $output->created_at ?? '' }}
                             </td>
                         </tr>
                         @endforeach

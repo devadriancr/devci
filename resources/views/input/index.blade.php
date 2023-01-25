@@ -36,42 +36,46 @@
             <table class="w-full whitespace-no-wrap">
                 <thead>
                     <tr class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b dark:border-gray-700 bg-gray-50 dark:text-gray-400 dark:bg-gray-800">
-                        <th class="px-4 py-3">Item</th>
+                        <th class="px-4 py-3">Proveedor</th>
+                        <th class="px-4 py-3">Serial</th>
+                        <th class="px-4 py-3">No. Parte</th>
                         <th class="px-4 py-3">Cantidad</th>
                         <th class="px-4 py-3">Transacción</th>
                         <th class="px-4 py-3">Almacen</th>
                         <th class="px-4 py-3">Locación</th>
-                        <th class="px-4 py-3">Proveedor</th>
-                        <th class="px-4 py-3">Serial</th>
                         <th class="px-4 py-3">Contenedor</th>
+                        <th class="px-4 py-3">Fecha de Entrada</th>
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y dark:divide-gray-700 dark:bg-gray-800">
                     @foreach ($inputs as $input)
                     <tr class="text-gray-700 dark:text-gray-400">
                         <td class="px-4 py-3 text-sm">
-                            {{ $input->item->item_number ?? ''}}
+                            {{ $input->supplier ?? '' }}
                         </td>
                         <td class="px-4 py-3 text-sm">
-                            {{ $input->item_quantity ?? ''}}
+                            {{ $input->serial ?? '' }}
                         </td>
                         <td class="px-4 py-3 text-sm">
-                            {{ $input->transaction->code ?? ''}}
+                            {{ $input->item->item_number ?? '' }}
                         </td>
                         <td class="px-4 py-3 text-sm">
-                            {{ $input->location->warehouse->code ?? ''}}
+                            {{ $input->item_quantity ?? '' }}
                         </td>
                         <td class="px-4 py-3 text-sm">
-                            {{ $input->location->code ?? ''}}
+                            {{ $input->transaction->code ?? '' }}
                         </td>
                         <td class="px-4 py-3 text-sm">
-                            {{ $input->supplier ?? ''}}
+                            {{ $input->location->warehouse->code ?? '' }}
                         </td>
                         <td class="px-4 py-3 text-sm">
-                            {{ $input->serial ?? ''}}
+                            {{ $input->location->code ?? '' }}
                         </td>
                         <td class="px-4 py-3 text-sm">
-                            {{ $input->container->code ?? ''}}
+                            {{ $input->container->code ?? '' }}
+                        </td>
+                        <td class="px-4 py-3 text-sm">
+                            {{ $input->created_at ?? '' }}
                         </td>
                     </tr>
                     @endforeach

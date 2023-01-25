@@ -55,7 +55,13 @@ class ConsignmentInstructionController extends Controller
 
         list($a, $b, $c, $d, $e, $f, $g, $h, $i, $j, $part_qty, $supplier, $m, $serial, $o, $p, $q, $r, $s, $t, $u, $v, $w, $x, $y, $z, $part_no) = explode(',', $dataRequest);
 
-        $data = ConsignmentInstruction::where([['serial', '=', $serial], ['supplier', '=', $supplier]])->first();
+        $data = ConsignmentInstruction::where(
+            [
+                ['serial', '=', $serial],
+                ['supplier', '=', $supplier],
+                ['part_no', 'LIKE', $part_no . '%']
+            ]
+        )->first();
 
         if ($data === null) {
             ConsignmentInstruction::storeConsignment($serial, $supplier, $part_qty, $part_no, 'L60', $request->container_id);
