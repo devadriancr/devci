@@ -2,13 +2,12 @@
 
 namespace App\Jobs;
 
-use App\Models\Input;
-use App\Models\Inventory;
+use App\Models\InputSupplier;
 use App\Models\Item;
 use App\Models\Location;
 use App\Models\TransactionType;
+use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
@@ -20,18 +19,28 @@ class StoreSupplierOrderJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable;
 
-    private $data;
-    private $no_po;
+    private $supplier;
+    private $orderNo;
+    private $sequence;
+    private $item;
+    private $snp;
+    private $receivedDate;
+    private $receivedTime;
 
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct($hpo, $po)
+    public function __construct($supplier, $orderNo, $sequence, $item, $snp, $receivedDate, $receivedTime)
     {
-        $this->data = $hpo;
-        $this->no_po = $po;
+        $this->supplier = $supplier;
+        $this->orderNo = $orderNo;
+        $this->sequence = $sequence;
+        $this->item = $item;
+        $this->snp = $snp;
+        $this->receivedDate = $receivedDate;
+        $this->receivedTime = $receivedTime;
     }
 
     /**
@@ -41,38 +50,61 @@ class StoreSupplierOrderJob implements ShouldQueue
      */
     public function handle()
     {
-        Log::info($this->data->PPROD);
-        $transaction = TransactionType::where('code', 'LIKE', 'U%')->first();
+        $item = Item::where('item_number', 'LIKE', $this->item)->first();
         $location = Location::where('code', 'LIKE', 'L80%')->first();
-        $item = Item::where('item_number', $this->data->PPROD)->first();
+        $transaction = TransactionType::where('code', 'LIKE', 'U%')->first();
 
-        $inventoryItem = Inventory::where([
-            ['item_id', '=', $item->id],
-            ['location_id', '=', $location->id]
-        ])->first();
+        $date = str_replace('/', '-', $this->receivedDate);
+        $time = $this->receivedTime;
 
-        $inventoryQuantity = $inventoryItem->quantity ?? 0;
-        $sum = $inventoryQuantity + $this->data->PQREC;
+        /**
+         * Infor History
+         */
+        InputSupplier::create([
+            'supplier' => $this->supplier,
+            'order_no' => $this->orderNo,
+            'sequence' => $this->sequence,
+            'item_id' => $item->id,
+            'snp' => $this->snp,
+            'received_date' => $date,
+            'received_time' => Carbon::parse($time)->format('H:i:s.v'),
+            'user_id' => Auth::id(),
+            'location_id' => $location->id,
+            'transaction_type_id' => $transaction->id,
+        ]);
 
-        Input::create(
-            [
-                'item_id' => $item->id,
-                'item_quantity' => $this->data->PQREC,
-                'transaction_type_id' => $transaction->id,
-                'location_id' => $location->id,
-                'purchase_order' => $this->no_po,
-                'user_id' => Auth::id()
-            ]
-        );
+        /**
+         * Inventory
+         */
+        // $inventory = Inventory::where([
+        //     ['item_id', '=', $item->id],
+        //     ['location_id', '=', $location->id]
+        // ])->first();
 
-        Inventory::updateOrCreate(
-            [
-                'item_id' =>  $item->id,
-                'location_id' => $location->id,
-            ],
-            [
-                'quantity' => $sum
-            ]
-        );
+        // $inventoryQuantity = $inventory->quantity ?? 0;
+        // $sum = $inventoryQuantity + $this->snp;
+
+        // if ($inventory !== null) {
+        //     $inventory->update(['quantity' => $sum]);
+        // } else {
+        //     Inventory::create([
+        //         'item_id' =>  $item->id,
+        //         'location_id' => $location->id,
+        //         'quantity' => $sum
+        //     ]);
+        // }
+
+        // InputSupplier::create([
+        //     'supplier' => $this->supplier,
+        //     'order_no' => $this->order_no,
+        //     'sequence' => $this->sequence,
+        //     'item_id' => $item->id,
+        //     'snp' => $this->snp,
+        //     'received_date' => $this->receivedDate,
+        //     'received_time' => $this->receivedTime,
+        //     'user_id' => Auth::id(),
+        //     'location_id' => $location->id,
+        //     'transaction_type_id' => $transaction->id,
+        // ]);
     }
 }
