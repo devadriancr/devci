@@ -40,4 +40,12 @@ class travel extends Model
     {
         return $this->belongsTo(Location::class);
     }
+
+    /**
+     *
+     */
+    public function inputSupplier(): HasMany
+    {
+        return $this->hasMany(InputSupplier::class);
+    }
 }

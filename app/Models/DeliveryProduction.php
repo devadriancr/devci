@@ -16,21 +16,43 @@ class DeliveryProduction extends Model
 
     protected $guarded = ['id', 'created_at', 'updated_at'];
 
-    // relacion 1:n de outputs
+    /**
+     *
+     */
     public function output(): HasMany
     {
         return $this->hasMany(Output::class);
     }
+
+    /**
+     *
+     */
     public function outputsupplier(): HasMany
     {
         return $this->hasMany(outputsupplier::class);
     }
+
+    /**
+     *
+     */
     public function input(): HasMany
     {
         return $this->hasMany(Input::class);
     }
+
+    /**
+     *
+     */
     public function location(): BelongsTo
     {
         return $this->belongsTo(Location::class);
+    }
+
+    /**
+     *
+     */
+    public function inputSupplier(): HasMany
+    {
+        return $this->hasMany(InputSupplier::class);
     }
 }

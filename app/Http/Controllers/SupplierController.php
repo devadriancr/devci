@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Jobs\SupplierOrderMigrationJob;
 use App\Models\HPO;
 use App\Models\Input;
+use App\Models\InputSupplier;
 use App\Models\Inventory;
 use App\Models\Item;
 use App\Models\Location;
@@ -24,6 +25,13 @@ class SupplierController extends Controller
      */
     public function index()
     {
+        $orders = RYT1::select('R1ORN', 'R1SQN', 'R1SNP', 'R1DAT', 'R1TIM', 'R1PRO', 'R1USR')
+            ->where('R1DAT', '>=', '01/01/2022')
+            ->orderByRaw('R1DAT DESC, R1TIM DESC, R1ORN DESC, R1SQN ASC')
+            ->limit(5)
+            ->get();
+        dd($orders);
+
         // SupplierOrderMigrationJob::dispatch();
         // return response("Fin");
 

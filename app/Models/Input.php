@@ -84,7 +84,10 @@ class Input extends Model
         return $this->belongsTo(User::class);
     }
 
-    public static function storeOpeningBalance(int $itemId, float $quantity, int $transactionId, int $locationId)
+    /**
+     *
+     */
+    public static function storeOpeningConsignment(int $itemId, float $quantity, int $transactionId, int $locationId)
     {
         $input = Input::create(
             [

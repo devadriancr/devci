@@ -62,21 +62,23 @@ class InventoryController extends Controller
                     ]
                 )->first();
 
-                if ($data !== null) {
-                    Input::storeOpeningBalance($item->id,  $iliVaue->LOPB, $transaction->id, $location->id);
+                dd($data);
 
-                    $data->update(['opening_balance' => $iliVaue->LOPB]);
-                } else {
-                    $input = Input::storeOpeningBalance($item->id, $iliVaue->LOPB, $transaction->id, $location->id);
+                // if ($data !== null) {
+                //     Input::storeOpeningConsignment($item->id,  $iliVaue->LOPB, $transaction->id, $location->id);
 
-                    $data = Inventory::create(
-                        [
-                            'item_id' => $item->id,
-                            'location_id' => $location->id,
-                            'opening_balance' => $iliVaue->LOPB,
-                        ]
-                    );
-                }
+                //     $data->update(['opening_balance' => $iliVaue->LOPB]);
+                // } else {
+                //     $input = Input::storeOpeningConsignment($item->id, $iliVaue->LOPB, $transaction->id, $location->id);
+
+                //     $data = Inventory::create(
+                //         [
+                //             'item_id' => $item->id,
+                //             'location_id' => $location->id,
+                //             'opening_balance' => $iliVaue->LOPB,
+                //         ]
+                //     );
+                // }
             } else {
                 Log::info("Item: " . $iliVaue->LPROD . "Locación: " . $iliVaue->LLOC);
             }
