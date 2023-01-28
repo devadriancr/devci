@@ -87,7 +87,7 @@ class Input extends Model
     /**
      *
      */
-    public static function storeOpeningBalance(int $itemId, float $quantity, int $transactionId, int $locationId)
+    public static function storeOpeningConsignment(int $itemId, float $quantity, int $transactionId, int $locationId)
     {
         $input = Input::create(
             [
