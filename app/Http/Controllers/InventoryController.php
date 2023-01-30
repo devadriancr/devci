@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Imports\InventoryAmountOpeningBalanceImport;
 use App\Models\ILI;
 use App\Models\Input;
+use App\Models\InputSupplier;
 use App\Models\Inventory;
 use App\Models\Item;
 use App\Models\ItemClass;
@@ -62,23 +63,39 @@ class InventoryController extends Controller
                     ]
                 )->first();
 
-                dd($data);
+                if ($data !== null) {
+                    if ($data->item->itemClass->code == 'S1') {
+                        Input::storeOpeningConsignment($item->id,  $iliVaue->LOPB, $transaction->id, $location->id);
 
-                // if ($data !== null) {
-                //     Input::storeOpeningConsignment($item->id,  $iliVaue->LOPB, $transaction->id, $location->id);
+                        $data->update(['opening_balance' => $iliVaue->LOPB]);
+                    } else if ($data->item->itemClass->code == 'P0' || $data->item->itemClass->code == 'P1' || $data->item->itemClass->code == 'P2') {
+                        InputSupplier::storeOpeningSupplier($item->id,  $iliVaue->LOPB, $transaction->id, $location->id);
 
-                //     $data->update(['opening_balance' => $iliVaue->LOPB]);
-                // } else {
-                //     $input = Input::storeOpeningConsignment($item->id, $iliVaue->LOPB, $transaction->id, $location->id);
+                        $data->update(['opening_balance' => $iliVaue->LOPB]);
+                    } else if ($data->item->itemClass->code == 'G0' || $data->item->itemClass->code == 'G1') {
+                        InputSupplier::storeOpeningSupplier($item->id,  $iliVaue->LOPB, $transaction->id, $location->id);
 
-                //     $data = Inventory::create(
-                //         [
-                //             'item_id' => $item->id,
-                //             'location_id' => $location->id,
-                //             'opening_balance' => $iliVaue->LOPB,
-                //         ]
-                //     );
-                // }
+                        $data->update(['opening_balance' => $iliVaue->LOPB]);
+                    } else {
+                        $data->update(['opening_balance' => $iliVaue->LOPB]);
+                    }
+                } else {
+                    $data = Inventory::create(
+                        [
+                            'item_id' => $item->id,
+                            'location_id' => $location->id,
+                            'opening_balance' => $iliVaue->LOPB,
+                        ]
+                    );
+
+                    if ($data->item->itemClass->code == 'S1') {
+                        $input = Input::storeOpeningConsignment($item->id, $iliVaue->LOPB, $transaction->id, $location->id);
+                    } else if ($data->item->itemClass->code == 'P0' || $data->item->itemClass->code == 'P1' || $data->item->itemClass->code == 'P2') {
+                        $input = InputSupplier::storeOpeningSupplier($item->id,  $iliVaue->LOPB, $transaction->id, $location->id);
+                    } else if ($data->item->itemClass->code == 'G0' || $data->item->itemClass->code == 'G1') {
+                        $input = InputSupplier::storeOpeningSupplier($item->id,  $iliVaue->LOPB, $transaction->id, $location->id);
+                    }
+                }
             } else {
                 Log::info("Item: " . $iliVaue->LPROD . "Locación: " . $iliVaue->LLOC);
             }

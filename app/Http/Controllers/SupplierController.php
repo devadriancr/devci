@@ -9,6 +9,7 @@ use App\Models\InputSupplier;
 use App\Models\Inventory;
 use App\Models\Item;
 use App\Models\Location;
+use App\Models\OutputSupplier;
 use App\Models\RYT1;
 use App\Models\TransactionType;
 use Carbon\Carbon;
@@ -25,12 +26,6 @@ class SupplierController extends Controller
      */
     public function index()
     {
-        $orders = RYT1::select('R1ORN', 'R1SQN', 'R1SNP', 'R1DAT', 'R1TIM', 'R1PRO', 'R1USR')
-            ->where('R1DAT', '>=', '01/01/2022')
-            ->orderByRaw('R1DAT DESC, R1TIM DESC, R1ORN DESC, R1SQN ASC')
-            ->limit(5)
-            ->get();
-        dd($orders);
 
         // SupplierOrderMigrationJob::dispatch();
         // return response("Fin");
@@ -161,5 +156,31 @@ class SupplierController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    public function indexSupplierInput(Request $request)
+    {
+        $search = strtoupper($request->search) ?? '';
+
+        $suppliers = InputSupplier::join('items', 'input_suppliers.item_id', '=', 'items.id')
+            ->where('input_suppliers.order_no', 'LIKE', '%' . $search . '%')
+            ->orWhere('items.item_number', 'LIKE', '%' . $search . '%')
+            ->orderBy('input_suppliers.updated_at', 'DESC')
+            ->paginate(10);
+
+        return view('supplier.input', ['suppliers' => $suppliers]);
+    }
+
+    public function indexSupplierOutput(Request $request)
+    {
+        $search = strtoupper($request->search) ?? '';
+
+        $suppliers = OutputSupplier::join('items', 'output_suppliers.item_id', '=', 'items.id')
+            ->where('output_suppliers.order_number', 'LIKE', '%' . $search . '%')
+            ->orWhere('items.item_number', 'LIKE', '%' . $search . '%')
+            ->orderBy('output_suppliers.updated_at', 'DESC')
+            ->paginate(10);
+
+        return view('supplier.output', ['suppliers' => $suppliers]);
     }
 }

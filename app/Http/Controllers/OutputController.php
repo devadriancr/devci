@@ -28,7 +28,9 @@ class OutputController extends Controller
 
         $outputs = Output::query()
             ->join('items', 'outputs.item_id', '=', 'items.id')
-            ->where('outputs.serial', 'LIKE', '%' . $search . '%')
+            ->join('item_classes', 'items.item_class_id', '=', 'item_classes.id')
+            ->where('item_classes.code', 'LIKE', 'S1%')
+            ->orWhere('outputs.serial', 'LIKE', '%' . $search . '%')
             ->orWhere('items.item_number', 'LIKE', '%' . $search . '%')
             ->orderBy('items.created_at', 'DESC')
             ->paginate(10);
@@ -423,9 +425,8 @@ class OutputController extends Controller
     }
     public function search(Request $request)
     {
-        if($request->serial!=null)
-        {
-            $serial=$request->serial??0;
+        if ($request->serial != null) {
+            $serial = $request->serial ?? 0;
 
             $cont = strlen($serial);
             $error = 0;
@@ -451,24 +452,23 @@ class OutputController extends Controller
             }
 
             $regin = input::with('item', 'location', 'container')->where('serial', $serial)->orderby('id', 'desc')->simplePaginate(10);
-            $total=count($regin);
+            $total = count($regin);
             if (count($regin) == 0) {
                 $error = 2;
                 $msg = 'Serial no encontrado';
             }
-            if($serial==0)
-            {
+            if ($serial == 0) {
                 $error = 0;
                 $msg = '';
             }
-        }else{
-            $regin=null;
+        } else {
+            $regin = null;
             $error = 0;
-                $msg = '';
-                $total=0;
+            $msg = '';
+            $total = 0;
         }
 
-        return view('Output.search', ['in' => $regin, 'error' => $error, 'msg' => $msg,'total'=>$total]);
+        return view('Output.search', ['in' => $regin, 'error' => $error, 'msg' => $msg, 'total' => $total]);
     }
 
     /**
@@ -479,10 +479,10 @@ class OutputController extends Controller
      */
     public function return(Request $request)
     {
-        $reg = input::with('item','location')->find($request->id);
+        $reg = input::with('item', 'location')->find($request->id);
         $location_new = location::where('code', 'like', '%L60%')->first();
         Output::create([
-            'supplier' =>   $reg-> suppier,
+            'supplier' =>   $reg->suppier,
             'serial' => $reg->serial,
             'item_id' => $reg->item_id,
             'item_quantity' =>  $reg->item_quantity,
@@ -491,7 +491,7 @@ class OutputController extends Controller
             'user_id' =>     $use = Auth::user()->id
         ]);
         input::create([
-            'supplier' =>   $reg-> suppier,
+            'supplier' =>   $reg->suppier,
             'serial' => $reg->serial,
             'item_id' => $reg->item_id,
             'item_quantity' =>  $reg->item_quantity,
@@ -538,10 +538,10 @@ class OutputController extends Controller
         );
 
         $regin = input::with('item', 'location', 'container')->where('serial', $reg->serial)->orderby('id', 'desc')->simplePaginate(10);
-        $error=1;
-        $msg='se a regresado el material a W60';
-        $total=count($regin);
-        return view('Output.search', ['in' => $regin, 'error' => $error, 'msg' => $msg,'total'=>$total]);
+        $error = 1;
+        $msg = 'se a regresado el material a W60';
+        $total = count($regin);
+        return view('Output.search', ['in' => $regin, 'error' => $error, 'msg' => $msg, 'total' => $total]);
     }
 
     /**

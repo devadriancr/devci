@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Auth;
 
 class InputSupplier extends Model
 {
@@ -74,5 +75,18 @@ class InputSupplier extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public static function storeOpeningSupplier(int $itemId, float $quantity, int $transactionId, int $locationId)
+    {
+        $input = InputSupplier::create(
+            [
+                'item_id' => $itemId,
+                'snp' => $quantity,
+                'transaction_type_id' => $transactionId,
+                'location_id' => $locationId,
+                'user_id' => Auth::id()
+            ]
+        );
     }
 }

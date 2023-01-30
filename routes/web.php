@@ -212,11 +212,12 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function () {
      */
     Route::resource('supplier', SupplierController::class);
 
-     /**
+    /**
      * Route Supplier
      */
     Route::resource('ManualAdjustment', ManualAdjustments::class);
- /**
+
+    /**
      * Delivery Supplier
      */
     Route::resource('DeliverySupplier', DeliverySupplierController::class);
@@ -228,4 +229,9 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function () {
     Route::POST('DeliverySupplier-destroy', [DeliverySupplierController::class, 'destroy'])->name('DeliverySupplier.destroy');
     Route::POST('DeliverySupplier-scanqr', [DeliverySupplierController::class, 'scanqr'])->name('DeliverySupplier.scanqr');
 
+    /**
+     *
+     */
+    Route::get('supplier-input', [SupplierController::class, 'indexSupplierInput'])->name('supplier-input.index');
+    Route::get('supplier-output', [SupplierController::class, 'indexSupplierOutput'])->name('supplier-output.index');
 });

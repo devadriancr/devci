@@ -57,7 +57,7 @@ class InventoryAmountOpeningBalanceImport implements ToModel, WithHeadingRow, Wi
             if ($input !== null) {
                 $input->update(['item_quantity' => $qty]);
             } else {
-                $input = Input::storeOpeningBalance($item->id, $qty, $transaction->id, $loct->id);
+                $input = Input::storeOpeningConsignment($item->id, $qty, $transaction->id, $loct->id);
             }
         }
     }

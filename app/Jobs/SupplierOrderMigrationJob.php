@@ -37,7 +37,7 @@ class SupplierOrderMigrationJob implements ShouldQueue
     {
         $orders = RYT1::select('R1ORN', 'R1SQN', 'R1SNP', 'R1DAT', 'R1TIM', 'R1PRO', 'R1USR')
             ->where('R1DAT', 'LIKE', '%2023')
-            ->orWhere('R1DAT', 'LIKE', '%2022')
+            // ->orWhere('R1DAT', 'LIKE', '%2022')
             ->orderByRaw('R1DAT DESC, R1TIM DESC, R1ORN DESC, R1SQN ASC')
             ->get();
 
