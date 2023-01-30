@@ -2,15 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Imports\DuplicateEntriesImport;
 use App\Imports\InventoryAmountOpeningBalanceImport;
 use App\Models\ILI;
 use App\Models\Input;
 use App\Models\InputSupplier;
 use App\Models\Inventory;
 use App\Models\Item;
-use App\Models\ItemClass;
 use App\Models\Location;
-use App\Models\output;
 use App\Models\TransactionType;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -207,5 +206,23 @@ class InventoryController extends Controller
     public function destroy(Inventory $inventory)
     {
         //
+    }
+
+    public function duplicateEntries(Request $request)
+    {
+        return view('inventory.duplicate');
+    }
+
+    public function duplicateEntryFile(Request $request)
+    {
+        $request->validate([
+            'import_file' => 'required', 'mimes:xls,xlsx,csv'
+        ]);
+
+        $file = $request->file('import_file');
+
+        Excel::import(new DuplicateEntriesImport, $file);
+
+        return redirect()->back()->with('success', 'Documento Importado Exitosamente');
     }
 }

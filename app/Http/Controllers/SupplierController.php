@@ -2,20 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Jobs\SupplierOrderMigrationJob;
-use App\Models\HPO;
-use App\Models\Input;
+
 use App\Models\InputSupplier;
-use App\Models\Inventory;
-use App\Models\Item;
-use App\Models\Location;
+
 use App\Models\OutputSupplier;
-use App\Models\RYT1;
-use App\Models\TransactionType;
-use Carbon\Carbon;
-use Illuminate\Cache\RateLimiting\Limit;
+
+
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
 class SupplierController extends Controller
 {
@@ -26,7 +19,6 @@ class SupplierController extends Controller
      */
     public function index()
     {
-
         // SupplierOrderMigrationJob::dispatch();
         // return response("Fin");
 
@@ -165,7 +157,8 @@ class SupplierController extends Controller
         $suppliers = InputSupplier::join('items', 'input_suppliers.item_id', '=', 'items.id')
             ->where('input_suppliers.order_no', 'LIKE', '%' . $search . '%')
             ->orWhere('items.item_number', 'LIKE', '%' . $search . '%')
-            ->orderBy('input_suppliers.updated_at', 'DESC')
+            ->orderBy('input_suppliers.received_date', 'DESC')
+            ->orderBy('input_suppliers.received_time', 'DESC')
             ->paginate(10);
 
         return view('supplier.input', ['suppliers' => $suppliers]);
