@@ -46,6 +46,7 @@ class RemoveDuplicateInputJob implements ShouldQueue
         )->orderBy('id', 'DESC')->get();
 
         foreach ($inputs as $key => $input) {
+            $qty = 0;
             if ($key != 0) {
                 $inventory = Inventory::where([['item_id', $input->item_id], ['location_id', 328]])->first();
                 $qty = $inventory->quantity - $input->item_quantity;
