@@ -382,6 +382,19 @@ class ConsignmentInstructionController extends Controller
     }
 
     /**
+     *
+     */
+    public function consigmentBarcodeIndex()
+    {
+        return view('consignment-instruction.consignment-barcode');
+    }
+
+    public function consignmentBarcodeStore(Request $request)
+    {
+        dd($request->all());
+    }
+
+    /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
