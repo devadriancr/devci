@@ -4,14 +4,19 @@ namespace App\Http\Controllers;
 
 use App\Exports\ConsignmentInstructionExport;
 use App\Imports\DataUploadImport;
+use App\Jobs\StoreConsignmentMcMhJob;
 use App\Models\ConsignmentInstruction;
 use App\Models\Container;
 use App\Models\Input;
+use App\Models\Inventory;
 use App\Models\Item;
 use App\Models\Location;
 use App\Models\ShippingInstruction;
 use App\Models\TransactionType;
+use App\Models\YH003;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Facades\Excel;
 
@@ -391,7 +396,35 @@ class ConsignmentInstructionController extends Controller
 
     public function consignmentBarcodeStore(Request $request)
     {
-        dd($request->all());
+        $request->validate([
+            'scan' => ['required', 'string', 'max:35', 'min:35']
+        ]);
+
+        $serial = substr(strtoupper($request->scan), 0, 10);
+        $part_no = substr(strtoupper($request->scan), 10, 10);
+        $snp = substr(strtoupper($request->scan), 20, 6);
+        $supplier = substr(strtoupper($request->scan), 26, 5);
+        $type = substr(strtoupper($request->scan), 31, 2);
+
+        $input = Input::where(
+            [
+                ['supplier', 'LIKE', $supplier],
+                ['serial', 'LIKE', $serial],
+                ['item_quantity', $snp],
+                ['type_consignment', 'LIKE', $type],
+            ]
+        )->first();
+
+        if ($input === null) {
+            StoreConsignmentMcMhJob::dispatchAfterResponse($serial, $part_no, $snp, $supplier, $type);
+            $respone = 'success';
+            $mesage = 'Registro Exitoso';
+        } else {
+            $respone = 'warning';
+            $mesage = 'Registro ya Existente';
+        }
+
+        return redirect()->back()->with($respone, $mesage);
     }
 
     /**
