@@ -312,11 +312,13 @@ class ShippingInstructionController extends Controller
                 $container = Container::where('code', 'LIKE', '%' . $dataShipping->container . '%')->first();
                 ConsignmentInstruction::storeConsignment($serial, $supplier, $quantity, $part, 'L60', $container->id);
                 $dataShipping->update(['search' => true]);
+                $respone = 'success';
+                $mesage = 'Registro Exitoso';
             } else {
                 return redirect()->back();
             }
         }
 
-        return redirect()->back();
+        return redirect()->back()->with($respone, $mesage);
     }
 }

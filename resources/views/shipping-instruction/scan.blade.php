@@ -1,7 +1,7 @@
 <x-app-layout title="Consigna">
     <div class="container grid px-6 mx-auto">
         <h2 class="my-4 text-2xl font-semibold text-center text-gray-700 dark:text-gray-200">
-            Recepción de Consigan
+            Recepción de Consigan MY
         </h2>
 
         <div class="flex justify-end mb-3">
