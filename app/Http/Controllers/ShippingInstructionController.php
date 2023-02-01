@@ -246,6 +246,10 @@ class ShippingInstructionController extends Controller
      */
     public function storeScan(Request $request)
     {
+        $request->validate([
+            'qr' => ['required', 'string', 'max:161', 'min:161']
+        ]);
+
         $data = strtoupper($request->qr);
 
         list($a, $b, $c, $d, $e, $f, $g, $h, $i, $j, $part_qty, $supplier, $m, $serial, $o, $p, $q, $r, $s, $t, $u, $v, $w, $x, $y, $z, $part_no) = explode(',', $data);
@@ -265,11 +269,17 @@ class ShippingInstructionController extends Controller
                 $container = Container::where('code', 'LIKE', '%' . $shipping->container . '%')->first();
                 ConsignmentInstruction::storeConsignment($serial, $supplier, $part_qty, $part_no, 'L60', $container->id);
                 $shipping->update(['search' => true]);
+                $respone = 'success';
+                $mesage = 'Registro Exitoso';
             } else {
-                return redirect()->back()->with('warning', 'Serial No Encontrado O Anteriormente Registrado');
+                $respone = 'warning';
+                $mesage = 'Serial no Encontrado';
             }
+        } else {
+            $respone = 'warning';
+            $mesage = 'Registro ya Existente';
         }
-        return redirect()->back()->with('success', 'Registro Exitoso');
+        return redirect()->back()->with($respone, $mesage);
     }
 
     /**
