@@ -432,7 +432,7 @@ class ConsignmentInstructionController extends Controller
             )->first();
 
             if ($input === null) {
-                $type = 'MZ';
+                $type = 'MY/MZ';
                 StoreConsignmentMzJob::dispatchAfterResponse($serial, $part_no, $snp, $supplier, $type);
                 $respone = 'success';
                 $mesage = 'Registro Exitoso';

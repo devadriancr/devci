@@ -7,6 +7,8 @@ use App\Models\Inventory;
 use App\Models\Item;
 use App\Models\Location;
 use App\Models\TransactionType;
+use App\Models\YH003;
+use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -47,7 +49,6 @@ class StoreConsignmentMzJob implements ShouldQueue
      */
     public function handle()
     {
-        Log::info("Entro MZ");
         $item = Item::where('item_number', 'LIKE', $this->part_no . '%')->first();
         $transaction = TransactionType::where('code', 'LIKE', 'U3')->first();
         $location = Location::where('code', 'LIKE', 'L60%')->first();
@@ -63,15 +64,15 @@ class StoreConsignmentMzJob implements ShouldQueue
             'user_id' => Auth::id()
         ]);
 
-        // $yh003 = YH003::query()->insert([
-        //     'H3PROD' => $item->item_number,
-        //     'H3SUCD' => $this->supplier,
-        //     'H3SENO' => $this->serial,
-        //     'H3RQTY' => $this->snp,
-        //     'H3CUSR' => Auth::user()->user_infor ?? '',
-        //     'H3RDTE' => Carbon::parse($input->created_at)->format('Ymd'),
-        //     'H3RTIM' => Carbon::parse($input->created_at)->format('His')
-        // ]);
+        $yh003 = YH003::query()->insert([
+            'H3PROD' => $item->item_number,
+            'H3SUCD' => $this->supplier,
+            'H3SENO' => $this->serial,
+            'H3RQTY' => $this->snp,
+            'H3CUSR' => Auth::user()->user_infor ?? '',
+            'H3RDTE' => Carbon::parse($input->created_at)->format('Ymd'),
+            'H3RTIM' => Carbon::parse($input->created_at)->format('His')
+        ]);
 
         $inventory = Inventory::where([
             ['item_id', '=', $item->id],

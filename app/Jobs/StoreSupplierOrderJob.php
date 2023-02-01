@@ -3,6 +3,7 @@
 namespace App\Jobs;
 
 use App\Models\InputSupplier;
+use App\Models\Inventory;
 use App\Models\Item;
 use App\Models\Location;
 use App\Models\TransactionType;
@@ -58,8 +59,26 @@ class StoreSupplierOrderJob implements ShouldQueue
         $time = $this->receivedTime;
 
         /**
-         * Infor History
+         * Inventory
          */
+        $inventory = Inventory::where([
+            ['item_id', '=', $item->id],
+            ['location_id', '=', $location->id]
+        ])->first();
+
+        $inventoryQuantity = $inventory->quantity ?? 0;
+        $sum = $inventoryQuantity + $this->snp;
+
+        if ($inventory !== null) {
+            $inventory->update(['quantity' => $sum]);
+        } else {
+            Inventory::create([
+                'item_id' =>  $item->id,
+                'location_id' => $location->id,
+                'quantity' => $sum
+            ]);
+        }
+
         InputSupplier::create([
             'supplier' => $this->supplier,
             'order_no' => $this->orderNo,
@@ -72,39 +91,5 @@ class StoreSupplierOrderJob implements ShouldQueue
             'location_id' => $location->id,
             'transaction_type_id' => $transaction->id,
         ]);
-
-        /**
-         * Inventory
-         */
-        // $inventory = Inventory::where([
-        //     ['item_id', '=', $item->id],
-        //     ['location_id', '=', $location->id]
-        // ])->first();
-
-        // $inventoryQuantity = $inventory->quantity ?? 0;
-        // $sum = $inventoryQuantity + $this->snp;
-
-        // if ($inventory !== null) {
-        //     $inventory->update(['quantity' => $sum]);
-        // } else {
-        //     Inventory::create([
-        //         'item_id' =>  $item->id,
-        //         'location_id' => $location->id,
-        //         'quantity' => $sum
-        //     ]);
-        // }
-
-        // InputSupplier::create([
-        //     'supplier' => $this->supplier,
-        //     'order_no' => $this->order_no,
-        //     'sequence' => $this->sequence,
-        //     'item_id' => $item->id,
-        //     'snp' => $this->snp,
-        //     'received_date' => $this->receivedDate,
-        //     'received_time' => $this->receivedTime,
-        //     'user_id' => Auth::id(),
-        //     'location_id' => $location->id,
-        //     'transaction_type_id' => $transaction->id,
-        // ]);
     }
 }

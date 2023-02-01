@@ -120,6 +120,7 @@ class Input extends Model
                 'serial' => $serial,
                 'item_id' => $itemId,
                 'item_quantity' => $quantity,
+                'type_consignment' => 'MY/MZ',
                 'container_id' => $containerId,
                 'transaction_type_id' => $transactionId,
                 'location_id' => $locationId,
