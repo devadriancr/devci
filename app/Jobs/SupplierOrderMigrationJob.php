@@ -34,8 +34,12 @@ class SupplierOrderMigrationJob implements ShouldQueue
     public function handle()
     {
         $orders = RYT1::select('R1ORN', 'R1SQN', 'R1SNP', 'R1DAT', 'R1TIM', 'R1PRO', 'R1USR', 'R1FLG')
-            ->where('R1DAT', 'LIKE', '%2023')
-            ->orWhere('R1DAT', 'LIKE', '%2022')
+            ->where(
+                [
+                    ['R1DAT', 'LIKE', '%2023'],
+                    ['R1FLG', '=', ' ']
+                ]
+            )
             ->orderByRaw('R1DAT DESC, R1TIM DESC, R1ORN DESC, R1SQN ASC')
             ->get();
 
@@ -61,7 +65,6 @@ class SupplierOrderMigrationJob implements ShouldQueue
                         ->whereRaw("R1ORN = '" . strval($order->R1ORN) . "' AND R1SQN = '" . strval($order->R1SQN) . "' AND R1SNP = '" . strval($order->R1SNP) . "' AND R1PRO = '" . strval($order->R1PRO) . "'")
                         ->update(['R1FLG' => "1"]);
 
-                    // Log::info($hpo->PVEND . ' '.$order->R1ORN . ' '.$order->R1SQN . ' '.$order->R1PRO . ' '.$order->R1SNP . ' '.$order->R1DAT . ' '.$order->R1TIM);
                     StoreSupplierOrderJob::dispatch(
                         $hpo->PVEND,
                         $order->R1ORN,
