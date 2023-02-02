@@ -2,12 +2,8 @@
 
 namespace App\Http\Controllers;
 
-
 use App\Models\InputSupplier;
-
 use App\Models\OutputSupplier;
-
-
 use Illuminate\Http\Request;
 
 class SupplierController extends Controller
@@ -19,69 +15,7 @@ class SupplierController extends Controller
      */
     public function index()
     {
-        // SupplierOrderMigrationJob::dispatch();
-        // return response("Fin");
-
-        // $transaction = TransactionType::where('code', 'LIKE', 'U%')->first();
-        // $location = Location::where('code', 'LIKE', 'L80%')->first();
-
-        // $orders = RYT1::select('R1ORN', 'R1SQN', 'R1SNP', 'R1DAT', 'R1TIM', 'R1USR')
-        //     ->orderByRaw('R1DAT DESC, R1ORN DESC, R1SQN ASC')
-        //     ->distinct('R1ORN')
-        //     ->limit(100)
-        //     ->get();
-
-        // foreach ($orders as $key => $order) {
-        //     $po = Input::where('purchase_order', $order->R1ORN)->first();
-
-        //     if ($po === null) {
-        //         $ord = floatval(substr($order->R1ORN, 0, 8));
-        //         $line = floatval(substr($order->R1ORN, -4, 4));
-
-        //         $hpo = HPO::where(
-        //             [
-        //                 ['PORD', $ord],
-        //                 ['PLINE', $line],
-        //                 ['PQREC', '>', 0]
-        //             ]
-        //         )->first();
-
-        //         if ($hpo !== null) {
-        //             $item = Item::where('item_number', $hpo->PPROD)->first();
-
-        //             $inventoryItem = Inventory::where([
-        //                 ['item_id', '=', $item->id],
-        //                 ['location_id', '=', $location->id]
-        //             ])->first();
-
-        //             $inventoryQuantity = $inventoryItem->quantity ?? 0;
-        //             $sum = $inventoryQuantity + $hpo->PQREC;
-
-        //             Input::create(
-        //                 [
-        //                     'item_id' => $item->id,
-        //                     'item_quantity' => $hpo->PQREC,
-        //                     'transaction_type_id' => $transaction->id,
-        //                     'location_id' => $location->id,
-        //                     'purchase_order' => $order->R1ORN,
-        //                     'user_id' => Auth::id()
-        //                 ]
-        //             );
-
-        //             Inventory::updateOrCreate(
-        //                 [
-        //                     'item_id' =>  $item->id,
-        //                     'location_id' => $location->id,
-        //                 ],
-        //                 [
-        //                     'quantity' => $sum
-        //                 ]
-        //             );
-        //         }
-        //     }
-        // }
-
-        return redirect('input');
+        //
     }
 
     /**

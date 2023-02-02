@@ -10,6 +10,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
 
 class RemoveDuplicateInputJob implements ShouldQueue
 {
@@ -45,14 +46,23 @@ class RemoveDuplicateInputJob implements ShouldQueue
             ]
         )->orderBy('id', 'DESC')->get();
 
+        $acum = 0;
+
         foreach ($inputs as $key => $input) {
-            $qty = 0;
             if ($key != 0) {
-                $inventory = Inventory::where([['item_id', $input->item_id], ['location_id', 328]])->first();
-                $qty = $inventory->quantity - $input->item_quantity;
-                $inventory->update(['quantity' => $qty]);
-                $input->delete();
+                $acum += $input->item_quantity;
             }
         }
+
+        $inventory = Inventory::where(
+            [
+                ['item_id', $input->item_id],
+                ['location_id', 328]
+            ]
+        )->first();
+
+        $qty = $inventory->quantity - $acum;
+        $inventory->update(['quantity' => $qty]);
+        $input->delete();
     }
 }

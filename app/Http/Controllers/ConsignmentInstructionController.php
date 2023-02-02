@@ -3,16 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Exports\ConsignmentInstructionExport;
-use App\Imports\DataUploadImport;
+use App\Jobs\StoreConsignmentMcMhJob;
+use App\Jobs\StoreConsignmentMzJob;
 use App\Models\ConsignmentInstruction;
 use App\Models\Container;
 use App\Models\Input;
-use App\Models\Item;
-use App\Models\Location;
 use App\Models\ShippingInstruction;
-use App\Models\TransactionType;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Facades\Excel;
 
 class ConsignmentInstructionController extends Controller
@@ -379,6 +376,76 @@ class ConsignmentInstructionController extends Controller
         } else {
             return view('consignment-instruction.barcode', ['container' => $container])->with('warning', 'Registro Duplicado');
         }
+    }
+
+    /**
+     *
+     */
+    public function consigmentBarcodeIndex()
+    {
+        return view('consignment-instruction.consignment-barcode');
+    }
+
+    public function consignmentBarcodeStore(Request $request)
+    {
+
+        $request->validate([
+            'scan' => ['required', 'string', 'max:161', 'min:35']
+        ]);
+
+        $code = strtoupper($request->scan);
+
+        if (strlen($code) == 35) {
+            $serial = substr($code, 0, 10);
+            $part_no = substr($code, 10, 10);
+            $snp = substr($code, 20, 6);
+            $supplier = substr($code, 26, 5);
+            $type = substr($code, 31, 2);
+
+            $input = Input::where(
+                [
+                    ['supplier', 'LIKE', $supplier],
+                    ['serial', 'LIKE', $serial],
+                    ['item_quantity', $snp],
+                    ['type_consignment', 'LIKE', $type],
+                ]
+            )->first();
+
+            if ($input === null) {
+                StoreConsignmentMcMhJob::dispatchAfterResponse($serial, $part_no, $snp, $supplier, $type);
+                $respone = 'success';
+                $mesage = 'Registro Exitoso';
+            } else {
+                $respone = 'warning';
+                $mesage = 'Registro ya Existente';
+            }
+        } else if (strlen($code) == 161) {
+            list($a, $b, $c, $d, $e, $f, $g, $h, $i, $j, $snp, $supplier, $m, $serial, $o, $p, $q, $r, $s, $t, $u, $v, $w, $x, $y, $z, $part_no) = explode(',', $code);
+
+            $input = Input::where(
+                [
+                    ['supplier', 'LIKE', $supplier],
+                    ['serial', 'LIKE', $serial],
+                    ['item_quantity', $snp],
+                    ['type_consignment', 'LIKE', 'MZ'],
+                ]
+            )->first();
+
+            if ($input === null) {
+                $type = 'MY/MZ';
+                StoreConsignmentMzJob::dispatchAfterResponse($serial, $part_no, $snp, $supplier, $type);
+                $respone = 'success';
+                $mesage = 'Registro Exitoso';
+            } else {
+                $respone = 'warning';
+                $mesage = 'Registro ya Existente';
+            }
+        } else {
+            $respone = 'warning';
+            $mesage = 'Código no Valido ';
+        }
+
+        return redirect()->back()->with($respone, $mesage);
     }
 
     /**

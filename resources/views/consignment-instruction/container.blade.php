@@ -1,7 +1,7 @@
 <x-app-layout title="Consigna">
     <div class="container grid px-6 mx-auto">
         <h2 class="mt-4 mb-2 text-2xl font-semibold text-gray-700 dark:text-gray-200">
-            Consigna
+            Recepción Consigna MY
         </h2>
         <div class="px-4 py-3 my-4 bg-white rounded-lg shadow-md dark:bg-gray-800">
             <h4 class="my-2 text-center text-lg font-semibold text-gray-600 dark:text-gray-300">
