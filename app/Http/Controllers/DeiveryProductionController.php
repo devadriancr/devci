@@ -4,16 +4,19 @@ namespace App\Http\Controllers;
 
 use App\Models\Location;
 use App\Models\DeliveryProduction;
+use App\Models\ShippingInstruction;
 use Illuminate\Http\Request;
 use App\Models\Inventory;
 use App\Models\Output;
 use App\Models\item;
 use App\Models\input;
 use App\Models\YI007;
+use App\Models\YH003;
 use Illuminate\Support\Facades\DB;
 use App\Models\transactiontype;
 use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Facades\Excel;
+use Carbon\Carbon;
 
 use App\Exports\DeliveryExport as ExportsDeliveryExport;
 
@@ -26,7 +29,7 @@ class DeiveryProductionController extends Controller
      */
     public function index()
     {
-        $travels = DeliveryProduction::orderby('id', 'desc')->paginate(10);
+        $travels = DeliveryProduction::where('deliverysupplier',null)->orderby('id', 'desc')->paginate(10);
         return view('delivery_line.index', ['travels' => $travels]);
     }
 
@@ -100,7 +103,7 @@ class DeiveryProductionController extends Controller
     }
     public function inventario($serial, $item, $number_item, $loc, $cantidad, $loc_ant, $fechahora, $WH, $wh_act)
     {
-        $serial_18=$serial.'         ';
+        $serial_18 = $serial . '         ';
         $operacion = Inventory::where('location_id', $loc)->where('item_id', $item)->first();
         $operacion_ant = Inventory::where('location_id', $loc_ant)->where('item_id', $item)->first();
         if (is_null($operacion)) {
@@ -175,21 +178,48 @@ class DeiveryProductionController extends Controller
     {
         $error = 0;
         $location = location::find($request->location_id);
-        $cadena = explode(",", $request->serial);
-        if (count($cadena) != 27) {
-            $error = 1;
-            $message = 'ESCANEO INCORRECTO';
+        if (strlen($request->serial) == 35) {
+            $serial = substr($request->serial, -35, 10);
+            $number_part = substr($request->serial, -25, 10);
+            $quantity = substr($request->serial, -15, 6);
+            $supplier = substr($request->serial, -9, 5);
+            $type_consigment = substr($request->serial, -4, 2);
+        } else {
+            $cadena = explode(",", $request->serial);
+            if (count($cadena) != 27) {
+
+                $error = 1;
+                $message = 'ESCANEO INCORRECTO';
+            } else {
+                $serial = $cadena[13];
+                $number_part = end($cadena);
+                $quantity = $cadena[10];
+                $supplier = $cadena[11];
+                $type_consigment = 'MY/MZ';
+            }
         }
 
+
         if ($error == 0) {
-            $item = DB::table('items')->whereRaw("item_number like  '" .  end($cadena) . "%'")->first();
+            $item = DB::table('items')->whereRaw("item_number like  '" .  $number_part . "%'")->first();
+
             if ($item == false) {
                 $error = 2;
                 $message = 'Item no existe';
             }
         }
         if ($error == 0) {
-            $serial_exist = input::where([['serial', $cadena[13]], ['supplier', $cadena[11]]])->first();
+            $serial_exist = input::where([['serial', $serial], ['supplier', $supplier],['item_id', $item->id ]])->first();
+            if(strlen($serial)==9)
+            {
+
+                $type_consigment= $serial_exist ->type_consignment ??'MY/MZ' ;
+            }
+
+                if(strlen($serial_exist ->type_consignment)==0)
+                {
+                 $type_consigment= 'MY/MZ' ;
+                }
             if ($serial_exist == null) {
                 $error = 5;
                 $message = 'Serial no encontrado con ese proveedor';
@@ -197,14 +227,14 @@ class DeiveryProductionController extends Controller
         }
         if ($error == 0) {
             $loc_act_id = location::with('warehouse')->whereRaw("code like'L61%'")->first();
-            $serial_exist = input::where([['serial', $cadena[13]], ['supplier', $cadena[11]]])->orderby('id', 'desc')->first();
+            $serial_exist = input::where([['serial', $serial], ['supplier', $supplier],['item_id', $item->id ]])->orderby('id', 'desc')->first();
             if ($serial_exist->location_id ==  $loc_act_id->id) {
                 $error = 12;
                 $message = 'Serial no se encuentra en almacen de YKM';
             }
         }
         if ($error == 0) {
-            $serial_exist = input::where([['serial', $cadena[13]], ['supplier', $cadena[11]]])->where('delivery_production_id', $request->delivery_id)->first();
+            $serial_exist = input::where([['serial', $serial], ['supplier', $supplier],['item_id', $item->id ]])->where('delivery_production_id', $request->delivery_id)->first();
             if ($serial_exist != false) {
                 $error = 3;
                 $message = 'serial ya fue escaneado';
@@ -212,51 +242,53 @@ class DeiveryProductionController extends Controller
         }
 
         if ($error == 0) {
-            $ultimaSal = input::where([['serial', $cadena[13]], ['supplier', $cadena[11]]])->orderby('id', 'desc')->first();
+            $ultimaSal = input::where([['serial', $serial], ['supplier', $supplier],['item_id', $item->id ]])->orderby('id', 'desc')->first();
             if ($ultimaSal->delivery_production_id != null) {
                 $error = 10;
                 $message = 'Serial ya se entrego anteriormente.';
             }
         }
-
-
-
-
         if ($error == 0) {
             $location_old = location::where('code', 'like', 'L60%')->first();
             $Transaction_type = transactiontype::where('code', 'like', '%T %')->first();
+            // dd($supplier, $serial, $item->id,$quantity, $Transaction_type->id,$request->delivery_id,$location_old->id);
+
             $re = Output::create([
-                'supplier' =>  $cadena[11],
-                'serial' => $cadena[13],
+                'supplier' =>  $supplier,
+                'serial' => $serial,
                 'item_id' => $item->id,
-                'item_quantity' =>  $cadena[10],
+                'item_quantity' =>  $quantity,
                 'transaction_type_id' => $Transaction_type->id,
                 'delivery_production_id' => $request->delivery_id,
                 'location_id' => $location_old->id,
                 'user_id' =>     $use = Auth::user()->id
             ]);
+
             $re = input::create([
-                'supplier' =>  $cadena[11],
-                'serial' => $cadena[13],
+                'supplier' =>  $supplier,
+                'serial' => $serial,
                 'item_id' => $item->id,
-                'item_quantity' =>  $cadena[10],
+                'item_quantity' =>  $quantity,
+                'type_consignment' =>  $type_consigment,
                 'transaction_type_id' => $Transaction_type->id,
                 'delivery_production_id' => $request->delivery_id,
                 'location_id' => $request->location_id,
                 'user_id' =>     $use = Auth::user()->id
             ]);
+
             $message = 'Serial capturado exitosamente';
         } else {
             if ($error == 5) {
 
                 $location_old = location::where('code', 'like', 'L60%')->first();
 
-                $Transaction_type = transactiontype::where('code', 'like', '%T %')->first();
+                $Transaction_type = transactiontype::where('code', 'like', 'U3%')->first();
                 $re = input::create([
-                    'supplier' =>  $cadena[11],
-                    'serial' => $cadena[13],
+                    'supplier' =>  $supplier,
+                    'serial' => $serial,
                     'item_id' => $item->id,
-                    'item_quantity' =>  $cadena[10],
+                    'type_consignment' =>  $type_consigment,
+                    'item_quantity' =>  $quantity,
                     'transaction_type_id' => $Transaction_type->id,
                     'location_id' => $location_old->id,
                     'user_id' =>     $use = Auth::user()->id
@@ -269,36 +301,46 @@ class DeiveryProductionController extends Controller
                 $use = Auth::user()->user_infor ?? 'ykms';
                 $loc_ant_id = location::with('warehouse')->whereRaw("code like 'L60%'")->first();
 
-                $infor = YI007::Query()->insert(
-                    [
-                        'I7PROD' => $item->item_number,
-                        'I7SENO' => $cadena[13],
-                        'I7TFLG' => 'I',
-                        'I7TDTE' => $fechascan,
-                        'I7TTIM' => $horascan,
-                        'I7TQTY' => $cadena[10],
-                        'I7WHS' => $loc_ant_id->warehouse->code,
-                        'I7CUSR' => 'YKMS',
-                        'I7CCDT' => $fechainfor,
-                        'I7CCTM' => $hora,
-                    ]
+                $srialcom = $supplier . $serial;
+                $container = ShippingInstruction::where([['serial', $srialcom], ['part_no', $number_part]])->first();
 
-                );
+                if ($container == null) {
+                    $fecha_con = 0;
+                    $hora_con = 0;
+                } else {
+                    $fecha_con = Carbon::parse($container->arrival_date)->format('Ymd');
+                    $hora_con = Carbon::parse($container->arrival_time)->format('His');
+                }
+                // dd($container->container?? '',$fecha_con,$hora_con,$item->item_number, $supplier, $serial,$quantity, Auth::user()->user_infor,Carbon::parse($re->created_at)->format('Ymd'),Carbon::parse($re->created_at)->format('His') );
+
+                $yH003 = YH003::query()->insert([
+                    'H3CONO' => $container->container ?? '',
+                    'H3DDTE' => $fecha_con,
+                    'H3DTIM' =>  $hora_con,
+                    'H3PROD' => $item->item_number,
+                    'H3SUCD' => $supplier,
+                    'H3SENO' => $serial,
+                    'H3RQTY' => $quantity,
+                    'H3CUSR' => Auth::user()->user_infor ?? '',
+                    'H3RDTE' => Carbon::parse($re->created_at)->format('Ymd'),
+                    'H3RTIM' => Carbon::parse($re->created_at)->format('His')
+                ]);
                 $re = Output::create([
-                    'supplier' =>  $cadena[11],
-                    'serial' => $cadena[13],
+                    'supplier' =>  $supplier,
+                    'serial' => $serial,
                     'item_id' => $item->id,
-                    'item_quantity' =>  $cadena[10],
+                    'item_quantity' =>  $quantity,
                     'transaction_type_id' => $Transaction_type->id,
-                    'delivery_production_id' => $request->delivery_id,
                     'location_id' => $location_old->id,
                     'user_id' =>     $use = Auth::user()->id
+
                 ]);
                 $re = input::create([
-                    'supplier' =>  $cadena[11],
-                    'serial' => $cadena[13],
+                    'supplier' =>  $supplier,
+                    'serial' => $serial,
                     'item_id' => $item->id,
-                    'item_quantity' =>  $cadena[10],
+                    'item_quantity' => $quantity,
+                    'type_consignment' =>  $type_consigment,
                     'transaction_type_id' => $Transaction_type->id,
                     'delivery_production_id' => $request->delivery_id,
                     'location_id' => $request->location_id,
@@ -312,6 +354,8 @@ class DeiveryProductionController extends Controller
         $entrega = DeliveryProduction::find($request->delivery_id);
         return view('delivery_line.scan', ['entrega' => $entrega, 'scan' => $scan, 'error' => $error, 'msg' => $message, 'location_id' => $location->id]);
     }
+
+
     public function updatebar(Request $request)
     {
         $error = 0;
@@ -368,6 +412,7 @@ class DeiveryProductionController extends Controller
                 'item_id' => $item->id,
                 'item_quantity' =>  $quantity,
                 'transaction_type_id' => $Transaction_type->id,
+                'purchase_order' =>  'MY',
                 'delivery_production_id' => $request->delivery_id,
                 'location_id' => $location_old->id,
                 'user_id' =>     $use = Auth::user()->id
@@ -377,6 +422,7 @@ class DeiveryProductionController extends Controller
                 'serial' => $serial,
                 'item_id' => $item->id,
                 'item_quantity' =>  $quantity,
+                'type_consignment' =>  'MY/MZ',
                 'transaction_type_id' => $Transaction_type->id,
                 'delivery_production_id' => $request->delivery_id,
                 'location_id' => $request->location_id,
@@ -392,6 +438,7 @@ class DeiveryProductionController extends Controller
                     'serial' => $serial,
                     'item_id' => $item->id,
                     'item_quantity' =>  $quantity,
+                    'type_consignment' =>'MY/MZ',
                     'transaction_type_id' => $Transaction_type->id,
                     'location_id' => $location_old->id,
                     'user_id' =>     $use = Auth::user()->id
@@ -436,6 +483,7 @@ class DeiveryProductionController extends Controller
                     'serial' => $serial,
                     'item_id' => $item->id,
                     'item_quantity' => $quantity,
+                    'type_consignment'=>  'MY',
                     'transaction_type_id' => $Transaction_type->id,
                     'delivery_production_id' => $request->delivery_id,
                     'location_id' => $request->location_id,

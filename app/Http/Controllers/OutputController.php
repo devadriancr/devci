@@ -299,7 +299,7 @@ class OutputController extends Controller
                 'transaction_type_id' => $Transaction_type->id,
                 'travel_id' => $request->travel_id,
                 'location_id' => $location_old->id,
-                'user_id' =>     $use = Auth::user()->id
+                'user_id' =>Auth::user()->id
             ]);
             input::create([
                 'supplier' =>  $suppier,
@@ -309,7 +309,7 @@ class OutputController extends Controller
                 'transaction_type_id' => $Transaction_type->id,
                 'travel_id' => $request->travel_id,
                 'location_id' => $request->location_id,
-                'user_id' =>     $use = Auth::user()->id
+                'user_id' =>Auth::user()->id
             ]);
             if ($error == 0) {
                 $message = 'serial capturado exitosamente';
@@ -326,7 +326,7 @@ class OutputController extends Controller
                     'transaction_type_id' => $Transaction_type->id,
                     'travel_id' => $request->travel_id,
                     'location_id' => $location_old->id,
-                    'user_id' =>     $use = Auth::user()->id
+                    'user_id' => Auth::user()->id
                 ]);
                 $fechascan = date('Ymd', strtotime($re->created_at));
                 $horascan = date('His', strtotime($re->created_at));
@@ -349,6 +349,9 @@ class OutputController extends Controller
                         'I7CCTM' => $hora,
                     ]
 
+
+
+
                 );
                 Output::create([
                     'supplier' =>  $suppier,
@@ -358,7 +361,7 @@ class OutputController extends Controller
                     'transaction_type_id' => $Transaction_type->id,
                     'travel_id' => $request->travel_id,
                     'location_id' => $location_old->id,
-                    'user_id' =>     $use = Auth::user()->id
+                    'user_id' =>     Auth::user()->id
                 ]);
                 input::create([
                     'supplier' => $suppier,
@@ -368,7 +371,7 @@ class OutputController extends Controller
                     'transaction_type_id' => $Transaction_type->id,
                     'travel_id' => $request->travel_id,
                     'location_id' => $request->location_id,
-                    'user_id' =>     $use = Auth::user()->id
+                    'user_id' =>  Auth::user()->id
                 ]);
                 $message = ' Serial dado de alta exitosamente ';
             }
@@ -423,9 +426,8 @@ class OutputController extends Controller
     }
     public function search(Request $request)
     {
-        if($request->serial!=null)
-        {
-            $serial=$request->serial??0;
+        if ($request->serial != null) {
+            $serial = $request->serial ?? 0;
 
             $cont = strlen($serial);
             $error = 0;
@@ -451,24 +453,23 @@ class OutputController extends Controller
             }
 
             $regin = input::with('item', 'location', 'container')->where('serial', $serial)->orderby('id', 'desc')->simplePaginate(10);
-            $total=count($regin);
+            $total = count($regin);
             if (count($regin) == 0) {
                 $error = 2;
                 $msg = 'Serial no encontrado';
             }
-            if($serial==0)
-            {
+            if ($serial == 0) {
                 $error = 0;
                 $msg = '';
             }
-        }else{
-            $regin=null;
+        } else {
+            $regin = null;
             $error = 0;
-                $msg = '';
-                $total=0;
+            $msg = '';
+            $total = 0;
         }
 
-        return view('Output.search', ['in' => $regin, 'error' => $error, 'msg' => $msg,'total'=>$total]);
+        return view('Output.search', ['in' => $regin, 'error' => $error, 'msg' => $msg, 'total' => $total]);
     }
 
     /**
@@ -479,25 +480,25 @@ class OutputController extends Controller
      */
     public function return(Request $request)
     {
-        $reg = input::with('item','location')->find($request->id);
+        $reg = input::with('item', 'location')->find($request->id);
         $location_new = location::where('code', 'like', '%L60%')->first();
         Output::create([
-            'supplier' =>   $reg-> suppier,
+            'supplier' =>   $reg->suppier,
             'serial' => $reg->serial,
             'item_id' => $reg->item_id,
             'item_quantity' =>  $reg->item_quantity,
             'transaction_type_id' => $reg->transaction_type_id,
             'location_id' =>  $reg->location_id,
-            'user_id' =>     $use = Auth::user()->id
+            'user_id' =>     Auth::user()->id
         ]);
         input::create([
-            'supplier' =>   $reg-> suppier,
+            'supplier' =>   $reg->suppier,
             'serial' => $reg->serial,
             'item_id' => $reg->item_id,
             'item_quantity' =>  $reg->item_quantity,
             'transaction_type_id' => $reg->transaction_type_id,
             'location_id' =>  $location_new->id,
-            'user_id' => $use = Auth::user()->id
+            'user_id' =>Auth::user()->id
         ]);
         $fechascan = date('Ymd', strtotime($reg->created_at));
         $horascan = date('His', strtotime($reg->created_at));
@@ -538,10 +539,10 @@ class OutputController extends Controller
         );
 
         $regin = input::with('item', 'location', 'container')->where('serial', $reg->serial)->orderby('id', 'desc')->simplePaginate(10);
-        $error=1;
-        $msg='se a regresado el material a W60';
-        $total=count($regin);
-        return view('Output.search', ['in' => $regin, 'error' => $error, 'msg' => $msg,'total'=>$total]);
+        $error = 1;
+        $msg = 'se a regresado el material a W60';
+        $total = count($regin);
+        return view('Output.search', ['in' => $regin, 'error' => $error, 'msg' => $msg, 'total' => $total]);
     }
 
     /**
