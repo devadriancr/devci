@@ -62,6 +62,7 @@ class RemoveDuplicateInputJob implements ShouldQueue
         )->first();
 
         $qty = $inventory->quantity - $acum;
+
         $inventory->update(['quantity' => $qty]);
         $input->delete();
     }
