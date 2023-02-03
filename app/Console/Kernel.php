@@ -26,7 +26,7 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         // $schedule->command('inspire')->hourly();
-        $schedule->job(SupplierOrderMigrationJob::class)->everyMinute();
+        $schedule->job(SupplierOrderMigrationJob::class)->everyTwoHours();
     }
 
     /**

@@ -62,6 +62,11 @@ class SupplierOrderMigrationJob implements ShouldQueue
 
 
                 if ($hpo !== null) {
+                    DB::connection('odbc-lx834fu01')
+                        ->table('LX834FU01.RYT1')
+                        ->whereRaw("R1ORN = '" . strval($order->R1ORN) . "' AND R1SQN = '" . strval($order->R1SQN) . "' AND R1SNP = '" . strval($order->R1SNP) . "' AND R1PRO = '" . strval($order->R1PRO) . "'")
+                        ->update(['R1FLG' => "1"]);
+
                     StoreSupplierOrderJob::dispatch(
                         $hpo->PVEND,
                         $order->R1ORN,
