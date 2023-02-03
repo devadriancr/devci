@@ -126,6 +126,7 @@
                         <th class="px-4 py-3"></th>
                         <th class="px-4 py-3">Serial</th>
                         <th class="px-4 py-3">Numero de Parte</th>
+                        <th class="px-4 py-3">Tipo consigna</th>
                         <th class="px-4 py-3">Cantidad </th>
                         <th class="px-4 py-3">Proveedor </th>
                         <th class="px-4 py-3">Eliminar</th>
@@ -146,6 +147,9 @@
                             </td>
                             <td class="px-4 py-3 text-sm">
                                 {{ $consignment->item->item_number }}
+                            </td>
+                            <td class="px-4 py-3 text-sm">
+                                {{ $consignment->type_consignment ??'' }}
                             </td>
                             <td class="px-4 py-3 text-sm">
                                 {{ $consignment->item_quantity }}

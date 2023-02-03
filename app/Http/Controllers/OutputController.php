@@ -301,7 +301,7 @@ class OutputController extends Controller
                 'transaction_type_id' => $Transaction_type->id,
                 'travel_id' => $request->travel_id,
                 'location_id' => $location_old->id,
-                'user_id' =>     $use = Auth::user()->id
+                'user_id' =>Auth::user()->id
             ]);
             input::create([
                 'supplier' =>  $suppier,
@@ -311,7 +311,7 @@ class OutputController extends Controller
                 'transaction_type_id' => $Transaction_type->id,
                 'travel_id' => $request->travel_id,
                 'location_id' => $request->location_id,
-                'user_id' =>     $use = Auth::user()->id
+                'user_id' =>Auth::user()->id
             ]);
             if ($error == 0) {
                 $message = 'serial capturado exitosamente';
@@ -328,7 +328,7 @@ class OutputController extends Controller
                     'transaction_type_id' => $Transaction_type->id,
                     'travel_id' => $request->travel_id,
                     'location_id' => $location_old->id,
-                    'user_id' =>     $use = Auth::user()->id
+                    'user_id' => Auth::user()->id
                 ]);
                 $fechascan = date('Ymd', strtotime($re->created_at));
                 $horascan = date('His', strtotime($re->created_at));
@@ -351,6 +351,9 @@ class OutputController extends Controller
                         'I7CCTM' => $hora,
                     ]
 
+
+
+
                 );
                 Output::create([
                     'supplier' =>  $suppier,
@@ -360,7 +363,7 @@ class OutputController extends Controller
                     'transaction_type_id' => $Transaction_type->id,
                     'travel_id' => $request->travel_id,
                     'location_id' => $location_old->id,
-                    'user_id' =>     $use = Auth::user()->id
+                    'user_id' =>     Auth::user()->id
                 ]);
                 input::create([
                     'supplier' => $suppier,
@@ -370,7 +373,7 @@ class OutputController extends Controller
                     'transaction_type_id' => $Transaction_type->id,
                     'travel_id' => $request->travel_id,
                     'location_id' => $request->location_id,
-                    'user_id' =>     $use = Auth::user()->id
+                    'user_id' =>  Auth::user()->id
                 ]);
                 $message = ' Serial dado de alta exitosamente ';
             }
@@ -488,7 +491,7 @@ class OutputController extends Controller
             'item_quantity' =>  $reg->item_quantity,
             'transaction_type_id' => $reg->transaction_type_id,
             'location_id' =>  $reg->location_id,
-            'user_id' =>     $use = Auth::user()->id
+            'user_id' =>     Auth::user()->id
         ]);
         input::create([
             'supplier' =>   $reg->suppier,
@@ -497,7 +500,7 @@ class OutputController extends Controller
             'item_quantity' =>  $reg->item_quantity,
             'transaction_type_id' => $reg->transaction_type_id,
             'location_id' =>  $location_new->id,
-            'user_id' => $use = Auth::user()->id
+            'user_id' =>Auth::user()->id
         ]);
         $fechascan = date('Ymd', strtotime($reg->created_at));
         $horascan = date('His', strtotime($reg->created_at));

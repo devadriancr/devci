@@ -9,6 +9,7 @@ use App\Models\Inventory;
 use App\Models\Output;
 use App\Models\HPO;
 use App\Models\OutputSupplier;
+use App\Models\InputSupplier;
 use App\Models\RYT1;
 use App\Models\item;
 use App\Models\input;
@@ -194,10 +195,9 @@ class DeliverySupplierController extends Controller
             $snp = substr($cadena, -6);
         }
         if ($error == 0) {
-            $order = RYT1::query()
-                ->select('R1ORN', 'R1SQN', 'R1SNP', 'R1PRO')
-                ->where('R1ORN', '=', $number_order)
-                ->count();
+
+            $order = InputSupplier::where('order_no',  $number_order)->count();
+
             if ($order == 0) {
                 $error = 2;
                 $message = 'Numero de Orden no existe';
@@ -229,16 +229,16 @@ class DeliverySupplierController extends Controller
 
             $Transaction_type = transactiontype::where('code', 'like', '%T %')->first();
 
-            $result_HPO = HPO::query()
-                ->select('PORD', 'PVEND', 'PPROD', 'PLINE')->where([['PORD', $order_HPO], ['PLINE', $order_line]])->first();
-            $item = item::whereRaw("item_number like  '" .  $result_HPO->PPROD . "%'")->first();
+            $order = InputSupplier::with('item')->where('order_no',  $number_order)->first();
+
+
 
             $re = OutputSupplier::create([
-                'supplier' =>  $result_HPO->PVEND,
+                'supplier' =>    $order->supplier,
                 'Identificationcard' => $cadena,
-                'order_number' => $number_order,
+                'order_number' => $number_order ,
                 'sequence' => $secuencia,
-                'item_id' => $item->id,
+                'item_id' => $order->item_id,
                 'quantity' =>  $snp,
                 'transaction_type_id' => $Transaction_type->id,
                 'delivery_production_id' => $request->delivery_id,

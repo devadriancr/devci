@@ -40,7 +40,7 @@ class RequestListController extends Controller
             ];
             $info += [$reports->item->item_number => $reg];
         }
-        return view('Requestlist.index', ['report' =>  $info,'repor'=> $repor]);
+        return view('Requestlist.index', ['report' =>  $info, 'repor' => $repor]);
     }
 
 
