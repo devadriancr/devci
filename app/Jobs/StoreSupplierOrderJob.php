@@ -14,6 +14,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class StoreSupplierOrderJob implements ShouldQueue
@@ -51,7 +52,8 @@ class StoreSupplierOrderJob implements ShouldQueue
      */
     public function handle()
     {
-        $item = Item::where('item_number', 'LIKE', $this->item)->first();
+        $part_no = Item::where('item_number', 'LIKE', $this->item)->first();
+        Log::info($part_no->id);
         $location = Location::where('code', 'LIKE', 'L80%')->first();
         $transaction = TransactionType::where('code', 'LIKE', 'U%')->first();
 
@@ -62,7 +64,7 @@ class StoreSupplierOrderJob implements ShouldQueue
          * Inventory
          */
         $inventory = Inventory::where([
-            ['item_id', '=', $item->id],
+            ['item_id', '=', $part_no->id],
             ['location_id', '=', $location->id]
         ])->first();
 
@@ -70,26 +72,32 @@ class StoreSupplierOrderJob implements ShouldQueue
         $sum = $inventoryQuantity + $this->snp;
 
         if ($inventory !== null) {
-            $inventory->update(['quantity' => $sum]);
+            // $inventory->update(['quantity' => $sum]);
         } else {
-            Inventory::create([
-                'item_id' =>  $item->id,
-                'location_id' => $location->id,
-                'quantity' => $sum
-            ]);
+            Log::info('Item ID: ' . $part_no->id . ' No Part: ' . $this->item . ' Sum: ' . $sum . ' ELSE');
+            // Inventory::create([
+            //     'item_id' =>  $part_no->id,
+            //     'location_id' => $location->id,
+            //     'quantity' => $sum
+            // ]);
         }
 
-        InputSupplier::create([
-            'supplier' => $this->supplier,
-            'order_no' => $this->orderNo,
-            'sequence' => $this->sequence,
-            'item_id' => $item->id,
-            'snp' => $this->snp,
-            'received_date' => $date,
-            'received_time' => Carbon::parse($time)->format('H:i:s.v'),
-            'user_id' => Auth::id(),
-            'location_id' => $location->id,
-            'transaction_type_id' => $transaction->id,
-        ]);
+        // InputSupplier::create([
+        //     'supplier' => $this->supplier,
+        //     'order_no' => $this->orderNo,
+        //     'sequence' => $this->sequence,
+        //     'item_id' => $part_no->id,
+        //     'snp' => $this->snp,
+        //     'received_date' => $date,
+        //     'received_time' => Carbon::parse($time)->format('H:i:s.v'),
+        //     'user_id' => Auth::id(),
+        //     'location_id' => $location->id,
+        //     'transaction_type_id' => $transaction->id,
+        // ]);
+
+        // DB::connection('odbc-lx834fu01')
+        //     ->table('LX834FU01.RYT1')
+        //     ->whereRaw("R1ORN = '" . strval($this->orderNo) . "' AND R1SQN = '" . strval($this->sequence) . "' AND R1SNP = '" . strval($this->snp) . "' AND R1PRO = '" . strval($this->item) . "'")
+        //     ->update(['R1FLG' => "1"]);
     }
 }

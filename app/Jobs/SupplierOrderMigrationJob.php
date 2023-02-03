@@ -11,6 +11,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class SupplierOrderMigrationJob implements ShouldQueue
 {
@@ -44,6 +45,7 @@ class SupplierOrderMigrationJob implements ShouldQueue
             ->get();
 
         foreach ($orders as $key => $order) {
+            // Log::info($key . '.    No. Order: ' . $order->R1ORN . '    Seqence: ' . $order->R1SQN . '    Date: ' . $order->R1DAT . '    Flag: ' . $order->R1FLG);
             $input = InputSupplier::where([['order_no', $order->R1ORN], ['sequence', $order->R1SQN]])->first();
 
             if ($input === null) {
@@ -58,13 +60,8 @@ class SupplierOrderMigrationJob implements ShouldQueue
                         ]
                     )->first();
 
+
                 if ($hpo !== null) {
-
-                    DB::connection('odbc-lx834fu01')
-                        ->table('LX834FU01.RYT1')
-                        ->whereRaw("R1ORN = '" . strval($order->R1ORN) . "' AND R1SQN = '" . strval($order->R1SQN) . "' AND R1SNP = '" . strval($order->R1SNP) . "' AND R1PRO = '" . strval($order->R1PRO) . "'")
-                        ->update(['R1FLG' => "1"]);
-
                     StoreSupplierOrderJob::dispatch(
                         $hpo->PVEND,
                         $order->R1ORN,
