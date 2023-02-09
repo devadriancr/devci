@@ -4,6 +4,7 @@ namespace App\Jobs;
 
 use App\Models\Input;
 use App\Models\Inventory;
+use App\Models\Item;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -46,11 +47,14 @@ class RemoveDuplicateInputJob implements ShouldQueue
             ]
         )->orderBy('id', 'DESC')->get();
 
+        $cont = 0;
         $acum = 0;
 
         foreach ($inputs as $key => $input) {
             if ($key != 0) {
+                $cont++;
                 $acum += $input->item_quantity;
+                $input->delete();
             }
         }
 
@@ -63,7 +67,8 @@ class RemoveDuplicateInputJob implements ShouldQueue
 
         $qty = $inventory->quantity - $acum;
 
+        // Log::info(',' . $cont . ',' . $inventory->item_id . ',' . $this->supplier . $this->serial . ',' . $inventory->quantity . ',' . $acum . ',' . $qty);
+
         $inventory->update(['quantity' => $qty]);
-        $input->delete();
     }
 }
