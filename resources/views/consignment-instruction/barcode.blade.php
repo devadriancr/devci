@@ -27,7 +27,7 @@
             @endif
 
             @if (session('warning'))
-            <div class="mb-4 font-medium text-yellow-600">
+            <div class="mb-4 font-medium text-orange-600">
                 {{ session('warning') }}
             </div>
             @endif
@@ -37,19 +37,19 @@
                 <input name="container" value="{{ $container->id }}" hidden>
                 <label class="block text-sm mt-2">
                     <span class="text-gray-700 dark:text-gray-400">No. Parte</span>
-                    <input name="part" type="text" class="block w-full text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input" autofocus required />
+                    <input name="part" type="text" class="block w-full text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input" minlength="10" maxlength="10" pattern="(P|p).+" autofocus required />
                 </label>
                 <label class="block text-sm mt-2">
                     <span class="text-gray-700 dark:text-gray-400">Cantidad</span>
-                    <input name="quantity" type="text" class="block w-full text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input" required />
+                    <input name="quantity" type="text" class="block w-full text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input" minlength="7" maxlength="7" pattern="(Q|q).+" required />
                 </label>
                 <label class="block text-sm mt-2">
                     <span class="text-gray-700 dark:text-gray-400">Proveedor</span>
-                    <input name="supplier" type="text" class="block w-full text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input" required />
+                    <input name="supplier" type="text" class="block w-full text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input" minlength="6" maxlength="6" pattern="(V|v).+" required />
                 </label>
                 <label class="block text-sm mt-2">
                     <span class="text-gray-700 dark:text-gray-400">Serial</span>
-                    <input name="serial" type="text" class="block w-full text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input" required />
+                    <input name="serial" type="text" class="block w-full text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input" minlength="10" maxlength="10" pattern="(S|s).+" required />
                 </label>
                 <div class="flex flex-row justify-end mt-2">
                     <button class="flex items-center justify-between px-4 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple">

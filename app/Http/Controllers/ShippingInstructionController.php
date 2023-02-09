@@ -296,10 +296,10 @@ class ShippingInstructionController extends Controller
     public function storeBarCode(Request $request)
     {
         $request->validate([
-            'part' => ['required', 'string'],
-            'quantity' => ['required', 'string'],
-            'supplier' => ['required', 'string'],
-            'serial' => ['required', 'string'],
+            'part' => ['required', 'string', 'min:10', 'max:10'],
+            'quantity' => ['required', 'string', 'min:7', 'max:7'],
+            'supplier' => ['required', 'string', 'min:6', 'max:6'],
+            'serial' => ['required', 'string', 'min:10', 'max:10'],
         ]);
 
         $supplier =  strtoupper(substr($request->supplier, 1));
@@ -325,8 +325,12 @@ class ShippingInstructionController extends Controller
                 $respone = 'success';
                 $mesage = 'Registro Exitoso';
             } else {
-                return redirect()->back();
+                $respone = 'warning';
+                $mesage = 'No se encontro en Shipping o Posiblemnte se Registro Anteriormente';
             }
+        } else {
+            $respone = 'warning';
+            $mesage = 'Se Encuentra Registrado';
         }
 
         return redirect()->back()->with($respone, $mesage);

@@ -15,7 +15,7 @@ class RoleController extends Controller
      */
     public function index()
     {
-        $roles = Role::orderBy('id', 'DESC')->paginate(10);
+        $roles = Role::orderBy('name', 'ASC')->paginate(10);
 
         return view('role.index', ['roles' => $roles]);
     }
@@ -27,7 +27,7 @@ class RoleController extends Controller
      */
     public function create()
     {
-        $permissions = Permission::all();
+        $permissions = Permission::orderBy('name', 'ASC')->get();
 
         return view('role.create', ['permissions' => $permissions]);
     }
