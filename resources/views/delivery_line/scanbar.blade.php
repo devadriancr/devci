@@ -48,8 +48,6 @@
                     <path stroke-linecap="round" stroke-linejoin="round"
                         d="M6.75 6.75h.75v.75h-.75v-.75zM6.75 16.5h.75v.75h-.75v-.75zM16.5 6.75h.75v.75h-.75v-.75zM13.5 13.5h.75v.75h-.75v-.75zM13.5 19.5h.75v.75h-.75v-.75zM19.5 13.5h.75v.75h-.75v-.75zM19.5 19.5h.75v.75h-.75v-.75zM16.5 16.5h.75v.75h-.75v-.75z" />
                 </svg>
-
-
                 <span class="ml-2">Escaneo con QR</span>
             </button>
         </div>
@@ -63,19 +61,19 @@
             <input name="location_id" value={{ $entrega->location_id }} hidden>
             <label class="block text-sm">
                 <span class="text-gray-700 dark:text-gray-400">Numero de parte</span>
-                <input name="item" id="item"  minlength='9'
+                <input name="item" id="item"   minlength='10'  maxlength='10'  pattern="(P|p).+"
                     class="block w-full my-2 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input"
                     autofocus='enable' required>
                 <span class="text-gray-700 dark:text-gray-400">Cantidad</span>
-                <input name="quantity" id="quantity" type="number"
+                <input name="quantity" id="quantity" minlength='7'   maxlength='7'pattern="(Q|q).+"
                     class="block w-full my-2 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input"
                     autofocus='enable' required>
                 <span class="text-gray-700 dark:text-gray-400">Supplier</span>
-                <input name="supplier" id="supplier"
+                <input name="supplier" id="supplier"  minlength='6'  maxlength='6'  pattern="(V|v).+"
                     class="block w-full my-2 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input"
                     autofocus='enable' required>
                 <span class="text-gray-700 dark:text-gray-400">Serial</span>
-                <input name="serial" id="serial" minlength='9' maxlength='10'
+                <input name="serial" id="serial" minlength='10'   maxlength='10' pattern="(S|s).+"
                     class="block w-full my-2 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input"
                     autofocus='enable' required>
                 @if (isset($error))
