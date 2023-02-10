@@ -58,7 +58,7 @@
             <input name="location_id" value={{ $entrega->location_id }} hidden>
             <label class="block text-sm">
                 <span class="text-gray-700 dark:text-gray-400">Serial</span>
-                <input name="serial" id="serial"
+                <input name="serial" id="serial" minlength='35'
                     class="block w-full my-2 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input"
                     autofocus='enable'>
                 @if (isset($error))

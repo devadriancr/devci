@@ -17,8 +17,6 @@
             <div class="text-basem-5 bg-white">
                 <p class="font-semibold"> Carta porte:</p>
                 <p class="font-normal">{{ $travels->carta_porte }} <br></p>
-
-
             </div>
             <div class="text-base m-5 bg-white">
                 <p class="font-semibold">Factura: </p>
@@ -80,20 +78,20 @@
             <input name="travel_id" value={{ $travels->id }} hidden>
             <input name="location_id" value={{ $travels->location->id }} hidden>
             <label class="block text-sm">
-                <span class="text-gray-700 dark:text-gray-400">Numero de parte</span>
-                <input name="item" id="item" minlength='9'
+                <span class="text-gray-700 dark:text-gray-400">Numero de parte 1</span>
+                <input name="item" type=''id="item" minlength='10'  maxlength='10'   pattern="(P|p).+"
                     class="block w-full my-2 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input"
                     autofocus='enable' required>
                 <span class="text-gray-700 dark:text-gray-400">Cantidad</span>
-                <input name="quantity" id="quantity" type="number"
+                <input name="quantity" id="quantity" minlength='7' maxlength="7" pattern="(Q|q).+"
                     class="block w-full my-2 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input"
                     autofocus='enable' required>
                 <span class="text-gray-700 dark:text-gray-400">Supplier</span>
-                <input name="supplier" id="supplier"
+                <input name="supplier" id="supplier" minlength='6'  maxlength='6' pattern="(V|v).+"
                     class="block w-full my-2 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input"
                     autofocus='enable' required>
                 <span class="text-gray-700 dark:text-gray-400">Serial</span>
-                <input name="serial" id="serial" minlength='9' maxlength='10'
+                <input name="serial" id="serial" minlength='10'   maxlength='10' pattern="(S|s).+"
                     class="block w-full my-2 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input"
                     autofocus='enable' required>
 
@@ -222,7 +220,7 @@
                 </tbody>
             </table>
         </div>
-        <div
+        {{-- <div
             class="grid px-4 py-3 text-xs font-semibold tracking-wide text-gray-500 uppercase border-t dark:border-gray-700 bg-gray-50 sm:grid-cols-9 dark:text-gray-400 dark:bg-gray-800">
             <span class="flex items-center col-span-3">
                 Mostrando {{ $scan->firstItem() }} - {{ $scan->lastItem() }}
@@ -236,7 +234,7 @@
                     </ul>
                 </nav>
             </span>
-        </div>
+        </div> --}}
     </div>
     </div>
 </x-app-layout>
