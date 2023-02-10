@@ -6,7 +6,6 @@
         </div>
         <div class="flex items-center bg-white">
             {{-- <div class="text-base m-5 border-blue-500 border-opacity-75">
-
                     <p class="font-semibold"> Orden : </p>
                     <p class="font-normal">{{ $travels->orderinformation->id}}</p>
                 </div> --}}
@@ -21,7 +20,6 @@
             <div class="text-base m-5 bg-white">
                 <p class="font-semibold">Factura: </p>
                 <p class="font-normal">{{ $travels->invoice_number }}<br></p>
-
             </div>
             <div class="text-base m-5 border-blue-500 border-opacity-75">
 

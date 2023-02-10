@@ -26,7 +26,7 @@ return new class extends Migration
     public function down()
     {
         Schema::table('outputs', function (Blueprint $table) {
-            $table->boolean('return_scan')->nullable();
+            $table->dropColumn('return_scan');
         });
     }
 };

@@ -97,7 +97,9 @@ class OutputController extends Controller
         }
 
         if ($error == 0) {
-            $location = location::where('code', 'like', '%L60%')->first();
+
+            $location = location::where('id', $request->location_id)->first();
+
             $safetystock = item::whereraw("item_number like '" . end($cadena) . "%'")->first();
             $invenoti = inventory::where([['item_id', $safetystock->id], ['location_id', $location->id]])->first();
             if ($invenoti != null) {
@@ -117,6 +119,7 @@ class OutputController extends Controller
             } else {
                 $location_old = location::where('code', 'like', '%L61%')->first();
             }
+
             Output::create([
                 'supplier' =>  $cadena[11],
                 'serial' => $cadena[13],
@@ -145,9 +148,13 @@ class OutputController extends Controller
                 } else {
 
                     $operador = 'I';
-                    $loc_ant = 'L61       ';
+                    $loc_new = 'L61       ';
                 }
+
+
+
                 $location_new = location::where('id', $request->location_id)->first();
+                // dd($cadena[13], $item->id, $item->item_number, $request->location_id, $operador, $cadena[10], $location_old->id, $re->created_at,  $location_old->warehouse->code,   $location_new->warehouse->code);
                 self::inventario($cadena[13], $item->id, $item->item_number, $request->location_id, $operador, $cadena[10], $location_old->id, $re->created_at,  $location_old->warehouse->code,   $location_new->warehouse->code);
 
         } else {
@@ -157,10 +164,10 @@ class OutputController extends Controller
             } else {
                 $location_old = location::where('code', 'like', '%L61%')->first();
             }
+
+
             if ($error == 5) {
-
                 $location_or = location::where('code', 'like', '%L60%')->first();
-
                 $Transaction_type = transactiontype::where('code', 'like', '%T %')->first();
                 $re = input::create([
                     'supplier' =>  $cadena[11],
@@ -227,6 +234,7 @@ class OutputController extends Controller
                     $operador = 'I';
                     $loc_ant = 'L61       ';
                 }
+
                 $location_new = location::where('id', $request->location_id)->first();
                 self::inventario($cadena[13], $item->id, $item->item_number, $request->location_id, $operador, $cadena[10], $location_old->id, $re->created_at,  $location_old->warehouse->code,   $location_new->warehouse->code);
 
@@ -291,8 +299,10 @@ class OutputController extends Controller
 
         if ($error == 0) {
 
-            $location = location::where('code', 'like', '%L60%')->first();
-            $safetystock = item::whereraw("item_number like '" . $item->id . "%'")->first();
+            $location = location::where('id', $request->location_id)->first();
+
+
+            $safetystock = item::whereraw("item_number like '" .$item_n. "%'")->first();
             $invenoti = inventory::where([['item_id', $safetystock->id], ['location_id', $location->id]])->first();
             if ($invenoti != null) {
                 $total = $invenoti->opening_balance + $invenoti->quantity;
@@ -342,7 +352,6 @@ class OutputController extends Controller
                 $operador = 'I';
                 $loc_ant = 'L61       ';
             }
-            dd($serial, $item->id, $item->item_number, $request->location_id, $operador, $quantity, $location_old->id, $re->created_at,  $location_old->warehouse->code,   $location_new->warehouse->code);
             self::inventario($serial, $item->id, $item->item_number, $request->location_id, $operador, $quantity, $location_old->id, $re->created_at,  $location_old->warehouse->code,   $location_new->warehouse->code);
              } else {
             if ($error == 5) {
@@ -597,20 +606,20 @@ class OutputController extends Controller
     {
 
         $travel = Travel::find($request->travel_id);
-        if ($travel->location->code == 'L61       ') {
-            $operador = 'O';
-            $loc_ant = 'L60       ';
-        } else {
+        // if ($travel->location->code == 'L61       ') {
+        //     $operador = 'O';
+        //     $loc_ant = 'L60       ';
+        // } else {
 
-            $operador = 'I';
-            $loc_ant = 'L61       ';
-        }
-        $scan  = input::with('item')->where('travel_id', $request->travel_id)->get();
-        $loc_ant_id = location::with('warehouse')->where('code', $loc_ant)->first();
-        $loc_act_id = location::with('warehouse')->where('id', $travel->location->id)->first();
-        foreach ($scan as $scans) {
-            self::inventario($scans->serial, $scans->item_id, $scans->item->item_number, $scans->location_id, $operador, $scans->item_quantity, $loc_ant_id->id, $scans->created_at, $loc_ant_id->warehouse->code, $loc_act_id->warehouse->code);
-        }
+        //     $operador = 'I';
+        //     $loc_ant = 'L61       ';
+        // }
+        // $scan  = input::with('item')->where('travel_id', $request->travel_id)->get();
+        // $loc_ant_id = location::with('warehouse')->where('code', $loc_ant)->first();
+        // $loc_act_id = location::with('warehouse')->where('id', $travel->location->id)->first();
+        // foreach ($scan as $scans) {
+        //     self::inventario($scans->serial, $scans->item_id, $scans->item->item_number, $scans->location_id, $operador, $scans->item_quantity, $loc_ant_id->id, $scans->created_at, $loc_ant_id->warehouse->code, $loc_act_id->warehouse->code);
+        // }
         // $conn = odbc_connect("Driver={Client Access ODBC Driver (32-bit)};System=192.168.200.7;", "LXSECOFR;", "LXSECOFR;");
         // $query = "CALL LX834OU02.YIN151C";
         // live

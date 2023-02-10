@@ -553,13 +553,11 @@ class DeiveryProductionController extends Controller
             input::where('id', $request->serial_id)->update(['return_scan' => 1]);
             output::where('id', $itemout->id)->update(['return_scan' => 1]);
             $reout = output::where([['delivery_production_id', $itemin->delivery_id], ['serial', $itemin->serial], ['item_id', $itemin->item_id]])->update(['return' => true]);
-
             $error = 1;
             $message = 'serial eliminado de la entrega actual ';
             $scan  = input::with('item')->where([['delivery_production_id', $request->delivery_id], ['return_scan', null]])->simplePaginate(10);
             $travels = array();
             $entrega = DeliveryProduction::find($request->delivery_id);
-
             return view('delivery_line.scan', ['entrega' => $entrega, 'scan' => $scan, 'error' => $error, 'msg' => $message,]);
         } else {
             $entrega = DeliveryProduction::find($request->delivery_id);
