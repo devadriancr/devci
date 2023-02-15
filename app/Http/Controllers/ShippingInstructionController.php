@@ -335,4 +335,27 @@ class ShippingInstructionController extends Controller
 
         return redirect()->back()->with($respone, $mesage);
     }
+
+    /**
+     *
+     */
+    public function reportConsignments()
+    {
+        return view('shipping-instruction.reportConsigments');
+    }
+
+    /**
+     *
+     */
+    public function downloadConsignment(Request $request)
+    {
+        $request->validate([
+            'type' => ['required'],
+            'start' => ['required', 'date'],
+            'end' => ['required', 'date']
+        ]);
+
+        dd($request->all());
+
+    }
 }
