@@ -17,8 +17,6 @@
             <div class="text-basem-5 bg-white">
                 <p class="font-semibold"> Carta porte:</p>
                 <p class="font-normal">{{ $travels->carta_porte }} <br></p>
-
-
             </div>
             <div class="text-base m-5 bg-white">
                 <p class="font-semibold">Factura: </p>
@@ -190,7 +188,7 @@
                             <td class="px-4 py-3 text-sm">
                                 {{ $consignment->supplier }}
                             </td>
-                            <td class="px-4 py-3">
+                            {{-- <td class="px-4 py-3">
                                 <div class="flex items-center space-x-4 text-sm">
                                     <form method="POST" action="{{ route('output.destroy') }}">
                                         @csrf
@@ -209,7 +207,7 @@
                                         </button>
                                     </form>
                                 </div>
-                            </td>
+                            </td> --}}
                         </tr>
                     @endforeach
                 </tbody>

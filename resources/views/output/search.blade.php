@@ -110,7 +110,7 @@
                                 <td class="px-4 py-3 text-sm">
                                     {{ $consignment->container->code ?? ' ' }}
                                 </td>
-                                <td class="px-4 py-3 text-sm">
+                                {{-- <td class="px-4 py-3 text-sm">
                                     @php
                                         $loc = $consignment->location->code ?? '';
                                     @endphp
@@ -120,7 +120,7 @@
                                                 @csrf
                                                 <input name="id" value='{{ $consignment->id }}' hidden>
                                                 {{-- <input name="travel_id" value='{{ $travels->id }}' hidden>
-                                        <input name="serial" value='{{ $consignment->serial }}' hidden> --}}
+                                        <input name="serial" value='{{ $consignment->serial }}' hidden>
                                                 <button
                                                     class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
                                                     aria-label="Delete">
@@ -136,7 +136,7 @@
                                         </div>
                                     @endif
 
-                                </td>
+                                </td> --}}
                             </tr>
                         @endforeach
                     @endif

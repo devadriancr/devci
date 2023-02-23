@@ -193,7 +193,7 @@
                             <td class="px-4 py-3 text-sm">
                                 {{ $consignment->supplier }}
                             </td>
-                            <td class="px-4 py-3">
+                            {{-- <td class="px-4 py-3">
                                 <div class="flex items-center space-x-4 text-sm">
                                     <form method="POST" action="{{ route('output.destroy') }}">
                                         @csrf
@@ -212,7 +212,7 @@
                                         </button>
                                     </form>
                                 </div>
-                            </td>
+                            </td> --}}
                         </tr>
                     @endforeach
                 </tbody>
