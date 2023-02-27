@@ -487,7 +487,7 @@ class OutputController extends Controller
             'user_id' =>     Auth::user()->id
         ]);
         input::create([
-            'supplier' =>   $reg->suppier,
+            'supplier' =>$reg->suppier,
             'serial' => $reg->serial,
             'item_id' => $reg->item_id,
             'item_quantity' =>  $reg->item_quantity,
