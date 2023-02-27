@@ -209,10 +209,7 @@ class DeiveryProductionController extends Controller
             }
         }
 
-        if (strlen($serial) >= 10) {
-            $error = 12;
-            $message = 'por el momento no se puede escanear este tipo de consigna  ';
-        }
+
 
         if ($error == 0) {
             $item = DB::table('items')->whereRaw("item_number like  '" .  $number_part . "%'")->first();
@@ -265,9 +262,7 @@ class DeiveryProductionController extends Controller
             $location_old = location::with('warehouse')->where('code', 'like', 'L60%')->first();
             $location_new = location::with('warehouse')->where('code', 'like', 'L12%')->first();
             $Transaction_type = transactiontype::where('code', 'like', '%T %')->first();
-            // dd($supplier, $serial, $item->id,$quantity, $Transaction_type->id,$request->delivery_id,$location_old->id);
-
-            $re = Output::create([
+            Output::create([
                 'supplier' =>  $supplier,
                 'serial' => $serial,
                 'item_id' => $item->id,
@@ -275,7 +270,7 @@ class DeiveryProductionController extends Controller
                 'transaction_type_id' => $Transaction_type->id,
                 'delivery_production_id' => $request->delivery_id,
                 'location_id' => $location_old->id,
-                'user_id' =>     $use = Auth::user()->id
+                'user_id' =>     Auth::user()->id
             ]);
 
             $re = input::create([
@@ -287,10 +282,12 @@ class DeiveryProductionController extends Controller
                 'transaction_type_id' => $Transaction_type->id,
                 'delivery_production_id' => $request->delivery_id,
                 'location_id' => $request->location_id,
-                'user_id' =>     $use = Auth::user()->id
+                'user_id' =>    Auth::user()->id
             ]);
+
             $message = 'Serial capturado exitosamente';
             SELF::inventario($serial, $item->id,  $item->item_number, $request->location_id, $quantity, $location_old->id,   $re->created_at, $location_old->warehouse->code, $location_new->warehouse->code);
+
         } else {
             if ($error == 5) {
                 $location_old = location::where('code', 'like', 'L60%')->first();
@@ -313,32 +310,6 @@ class DeiveryProductionController extends Controller
                 $hora = date('His', time());
                 $use = Auth::user()->user_infor ?? 'ykms';
                 $loc_ant_id = location::with('warehouse')->whereRaw("code like 'L60%'")->first();
-
-                self:: inventario_nuevo($serial, $item->id,  $location_old->id,$quantity);
-                // $srialcom = $supplier . $serial;
-                // $container = ShippingInstruction::where([['serial', $srialcom], ['part_no', $number_part]])->first();
-
-                // if ($container == null) {
-                //     $fecha_con = 0;b
-                //     $hora_con = 0;
-                // } else {
-                //     $fecha_con = Carbon::parse($container->arrival_date)->format('Ymd');
-                //     $hora_con = Carbon::parse($container->arrival_time)->format('His');
-                // }
-                // dd($container->container?? '',$fecha_con,$hora_con,$item->item_number, $supplier, $serial,$quantity, Auth::user()->user_infor,Carbon::parse($re->created_at)->format('Ymd'),Carbon::parse($re->created_at)->format('His') );
-
-                // $yH003 = YH003::query()->insert([
-                //     'H3CONO' => $container->container ?? '',
-                //     'H3DDTE' => $fecha_con,
-                //     'H3DTIM' =>  $hora_con,
-                //     'H3PROD' => $item->item_number,
-                //     'H3SUCD' => $supplier,
-                //     'H3SENO' => $serial,
-                //     'H3RQTY' => $quantity,
-                //     'H3CUSR' => Auth::user()->user_infor ?? '',
-                //     'H3RDTE' => Carbon::parse($re->created_at)->format('Ymd'),
-                //     'H3RTIM' => Carbon::parse($re->created_at)->format('His')
-                // ]);
                 $infor = YI007::Query()->insert(
                     [
                         'I7PROD' => $item->item_number,
@@ -376,6 +347,10 @@ class DeiveryProductionController extends Controller
                     'location_id' => $request->location_id,
                     'user_id' =>     $use = Auth::user()->id
                 ]);
+                self:: inventario_nuevo($serial, $item->id,  $location_old->id,$quantity);
+
+
+
                 $message = ' Serial dado de alta exitosamente ';
                 $location_old = location::with('warehouse')->where('code', 'like', 'L60%')->first();
                 $location_new = location::with('warehouse')->where('code', 'like', 'L12%')->first();
