@@ -89,7 +89,7 @@ class TravelController extends Controller
         $msg = '';
         $scan = input::where('travel_id', $idtravel->id)->paginate(10);
 
-        return view('output.index', ['travels' => $idtravel, 'scan' => $scan]);
+        return view('output.scan', ['travels' => $idtravel, 'scan' => $scan]);
     }
 
     /**

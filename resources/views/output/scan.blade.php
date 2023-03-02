@@ -5,13 +5,23 @@
         </div>
         <div class="flex items-center bg-white">
             <div class="text-base m-5">
-                <p class="font-semibold">No de entrega: </p>
+                <p class="font-semibold">ID de Viaje: </p>
                 <p class="font-normal">{{ $travels->id }}<br></p>
             </div>
             <div class="text-basem-5 bg-white">
-                <p class="font-semibold">No de nomina: </p>
-                <p class="font-normal">{{ $travels->control_number }}<br></p>
+                <p class="font-semibold"> Carta porte:</p>
+                <p class="font-normal">{{ $travels->carta_porte }} <br></p>
             </div>
+            <div class="text-base m-5 bg-white">
+                <p class="font-semibold">Factura: </p>
+                <p class="font-normal">{{ $travels->invoice_number }}<br></p>
+            </div>
+            <div class="text-base m-5 border-blue-500 border-opacity-75">
+
+                <p class="font-semibold"> Locacion: </p>
+                <p class="font-normal">{{ $travels->location->name }}</p>
+            </div>
+
         </div>
 
         <form method="POST" action="{{ route('output.update') }}">
@@ -112,6 +122,40 @@
                     </div>
                 </label>
             </form>
+        </div>
+        <div class="w-full overflow-hidden rounded-lg shadow-xs">
+            <div class="w-full overflow-x-auto">
+                <table class="w-full whitespace-no-wrap">
+                    <thead>
+                        <tr
+                            class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b dark:border-gray-700 bg-gray-50 dark:text-gray-400 dark:bg-gray-800">
+                            <th class="px-4 py-3">Serial</th>
+                            <th class="px-4 py-3">Numero de Parte</th>
+                            <th class="px-4 py-3">Cantidad </th>
+                            <th class="px-4 py-3">Proveedor </th>
+
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y dark:divide-gray-700 dark:bg-gray-800">
+                        @foreach ($scan as $consignment)
+                            <tr class="text-gray-700 dark:text-gray-400">
+                                <td class="px-4 py-3 text-sm">
+                                    {{ $consignment->serial ?? '' }}
+                                </td>
+                                <td class="px-4 py-3 text-sm">
+                                    {{ $consignment->item->item_number ?? '' }}
+                                </td>
+                                <td class="px-4 py-3 text-sm">
+                                    {{ $consignment->item_quantity ?? '' }}
+                                </td>
+                                <td class="px-4 py-3 text-sm">
+                                    {{ $consignment->supplier }}
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
     <script>
