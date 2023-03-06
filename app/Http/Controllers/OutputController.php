@@ -46,14 +46,15 @@ class OutputController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create(Request $request)
+    public function create1(Request $request)
     {
         $error = 0;
-        $location = location::find($request->location_id);
+        $location = location::with('warehouse')->find($request->location_id);
         $cadena = explode(",", $request->serial);
 
         if (count($cadena) != 27) {
             $error = 8;
+
             $message = 'ESCANEO INCORRECTO';
         }
         if ($error == 0) {
@@ -64,61 +65,58 @@ class OutputController extends Controller
             }
         }
         if ($error == 0) {
-            $serial_exist = input::where([['serial', $cadena[13]], ['supplier', $cadena[11]]])->first();
+            $serial_exist = input::where([['serial', $cadena[13]], ['supplier', $cadena[11]], ['item_id', $item->id]])->orderby('id', 'desc')->first();
             if ($serial_exist == null) {
                 $error = 5;
                 $message = 'Serial no encontrado en shipping se ha dado de alta';
             }
-        }
-        if ($error == 0) {
-            $serial_exist = input::where([['serial', $cadena[13]], ['supplier', $cadena[11]]])->where('delivery_production_id', '!=', null)->first();
-            if ($serial_exist == true) {
-                $error = 11;
-                $message = 'Serial ya fue entregado a linea de produccion ';
+            if ($error == 0) {
+                if ($serial_exist->delivery_production_id != null) {
+                    $error = 11;
+                    $message = 'Serial ya fue entregado a linea de produccion ';
+                }
             }
-        }
-
-        if ($error == 0) {
-            $serial_exist = input::where([['serial', $cadena[13]], ['supplier', $cadena[11]]])->where('travel_id', $request->travel_id)->first();
-            if ($serial_exist != false) {
-                $error = 3;
-                $message = 'serial ya fue  escaneado';
+            if ($error == 0) {
+                if ($serial_exist->travel_id == $request->travel_id) {
+                    $error = 3;
+                    $message = 'serial ya fue  escaneado';
+                } else {
+                    $scan_ac = input::where([['serial', $cadena[13]], ['supplier', $cadena[11]], ['item_id', $item->id], ['travel_id', $request->travel_id]])->orderby('id', 'desc')->first();
+                    if ($scan_ac != null) {
+                        $error = 3;
+                        $message = 'serial ya fue  escaneado';
+                    }
+                }
             }
-        }
-
-        if ($error == 0) {
-            $ultimaEnt = input::where([['serial', $cadena[13]], ['supplier', $cadena[11]]])->orderby('id', 'desc')->first();
-            if ($ultimaEnt != null) {
-                if ($ultimaEnt->location_id == $request->location_id) {
-                    $error = 4;
-                    $message = 'serial ya existente en el almacen actual ';
+            if ($error == 0) {
+                if ($serial_exist != null) {
+                    if ($serial_exist->location_id == $request->location_id) {
+                        $error = 4;
+                        $message = 'serial ya existente en el almacen actual ';
+                    }
                 }
             }
         }
-
-        if ($error == 0) {
-
-            $location = location::where('id', $request->location_id)->first();
-            // $safetystock = item::whereraw("item_number like '" . end($cadena) . "%'")->first();
-            $invenoti = inventory::where([['item_id', $item->id], ['location_id', $location->id]])->first();
-            if ($invenoti != null) {
-                $total = $invenoti->opening_balance + $invenoti->quantity;
-            } else {
-                $total = 0;
-            }
-            if ($item->safety_stock > $total) {
-                $error = 1;
-                $message = 'inventario menor a safety stock';
-            }
-        }
-        $Transaction_type = transactiontype::where('code', 'like', '%T %')->first();
         if ($error <= 1) {
+            $Transaction_type = transactiontype::where('code', 'like', '%T %')->first();
             if ($location->code == 'L61       ') {
-                $location_old = location::where('code', 'like', '%L60%')->first();
+                $location_old  = location::with('warehouse')->where('code', 'like', '%L60%')->first();
+                $invenoti = inventory::where([['item_id', $item->id], ['location_id', $location_old->id]])->first();
+                if ($invenoti != null) {
+                    $total = $invenoti->opening_balance + $invenoti->quantity;
+                } else {
+                    $total = 0;
+                }
+                if ($item->safety_stock > $total) {
+                    $error = 1;
+                    $message = 'escaneo correcto inventario menor a safety stock';
+                }
             } else {
                 $location_old = location::where('code', 'like', '%L61%')->first();
             }
-
+            if ($error == 0) {
+                $message = 'serial capturado exitosamente';
+            }
             Output::create([
                 'supplier' =>  $cadena[11],
                 'serial' => $cadena[13],
@@ -127,7 +125,7 @@ class OutputController extends Controller
                 'transaction_type_id' => $Transaction_type->id,
                 'travel_id' => $request->travel_id,
                 'location_id' => $location_old->id,
-                'user_id' =>     $use = Auth::user()->id
+                'user_id' =>     Auth::user()->id
             ]);
             $re = input::create([
                 'supplier' =>  $cadena[11],
@@ -137,70 +135,102 @@ class OutputController extends Controller
                 'transaction_type_id' => $Transaction_type->id,
                 'travel_id' => $request->travel_id,
                 'location_id' => $request->location_id,
-                'user_id' =>     $use = Auth::user()->id
+                'user_id' =>      Auth::user()->id
             ]);
-            if($error==0)
-            {
-                $message = 'serial capturado exitosamente';
-            }
 
-            if ($request->location_id == 'L61       ') {
-                $operador = 'O';
-                $loc_ant = 'L60       ';
+            $operacion = Inventory::where('location_id', $location->id)->where('item_id', $item->id)->first();
+            $operacion_ant = Inventory::where('location_id', $location_old->id)->where('item_id', $item->id)->first();
+            if (is_null($operacion)) {
+                $inv = 0;
             } else {
-
-                $operador = 'I';
-                $loc_new = 'L61       ';
+                $inv = $operacion->quantity;
             }
-            $location_new = location::where('id', $request->location_id)->first();
-            // dd($cadena[13], $item->id, $item->item_number, $request->location_id, $operador, $cadena[10], $location_old->id, $re->created_at,  $location_old->warehouse->code,   $location_new->warehouse->code);
-            self::inventario($cadena[13], $item->id, $item->item_number, $request->location_id, $operador, $cadena[10], $location_old->id, $re->created_at,  $location_old->warehouse->code,   $location_new->warehouse->code);
+            if (is_null($operacion_ant)) {
+                $inv_ant = 0;
+            } else {
+                $inv_ant = $operacion_ant->quantity;
+            }
+            $total = $inv +  $cadena[10];
+            $totalant = $inv_ant -  $cadena[10];
+            $mov = Inventory::updateOrCreate(
+                ['location_id' => $location->id, 'item_id' => $item->id],
+                ['quantity' => $total]
+            );
+            $mov = Inventory::updateOrCreate(
+                ['location_id' => $location_old->id, 'item_id' => $item->id],
+                ['quantity' => $totalant]
+            );
+            $fechascan = date('Ymd', strtotime($re->created_at));
+            $horascan = date('His', strtotime($re->created_at));
+            $fechainfor = date('Ymd', strtotime('now'));
+            $hora = date('His', time());
+            $infor = YI007::Query()->insert(
+                [
+                    'I7PROD' => $item->item_number,
+                    'I7SENO' => $cadena[13],
+                    'I7TFLG' => 'O',
+                    'I7TDTE' => $fechascan,
+                    'I7TTIM' => $horascan,
+                    'I7TQTY' => $cadena[10],
+                    'I7WHS' =>  $location_old->warehouse->code,
+                    'I7CUSR' => 'YKMS',
+                    'I7CCDT' => $fechainfor,
+                    'I7CCTM' => $hora,
+                ]
+
+            );
+            $infor = YI007::Query()->insert(
+                [
+                    'I7PROD' => $item->item_number,
+                    'I7SENO' => $cadena[13],
+                    'I7TFLG' => 'I',
+                    'I7TDTE' => $fechascan,
+                    'I7TTIM' => $horascan,
+                    'I7TQTY' => $cadena[10],
+                    'I7WHS' =>  $location->warehouse->code,
+                    'I7CUSR' => 'YKMS',
+                    'I7CCDT' => $fechainfor,
+                    'I7CCTM' => $hora,
+                ]
+
+            );
         } else {
 
-            if ($location->code == 'L61       ') {
-                $location_old = location::where('code', 'like', '%L60%')->first();
-            } else {
-                $location_old = location::where('code', 'like', '%L61%')->first();
-            }
             if ($error == 5) {
-                $location_or = location::where('code', 'like', '%L60%')->first();
                 $Transaction_type = transactiontype::where('code', 'like', '%T %')->first();
+                if ($location->code == 'L61       ') {
+                    $location_old  = location::with('warehouse')->where('code', 'like', '%L60%')->first();
+                    $invenoti = inventory::where([['item_id', $item->id], ['location_id', $location_old->id]])->first();
+                } else {
+                    $location_old = location::where('code', 'like', '%L61%')->first();
+                }
                 $re = input::create([
                     'supplier' =>  $cadena[11],
                     'serial' => $cadena[13],
                     'item_id' => $item->id,
                     'item_quantity' =>  $cadena[10],
                     'transaction_type_id' => $Transaction_type->id,
-                    'location_id' => $location_or->id,
-                    'user_id' =>     $use = Auth::user()->id
+                    'location_id' =>  $location_old->id,
+                    'user_id' =>   Auth::user()->id
                 ]);
-                self:: inventario_nuevo($cadena[13], $item->id,  $location_old->id,$cadena[10]);
+                $operacion = Inventory::where('location_id', $location_old->id)->where('item_id', $item->id)->first();
+                if (is_null($operacion)) {
+                    $inv = 0;
+                } else {
+                    $inv = $operacion->quantity;
+                }
+
+                $total = $inv +  $cadena[10];
+
+                $mov = Inventory::updateOrCreate(
+                    ['location_id' => $location_old->id, 'item_id' => $item->id],
+                    ['quantity' => $total]
+                );
+
                 $fechascan = date('Ymd', strtotime($re->created_at));
                 $horascan = date('His', strtotime($re->created_at));
                 $fechainfor = date('Ymd', strtotime('now'));
                 $hora = date('His', time());
-                $use = Auth::user()->user_infor ?? 'ykms';
-                $loc_ant_id = location::with('warehouse')->whereRaw("code like 'L60%'")->first();
-                // $container = ShippingInstruction::where([['serial', $cadena[13]], ['part_no', $item->item_number]])->first();
-                // if ($container == null) {
-                //     $fecha_con = 0;
-                //     $hora_con = 0;
-                // } else {
-                //     $fecha_con = Carbon::parse($container->arrival_date)->format('Ymd');
-                //     $hora_con = Carbon::parse($container->arrival_time)->format('His');
-                // }
-                // $yH003 = YH003::query()->insert([
-                //     'H3CONO' => $container->container ?? '',
-                //     'H3DDTE' => $fecha_con,
-                //     'H3DTIM' =>  $hora_con,
-                //     'H3PROD' => $item->item_number,
-                //     'H3SUCD' => $cadena[11],
-                //     'H3SENO' => $cadena[13],
-                //     'H3RQTY' =>  $cadena[10],
-                //     'H3CUSR' => Auth::user()->user_infor ?? '',
-                //     'H3RDTE' => Carbon::parse($re->created_at)->format('Ymd'),
-                //     'H3RTIM' => Carbon::parse($re->created_at)->format('His')
-                // ]);
                 $infor = YI007::Query()->insert(
                     [
                         'I7PROD' => $item->item_number,
@@ -209,13 +239,16 @@ class OutputController extends Controller
                         'I7TDTE' => $fechascan,
                         'I7TTIM' => $horascan,
                         'I7TQTY' =>  $cadena[10],
-                        'I7WHS' =>   $loc_ant_id->warehouse->code,
+                        'I7WHS' =>   $location_old->warehouse->code,
                         'I7CUSR' => 'YKMS',
                         'I7CCDT' => $fechainfor,
                         'I7CCTM' => $hora,
                     ]
-
                 );
+                if ($error == 0) {
+                    $message = 'serial capturado exitosamente';
+                }
+
                 Output::create([
                     'supplier' =>  $cadena[11],
                     'serial' => $cadena[13],
@@ -224,9 +257,9 @@ class OutputController extends Controller
                     'transaction_type_id' => $Transaction_type->id,
                     'travel_id' => $request->travel_id,
                     'location_id' => $location_old->id,
-                    'user_id' =>     $use = Auth::user()->id
+                    'user_id' =>     Auth::user()->id
                 ]);
-                input::create([
+                $re = input::create([
                     'supplier' =>  $cadena[11],
                     'serial' => $cadena[13],
                     'item_id' => $item->id,
@@ -234,31 +267,72 @@ class OutputController extends Controller
                     'transaction_type_id' => $Transaction_type->id,
                     'travel_id' => $request->travel_id,
                     'location_id' => $request->location_id,
-                    'user_id' =>     $use = Auth::user()->id
+                    'user_id' =>      Auth::user()->id
                 ]);
-                if ($error == 0) {
-                    $message = 'serial capturado exitosamente';
-                }
-                // $message = ' Serial dado de alta exitosamente ';
-                if ($request->location_id == 'L61       ') {
-                    $operador = 'O';
-                    $loc_ant = 'L60       ';
+
+                $operacion = Inventory::where('location_id', $location->id)->where('item_id', $item->id)->first();
+                $operacion_ant = Inventory::where('location_id', $location_old->id)->where('item_id', $item->id)->first();
+                if (is_null($operacion)) {
+                    $inv = 0;
                 } else {
-
-                    $operador = 'I';
-                    $loc_ant = 'L61       ';
+                    $inv = $operacion->quantity;
                 }
+                if (is_null($operacion_ant)) {
+                    $inv_ant = 0;
+                } else {
+                    $inv_ant = $operacion_ant->quantity;
+                }
+                $total = $inv +  $cadena[10];
+                $totalant = $inv_ant -  $cadena[10];
+                $mov = Inventory::updateOrCreate(
+                    ['location_id' => $location->id, 'item_id' => $item->id],
+                    ['quantity' => $total]
+                );
+                $mov = Inventory::updateOrCreate(
+                    ['location_id' => $location_old->id, 'item_id' => $item->id],
+                    ['quantity' => $totalant]
+                );
+                $fechascan = date('Ymd', strtotime($re->created_at));
+                $horascan = date('His', strtotime($re->created_at));
+                $fechainfor = date('Ymd', strtotime('now'));
+                $hora = date('His', time());
+                $infor = YI007::Query()->insert(
+                    [
+                        'I7PROD' => $item->item_number,
+                        'I7SENO' => $cadena[13],
+                        'I7TFLG' => 'O',
+                        'I7TDTE' => $fechascan,
+                        'I7TTIM' => $horascan,
+                        'I7TQTY' => $cadena[10],
+                        'I7WHS' =>  $location_old->warehouse->code,
+                        'I7CUSR' => 'YKMS',
+                        'I7CCDT' => $fechainfor,
+                        'I7CCTM' => $hora,
+                    ]
 
-                $location_new = location::where('id', $request->location_id)->first();
-                self::inventario($cadena[13], $item->id, $item->item_number, $request->location_id, $operador, $cadena[10], $location_old->id, $re->created_at,  $location_old->warehouse->code,   $location_new->warehouse->code);
+                );
+                $infor = YI007::Query()->insert(
+                    [
+                        'I7PROD' => $item->item_number,
+                        'I7SENO' => $cadena[13],
+                        'I7TFLG' => 'I',
+                        'I7TDTE' => $fechascan,
+                        'I7TTIM' => $horascan,
+                        'I7TQTY' => $cadena[10],
+                        'I7WHS' =>  $location->warehouse->code,
+                        'I7CUSR' => 'YKMS',
+                        'I7CCDT' => $fechainfor,
+                        'I7CCTM' => $hora,
+                    ]
+
+                );
             }
         }
-
         $scan  = input::with('item')->where('travel_id', $request->travel_id)->orderBy('created_at', 'desc')->get();
         $locations = location::find($request->location_id);
         $travels = travel::find($request->travel_id);
 
-        return view('Output.index', ['travels' => $travels, 'scan' => $scan, 'error' => $error, 'msg' => $message, 'location_id' => $locations]);
+        return view('Output.scan', ['travels' => $travels, 'scan' => $scan, 'error' => $error, 'msg' => $message, 'location_id' => $locations]);
     }
     public function createscan(Request $request)
     {
@@ -271,7 +345,7 @@ class OutputController extends Controller
         $suppier = substr($suppier, 1);
         $item_n = substr($item_n, 1);
         $error = 0;
-        $location = location::find($request->location_id);
+        $location = location::with('warehouse')->find($request->location_id);
         if ($error == 0) {
             $item = DB::table('items')->whereRaw("item_number like '" . $item_n . "%'")->first();
             if ($item == false) {
@@ -280,61 +354,59 @@ class OutputController extends Controller
             }
         }
         if ($error == 0) {
-            $serial_exist = input::where([['serial', $serial], ['supplier', $suppier]])->first();
+            $serial_exist = input::where([['serial', $serial], ['supplier', $suppier], ['item_id', $item->id]])->orderby('id', 'desc')->first();
             if ($serial_exist == null) {
                 $error = 5;
-                $message = 'Serial no encontrado en shipping, se ingresa en el sistema';
+                $message = 'Serial no encontrado en shipping se ha dado de alta';
             }
-        }
-        if ($error == 0) {
-            $serial_exist = input::where([['serial', $serial], ['supplier', $suppier]])->where('delivery_production_id', '!=', null)->first();
-            if ($serial_exist == true) {
-                $error = 11;
-                $message = 'Serial ya fue entregado a linea de produccion ';
+            if ($error == 0) {
+                if ($serial_exist->delivery_production_id != null) {
+                    $error = 11;
+                    $message = 'Serial ya fue entregado a linea de produccion ';
+                }
             }
-        }
-        if ($error == 0) {
-            $serial_exist = input::where([['serial', $serial], ['supplier', $suppier]])->where('travel_id', $request->travel_id)->first();
-            if ($serial_exist != false) {
-                $error = 3;
-                $message = 'serial ya fue  escaneado';
+            if ($error == 0) {
+
+                if ($serial_exist->travel_id == $request->travel_id) {
+                    $error = 3;
+                    $message = 'serial ya fue  escaneado';
+                } else {
+                    $scan_ac = input::where([['serial', $serial], ['supplier', $suppier], ['item_id', $item->id], ['travel_id', $request->travel_id]])->orderby('id', 'desc')->first();
+                    if ($scan_ac != null) {
+                        $error = 3;
+                        $message = 'serial ya fue  escaneado';
+                    }
+                }
             }
-        }
-        if ($error == 0) {
-            $ultimaEnt = input::where([['serial', $serial], ['supplier', $suppier]])->orderby('id', 'desc')->first();
-            if ($ultimaEnt != null) {
-                if ($ultimaEnt->location_id == $request->location_id) {
-                    $error = 4;
-                    $message = 'serial ya existente en el almacen actual ';
+            if ($error == 0) {
+                if ($serial_exist != null) {
+                    if ($serial_exist->location_id == $request->location_id) {
+                        $error = 4;
+                        $message = 'serial ya existente en el almacen actual ';
+                    }
                 }
             }
         }
-
-        if ($error == 0) {
-
-            $location = location::where('id', $request->location_id)->first();
-
-
-            $safetystock = item::whereraw("item_number like '" . $item_n . "%'")->first();
-            $invenoti = inventory::where([['item_id', $safetystock->id], ['location_id', $location->id]])->first();
-            if ($invenoti != null) {
-                $total = $invenoti->opening_balance + $invenoti->quantity;
-            } else {
-                $total = 0;
-            }
-            if ($safetystock->safety_stock > $total) {
-                $error = 1;
-                $message = 'inventario menor a safety stock';
-            }
-        }
         $Transaction_type = transactiontype::where('code', 'like', '%T %')->first();
+
         if ($error <= 1) {
             if ($location->code == 'L61       ') {
-                $location_old = location::with('warehouse')->where('code', 'like', '%L60%')->first();
+                $location_old  = location::with('warehouse')->where('code', 'like', '%L60%')->first();
+                $invenoti = inventory::where([['item_id', $item->id], ['location_id', $location_old->id]])->first();
+                if ($invenoti != null) {
+                    $total = $invenoti->opening_balance + $invenoti->quantity;
+                } else {
+                    $total = 0;
+                }
+                if ($item->safety_stock > $total) {
+                    $error = 1;
+                    $message = 'escaneo correcto inventario menor a safety stock';
+                }
             } else {
-                $location_old = location::with('warehouse')->where('code', 'like', '%L61%')->first();
+                $location_old = location::where('code', 'like', '%L61%')->first();
             }
-            $location_new = location::where('id', $request->location_id)->first();
+             // -------------------------------ingresa los movimientos de entrada y salidad  -------------------
+
             Output::create([
                 'supplier' =>  $suppier,
                 'serial' => $serial,
@@ -358,21 +430,84 @@ class OutputController extends Controller
             if ($error == 0) {
                 $message = 'serial capturado exitosamente';
             }
+              // -------------------------------ingresa los movimientos de entrada y salidad inventario-------------------
 
-            if ($request->location_id == 'L61       ') {
-                $operador = 'O';
-                $loc_ant = 'L60       ';
+            $operacion = Inventory::where('location_id', $location->id)->where('item_id', $item->id)->first();
+            $operacion_ant = Inventory::where('location_id', $location_old->id)->where('item_id', $item->id)->first();
+            if (is_null($operacion)) {
+                $inv = 0;
             } else {
-
-                $operador = 'I';
-                $loc_ant = 'L61       ';
+                $inv = $operacion->quantity;
             }
-            self::inventario($serial, $item->id, $item->item_number, $request->location_id, $operador, $quantity, $location_old->id, $re->created_at,  $location_old->warehouse->code,   $location_new->warehouse->code);
+            if (is_null($operacion_ant)) {
+                $inv_ant = 0;
+            } else {
+                $inv_ant = $operacion_ant->quantity;
+            }
+            $total = $inv +  $quantity;
+            $totalant = $inv_ant -  $quantity;
+            $mov = Inventory::updateOrCreate(
+                ['location_id' => $location->id, 'item_id' => $item->id],
+                ['quantity' => $total]
+            );
+            $mov = Inventory::updateOrCreate(
+                ['location_id' => $location_old->id, 'item_id' => $item->id],
+                ['quantity' => $totalant]
+            );
+              // -------------------------------ingresa los movimientos de entrada y salidad  Infor-------------------
+
+            $fechascan = date('Ymd', strtotime($re->created_at));
+            $horascan = date('His', strtotime($re->created_at));
+            $fechainfor = date('Ymd', strtotime('now'));
+            $hora = date('His', time());
+            $infor = YI007::Query()->insert(
+                [
+                    'I7PROD' => $item->item_number,
+                    'I7SENO' => $serial,
+                    'I7TFLG' => 'O',
+                    'I7TDTE' => $fechascan,
+                    'I7TTIM' => $horascan,
+                    'I7TQTY' => $quantity,
+                    'I7WHS' =>  $location_old->warehouse->code,
+                    'I7CUSR' => 'YKMS',
+                    'I7CCDT' => $fechainfor,
+                    'I7CCTM' => $hora,
+                ]
+            );
+            $infor = YI007::Query()->insert(
+                [
+                    'I7PROD' => $item->item_number,
+                    'I7SENO' => $serial,
+                    'I7TFLG' => 'I',
+                    'I7TDTE' => $fechascan,
+                    'I7TTIM' => $horascan,
+                    'I7TQTY' => $quantity,
+                    'I7WHS' =>  $location->warehouse->code,
+                    'I7CUSR' => 'YKMS',
+                    'I7CCDT' => $fechainfor,
+                    'I7CCTM' => $hora,
+                ]
+
+            );
         } else {
             if ($error == 5) {
-                $location_old = location::where('code', 'like', '%L60%')->first();
+                if ($location->code == 'L61       ') {
+                    $location_old  = location::with('warehouse')->where('code', 'like', '%L60%')->first();
+                    $invenoti = inventory::where([['item_id', $item->id], ['location_id', $location_old->id]])->first();
+                    if ($invenoti != null) {
+                        $total = $invenoti->opening_balance + $invenoti->quantity;
+                    } else {
+                        $total = 0;
+                    }
+                    if ($item->safety_stock > $total) {
+                        $error = 1;
+                        $message = 'escaneo correcto inventario menor a safety stock';
+                    }
+                } else {
+                    $location_old = location::where('code', 'like', '%L61%')->first();
+                }
                 $Transaction_type = transactiontype::where('code', 'like', '%T %')->first();
-                $location_new = location::where('id', $request->location_id)->first();
+                // -------------------------------ingresa primer registro si no esta -------------------
                 $re = input::create([
                     'supplier' => $suppier,
                     'serial' => $serial,
@@ -382,33 +517,23 @@ class OutputController extends Controller
                     'location_id' => $location_old->id,
                     'user_id' => Auth::user()->id
                 ]);
-                self:: inventario_nuevo($serial, $item->id,  $location_old->id,$quantity);
+                $operacion = Inventory::where('location_id', $location_old->id)->where('item_id', $item->id)->first();
+                if (is_null($operacion)) {
+                    $inv = 0;
+                } else {
+                    $inv = $operacion->quantity;
+                }
+                $total = $inv + $quantity;
+
+                $mov = Inventory::updateOrCreate(
+                    ['location_id' => $location_old->id, 'item_id' => $item->id],
+                    ['quantity' => $total]
+                );
+
                 $fechascan = date('Ymd', strtotime($re->created_at));
                 $horascan = date('His', strtotime($re->created_at));
                 $fechainfor = date('Ymd', strtotime('now'));
                 $hora = date('His', time());
-                $use = Auth::user()->user_infor ?? 'ykms';
-                $loc_ant_id = location::with('warehouse')->whereRaw("code like 'L60%'")->first();
-                $container = ShippingInstruction::where([['serial', $serial], ['part_no', $item->item_number]])->first();
-                if ($container == null) {
-                    $fecha_con = 0;
-                    $hora_con = 0;
-                } else {
-                    $fecha_con = Carbon::parse($container->arrival_date)->format('Ymd');
-                    $hora_con = Carbon::parse($container->arrival_time)->format('His');
-                }
-                // $yH003 = YH003::query()->insert([
-                //     'H3CONO' => $container->container ?? '',
-                //     'H3DDTE' => $fecha_con,
-                //     'H3DTIM' =>  $hora_con,
-                //     'H3PROD' => $item->item_number,
-                //     'H3SUCD' => $suppier,
-                //     'H3SENO' => $serial,
-                //     'H3RQTY' => $quantity,
-                //     'H3CUSR' => Auth::user()->user_infor ?? '',
-                //     'H3RDTE' => Carbon::parse($re->created_at)->format('Ymd'),
-                //     'H3RTIM' => Carbon::parse($re->created_at)->format('His')
-                // ]);
                 $infor = YI007::Query()->insert(
                     [
                         'I7PROD' => $item->item_number,
@@ -417,13 +542,14 @@ class OutputController extends Controller
                         'I7TDTE' => $fechascan,
                         'I7TTIM' => $horascan,
                         'I7TQTY' =>  $quantity,
-                        'I7WHS' =>   $loc_ant_id->warehouse->code,
+                        'I7WHS' =>   $location_old->warehouse->code,
                         'I7CUSR' => 'YKMS',
                         'I7CCDT' => $fechainfor,
                         'I7CCTM' => $hora,
                     ]
 
                 );
+                // -------------------------------ingresa los movimientos de entrada y salidad  -------------------
                 Output::create([
                     'supplier' =>  $suppier,
                     'serial' => $serial,
@@ -447,16 +573,67 @@ class OutputController extends Controller
                 if ($error == 0) {
                     $message = 'serial capturado exitosamente';
                 }
-                if ($request->location_id == 'L61       ') {
-                    $operador = 'O';
-                    $loc_ant = 'L60       ';
+                  // -------------------------------ingresa los movimientos de inventario de suma y resta   -------------------
+                $operacion = Inventory::where('location_id', $location->id)->where('item_id', $item->id)->first();
+                $operacion_ant = Inventory::where('location_id', $location_old->id)->where('item_id', $item->id)->first();
+                if (is_null($operacion)) {
+                    $inv = 0;
                 } else {
-
-                    $operador = 'I';
-                    $loc_ant = 'L61       ';
+                    $inv = $operacion->quantity;
                 }
+                if (is_null($operacion_ant)) {
+                    $inv_ant = 0;
+                } else {
+                    $inv_ant = $operacion_ant->quantity;
+                }
+                $total = $inv +  $quantity;
+                $totalant = $inv_ant -  $quantity;
 
-                self::inventario($serial, $item->id, $item->item_number, $request->location_id, $operador, $quantity, $location_old->id, $re->created_at,  $location_old->warehouse->code,   $location_new->warehouse->code);
+                $mov = Inventory::updateOrCreate(
+                    ['location_id' => $location->id, 'item_id' => $item->id],
+                    ['quantity' => $total]
+                );
+                $mov = Inventory::updateOrCreate(
+                    ['location_id' => $location_old->id, 'item_id' => $item->id],
+                    ['quantity' => $totalant]
+                );
+
+                // -------------------------------ingresa los movimientos de entrada y salidad a ifnfor  -------------------
+
+                $fechascan = date('Ymd', strtotime($re->created_at));
+                $horascan = date('His', strtotime($re->created_at));
+                $fechainfor = date('Ymd', strtotime('now'));
+                $hora = date('His', time());
+                $infor = YI007::Query()->insert(
+                    [
+                        'I7PROD' => $item->item_number,
+                        'I7SENO' => $serial,
+                        'I7TFLG' => 'O',
+                        'I7TDTE' => $fechascan,
+                        'I7TTIM' => $horascan,
+                        'I7TQTY' => $quantity,
+                        'I7WHS' =>  $location_old->warehouse->code,
+                        'I7CUSR' => 'YKMS',
+                        'I7CCDT' => $fechainfor,
+                        'I7CCTM' => $hora,
+                    ]
+
+                );
+                $infor = YI007::Query()->insert(
+                    [
+                        'I7PROD' => $item->item_number,
+                        'I7SENO' => $serial,
+                        'I7TFLG' => 'I',
+                        'I7TDTE' => $fechascan,
+                        'I7TTIM' => $horascan,
+                        'I7TQTY' => $quantity,
+                        'I7WHS' =>  $location->warehouse->code,
+                        'I7CUSR' => 'YKMS',
+                        'I7CCDT' => $fechainfor,
+                        'I7CCTM' => $hora,
+                    ]
+
+                );
             }
         }
         $scan  = input::with('item')->where('travel_id', $request->travel_id)->orderBy('created_at', 'desc')->GET();
@@ -480,9 +657,6 @@ class OutputController extends Controller
             ['quantity' => $total]
 
         );
-
-
-
     }
 
     public function scanbar(Request $request)
@@ -513,7 +687,7 @@ class OutputController extends Controller
         }
         $msg = '';
         $locations = location::get();
-        return view('Output.index', ['travels' => $travel, 'scan' => $scan, 'msg' => $msg, 'locations' => $locations]);
+        return view('Output.scan', ['travels' => $travel, 'scan' => $scan, 'msg' => $msg, 'locations' => $locations]);
     }
 
     /**
@@ -593,7 +767,7 @@ class OutputController extends Controller
             'user_id' =>     Auth::user()->id
         ]);
         input::create([
-            'supplier' =>   $reg->suppier,
+            'supplier' => $reg->suppier,
             'serial' => $reg->serial,
             'item_id' => $reg->item_id,
             'item_quantity' =>  $reg->item_quantity,
@@ -686,7 +860,7 @@ class OutputController extends Controller
     }
 
 
-    public function inventario($serial, $item, $number_item, $loc, $op, $cantidad, $loc_ant, $fechahora, $WH, $wh_act)
+    public function inventario($serial, $item, $number_item, $loc,  $cantidad, $loc_ant, $fechahora, $WH, $wh_act)
     {
 
         $operacion = Inventory::where('location_id', $loc)->where('item_id', $item)->first();
@@ -704,6 +878,7 @@ class OutputController extends Controller
 
         $total = $inv + $cantidad;
         $totalant = $inv_ant - $cantidad;
+
         $mov = Inventory::updateOrCreate(
             ['location_id' => $loc, 'item_id' => $item],
             ['quantity' => $total]

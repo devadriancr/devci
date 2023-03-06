@@ -5,17 +5,28 @@
         </div>
         <div class="flex items-center bg-white">
             <div class="text-base m-5">
-                <p class="font-semibold">No de entrega: </p>
-                <p class="font-normal">{{ $entrega->id }}<br></p>
+                <p class="font-semibold">ID de Viaje: </p>
+                <p class="font-normal">{{ $travels->id }}<br></p>
             </div>
             <div class="text-basem-5 bg-white">
-                <p class="font-semibold">No de nomina: </p>
-                <p class="font-normal">{{ $entrega->control_number }}<br></p>
+                <p class="font-semibold"> Carta porte:</p>
+                <p class="font-normal">{{ $travels->carta_porte }} <br></p>
             </div>
+            <div class="text-base m-5 bg-white">
+                <p class="font-semibold">Factura: </p>
+                <p class="font-normal">{{ $travels->invoice_number }}<br></p>
+            </div>
+            <div class="text-base m-5 border-blue-500 border-opacity-75">
+
+                <p class="font-semibold"> Locacion: </p>
+                <p class="font-normal">{{ $travels->location->name }}</p>
+            </div>
+
         </div>
-        <form method="POST" action="{{ route('Delivery.store') }}">
+
+        <form method="POST" action="{{ route('output.update') }}">
             @csrf
-            <input name="Delivery_id" value="{{ $entrega->id }}" hidden>
+            <input name="travel_id" value="{{ $travels->id }}" hidden>
             <div class="flex justify-end mt-2 gap-2">
                 <button
                     class="flex items-center justify-between px-4 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple">
@@ -28,10 +39,10 @@
                 </button>
             </div>
         </form>
-        <form method="POST" action="{{ route('Delivery.scanbar') }}">
+        <form method="POST" action="{{ route('output.scanbar') }}">
             @csrf
-            <input name="Delivery_id" value="{{ $entrega->id }}" hidden>
-            <input name="location_id" value="{{ $entrega->location_id }}" hidden>
+            <input name="travel_id" value="{{ $travels->id }}" hidden>
+            <input name="location_id" value="{{ $travels->location_id }}" hidden>
             <div class="flex justify-end mt-2 gap-2">
                 <button
                     class="flex items-center justify-between px-4 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple">
@@ -47,12 +58,12 @@
             </div>
         </form>
         <div class="px-4 py-3 my-2 bg-white rounded-lg shadow-md dark:bg-gray-800">
-            <form method="POST" action="{{ route('Delivery.update') }}">
+            <form method="POST" action="{{ route('output.create1') }}">
                 <h4 class="my-2 text-center text-lg font-semibold text-gray-600 dark:text-gray-300">
                 </h4>
                 @csrf
-                <input name="delivery_id" value="{{ $entrega->id }}" hidden>
-                <input name="location_id" value="{{ $entrega->location_id }}" hidden>
+                <input name="travel_id" value="{{ $travels->id }}" hidden>
+                <input name="location_id" value="{{ $travels->location_id }}" hidden>
                 <label class="block text-sm">
                     <span class="text-gray-700 dark:text-gray-400">Serial</span>
                     <input name="serial" id="serial" minlength='35'
@@ -112,43 +123,30 @@
                 </label>
             </form>
         </div>
-
         <div class="w-full overflow-hidden rounded-lg shadow-xs">
             <div class="w-full overflow-x-auto">
                 <table class="w-full whitespace-no-wrap">
                     <thead>
                         <tr
                             class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b dark:border-gray-700 bg-gray-50 dark:text-gray-400 dark:bg-gray-800">
-                            <th class="px-4 py-3"></th>
                             <th class="px-4 py-3">Serial</th>
                             <th class="px-4 py-3">Numero de Parte</th>
-                            <th class="px-4 py-3">Tipo consigna</th>
                             <th class="px-4 py-3">Cantidad </th>
                             <th class="px-4 py-3">Proveedor </th>
-                            <th class="px-4 py-3">Eliminar</th>
+
                         </tr>
                     </thead>
-
                     <tbody class="bg-white divide-y dark:divide-gray-700 dark:bg-gray-800">
-                        @php
-                            $CONT = 0;
-                        @endphp
                         @foreach ($scan as $consignment)
                             <tr class="text-gray-700 dark:text-gray-400">
                                 <td class="px-4 py-3 text-sm">
-                                    {{ $CONT = $CONT + 1 }}
+                                    {{ $consignment->serial ?? '' }}
                                 </td>
                                 <td class="px-4 py-3 text-sm">
-                                    {{ $consignment->serial }}
+                                    {{ $consignment->item->item_number ?? '' }}
                                 </td>
                                 <td class="px-4 py-3 text-sm">
-                                    {{ $consignment->item->item_number }}
-                                </td>
-                                <td class="px-4 py-3 text-sm">
-                                    {{ $consignment->type_consignment ?? '' }}
-                                </td>
-                                <td class="px-4 py-3 text-sm">
-                                    {{ $consignment->item_quantity }}
+                                    {{ $consignment->item_quantity ?? '' }}
                                 </td>
                                 <td class="px-4 py-3 text-sm">
                                     {{ $consignment->supplier }}
@@ -164,7 +162,6 @@
         (function() {
             var allowSubmit = true;
             finish.onsubmit = function() {
-
                 if (allowSubmit)
                     allowSubmit = false;
                 else
@@ -172,4 +169,4 @@
             }
         })();
     </script>
- </x-app-layout>
+</x-app-layout>
