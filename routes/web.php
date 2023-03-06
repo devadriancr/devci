@@ -144,7 +144,7 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function () {
     Route::resource('output', TravelController::class);
     Route::get('output-search', [OutputController::class, 'search'])->name('output.search');
     Route::POST('output-store', [OutputController::class, 'store'])->name('output.store');
-    Route::POST('output-create', [OutputController::class, 'create'])->name('output.create');
+    Route::POST('output-create1', [OutputController::class, 'create1'])->name('output.create1');
     Route::POST('output-createacan', [OutputController::class, 'createscan'])->name('output.createscan');
     Route::POST('output-update', [OutputController::class, 'update'])->name('output.update');
     Route::POST('output-destroy', [OutputController::class, 'destroy'])->name('output.destroy');
