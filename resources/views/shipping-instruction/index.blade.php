@@ -16,8 +16,9 @@
         @endif
 
         @if (session('success'))
-        <div class="mb-4 font-medium text-green-600">
-            {{ session('success') }}
+        <div class="bg-blue-100 border border-blue-400 text-blue-700 px-4 py-3 mb-2 rounded relative" role="alert">
+            <strong class="font-bold">!Exitoso¡</strong>
+            <span class="block sm:inline">{{ session('success') }}</span>
         </div>
         @endif
 
@@ -48,7 +49,7 @@
                     </a>
                 </div>
             </div>
-            <div class="flex-auto">
+            {{--<div class="flex-auto">
                 <div class="flex justify-end">
                     <a href="{{ route('shipping-instruction.report-consignments') }}" class="flex items-center justify-between px-4 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -57,7 +58,7 @@
                         <span class="ml-4 text-xs">Reportes MC/MH/MZ</span>
                     </a>
                 </div>
-            </div>
+            </div>--}}
         </div>
         <div class="w-full overflow-hidden rounded-lg shadow-xs">
             <div class="w-full overflow-x-auto">

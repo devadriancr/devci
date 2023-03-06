@@ -16,6 +16,20 @@
         </div>
         @endif
 
+        @if (session('success'))
+        <div class="bg-blue-100 border border-blue-400 text-blue-700 px-4 py-3 mb-2 rounded relative" role="alert">
+            <strong class="font-bold">¡Muy Bien!</strong>
+            <span class="block sm:inline">{{ session('success') }}</span>
+        </div>
+        @endif
+
+        @if (session('warning'))
+        <div class="bg-orange-100 border border-orange-400 text-orange-700 px-4 py-3 mb-2 rounded relative" role="alert">
+            <strong class="font-bold">¡Advertencia!</strong>
+            <span class="block sm:inline">{{ session('warning') }}</span>
+        </div>
+        @endif
+
         <div class="px-4 py-3 mb-8 bg-white rounded-lg shadow-md dark:bg-gray-800">
             <form action="{{ route('consigment-instruction.consignment-barcode-store') }}" method="post">
                 @csrf
@@ -30,20 +44,7 @@
                         </div>
                     </div>
                 </label>
-                <div class="flex flex-row justify-between">
-                    <div>
-                        @if (session('success'))
-                        <div class="mb-4 font-medium text-green-600">
-                            {{ session('success') }}
-                        </div>
-                        @endif
-
-                        @if (session('warning'))
-                        <div class="mb-4 font-medium text-orange-600">
-                            {{ session('warning') }}
-                        </div>
-                        @endif
-                    </div>
+                <div class="flex flex-row justify-end">
                     <button type="submit" class="flex items-center justify-between px-4 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple">
                         <span class="mr-4">Guardar</span>
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">

@@ -432,6 +432,8 @@ class ConsignmentInstructionController extends Controller
                 ]
             )->first();
 
+            // dd($serial, $part_no, $snp, $supplier, $type, $input);
+
             if ($input === null) {
                 StoreConsignmentMcMhJob::dispatch($serial, $part_no, $snp, $supplier, $type);
                 $respone = 'success';

@@ -5,6 +5,7 @@ namespace App\Jobs;
 use App\Models\HPO;
 use App\Models\InputSupplier;
 use App\Models\RYT1;
+use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -45,8 +46,17 @@ class SupplierOrderMigrationJob implements ShouldQueue
             ->get();
 
         foreach ($orders as $key => $order) {
+            $date = Carbon::parse(str_replace('/', '-', $order->R1DAT))->format('Y-m-d');
+            $time = Carbon::parse($order->R1TIM)->format('H:i:s.v');
             // Log::info($key . '.    No. Order: ' . $order->R1ORN . '    Seqence: ' . $order->R1SQN . '    Date: ' . $order->R1DAT . '    Flag: ' . $order->R1FLG);
-            $input = InputSupplier::where([['order_no', $order->R1ORN], ['sequence', $order->R1SQN]])->first();
+            $input = InputSupplier::where(
+                [
+                    ['order_no', $order->R1ORN],
+                    ['sequence', $order->R1SQN],
+                    ['received_date', $date],
+                    ['received_time', $time]
+                ]
+            )->first();
 
             if ($input === null) {
                 $ord = intval(substr($order->R1ORN, 0, 8));
