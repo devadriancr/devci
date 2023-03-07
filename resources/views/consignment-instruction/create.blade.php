@@ -73,21 +73,22 @@
                         </button>
                     </div>
                 </div>
-
-                @if (session('success'))
-                <div class="mb-4 font-medium text-green-600">
-                    {{ session('success') }}
-                </div>
-                @endif
-
-                @if (session('warning'))
-                <div class="mb-4 font-medium text-yellow-600">
-                    {{ session('warning') }}
-                </div>
-                @endif
-
             </form>
         </div>
+
+        @if (session('success'))
+        <div class="bg-blue-100 border border-blue-400 text-blue-700 px-4 py-3 mb-2 rounded relative" role="alert">
+            <strong class="font-bold">!Exitoso¡</strong>
+            <span class="block sm:inline">{{ session('success') }}</span>
+        </div>
+        @endif
+
+        @if (session('warning'))
+        <div class="bg-orange-100 border border-orange-400 text-orange-700 px-4 py-3 mb-2 rounded relative" role="alert">
+            <strong class="font-bold">¡Advertencia!</strong>
+            <span class="block sm:inline">{{ session('warning') }}</span>
+        </div>
+        @endif
 
         <div class="w-full overflow-hidden rounded-lg shadow-xs">
             <div class="w-full overflow-x-auto">

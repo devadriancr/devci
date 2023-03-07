@@ -61,11 +61,33 @@ class ConsignmentInstructionController extends Controller
         )->first();
 
         if ($data === null) {
-            ConsignmentInstruction::storeConsignment($serial, $supplier, $part_qty, $part_no, 'L60', $request->container_id);
-            return redirect()->back()->with('success', 'Registro Exitoso');
+
+            $container = Container::find($request->container_id);
+
+            $shipping = ShippingInstruction::where(
+                [
+                    ['container', 'LIKE', $container->code],
+                    ['arrival_date', $container->arrival_date],
+                    ['arrival_time', $container->arrival_time],
+                    ['part_no', 'LIKE', $part_no . '%'],
+                    ['serial', 'LIKE', $supplier . $serial]
+                ]
+            )->first();
+
+            if ($shipping !== null) {
+                ConsignmentInstruction::storeConsignment($serial, $supplier, $part_qty, $part_no, 'L60', $request->container_id);
+                $msg = 'Registro Exitoso';
+                $status = 'success';
+            } else {
+                $msg = 'Este Item no Pertenece al Contenedor';
+                $status = 'warning';
+            }
         } else {
-            return redirect()->back()->with('warning', 'Registro Duplicado');
+            $msg = 'Registro Duplicado';
+            $status = 'warning';
         }
+
+        return redirect()->back()->with($status, $msg);
     }
 
     /**
@@ -388,7 +410,6 @@ class ConsignmentInstructionController extends Controller
 
     public function consignmentBarcodeStore(Request $request)
     {
-
         $request->validate([
             'scan' => ['required', 'string', 'max:161', 'min:35']
         ]);
@@ -411,8 +432,10 @@ class ConsignmentInstructionController extends Controller
                 ]
             )->first();
 
+            // dd($serial, $part_no, $snp, $supplier, $type, $input);
+
             if ($input === null) {
-                StoreConsignmentMcMhJob::dispatchAfterResponse($serial, $part_no, $snp, $supplier, $type);
+                StoreConsignmentMcMhJob::dispatch($serial, $part_no, $snp, $supplier, $type);
                 $respone = 'success';
                 $mesage = 'Registro Exitoso';
             } else {
@@ -432,8 +455,8 @@ class ConsignmentInstructionController extends Controller
             )->first();
 
             if ($input === null) {
-                $type = 'MY/MZ';
-                StoreConsignmentMzJob::dispatchAfterResponse($serial, $part_no, $snp, $supplier, $type);
+                $type = 'MZ';
+                StoreConsignmentMzJob::dispatch($serial, $part_no, $snp, $supplier, $type);
                 $respone = 'success';
                 $mesage = 'Registro Exitoso';
             } else {

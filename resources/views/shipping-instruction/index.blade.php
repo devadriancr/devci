@@ -16,41 +16,49 @@
         @endif
 
         @if (session('success'))
-        <div class="mb-4 font-medium text-green-600">
-            {{ session('success') }}
+        <div class="bg-blue-100 border border-blue-400 text-blue-700 px-4 py-3 mb-2 rounded relative" role="alert">
+            <strong class="font-bold">!Exitoso¡</strong>
+            <span class="block sm:inline">{{ session('success') }}</span>
         </div>
         @endif
 
         <!-- <h4 class="mb-4 text-lg font-semibold text-gray-600 dark:text-gray-300">
             Table with actions
         </h4> -->
-        <div class="px-4 py-3 mt-2 mb-4 bg-white rounded-lg shadow-md dark:bg-gray-800">
-            <div class="grid grid-cols-12 gap-4">
-
-                <div class="col-span-10">
-                    <form method="POST" action="{{ route('shipping-instruction.store') }}" enctype="multipart/form-data">
-                        @csrf
-                        <label class="block text-sm">
-                            <div class="relative text-gray-500 focus-within:text-purple-600">
-                                <input type="file" name="import_file" class="block w-full pr-20 text-sm text-black dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:focus:shadow-outline-gray form-input" placeholder="Jane Doe" />
-                                <button class="absolute inset-y-0 right-0 px-4 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-r-md active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple">
-                                    Cargar
-                                </button>
-                            </div>
-                        </label>
-                    </form>
-                </div>
-                <div class="col-span-2">
-                    <div class="flex justify-end">
-                        <a href="{{ route('shipping-instruction.report-si') }}" class="flex items-center justify-between px-4 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                            <span class="ml-4 text-xs">Información</span>
-                        </a>
-                    </div>
+        <div class="flex gap-2 px-4 py-3 mt-2 mb-4 bg-white rounded-lg shadow-md dark:bg-gray-800">
+            <div class="flex-auto">
+                <form method="POST" action="{{ route('shipping-instruction.store') }}" enctype="multipart/form-data">
+                    @csrf
+                    <label class="block text-sm">
+                        <div class="relative text-gray-500 focus-within:text-purple-600">
+                            <input type="file" name="import_file" class="block w-full pr-20 text-sm text-black dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:focus:shadow-outline-gray form-input" placeholder="Jane Doe" />
+                            <button class="absolute inset-y-0 right-0 px-4 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-r-md active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple">
+                                Cargar
+                            </button>
+                        </div>
+                    </label>
+                </form>
+            </div>
+            <div class="flex-auto">
+                <div class="flex justify-end">
+                    <a href="{{ route('shipping-instruction.report-si') }}" class="flex items-center justify-between px-4 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <span class="ml-4 text-xs">Reportes MY</span>
+                    </a>
                 </div>
             </div>
+            {{--<div class="flex-auto">
+                <div class="flex justify-end">
+                    <a href="{{ route('shipping-instruction.report-consignments') }}" class="flex items-center justify-between px-4 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <span class="ml-4 text-xs">Reportes MC/MH/MZ</span>
+                    </a>
+                </div>
+            </div>--}}
         </div>
         <div class="w-full overflow-hidden rounded-lg shadow-xs">
             <div class="w-full overflow-x-auto">
