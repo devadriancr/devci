@@ -175,12 +175,15 @@ class ShippingInstructionController extends Controller
         foreach ($containers as $key => $container) {
             if ($container->arrival_date != null && $container->arrival_time != null) {
                 Container::storeContainer($container->container, $container->arrival_date, $container->arrival_time);
+                $respone = "success";
+                $msg = "Documento Importado Exitosamente";
             } else {
-                Log::info("$container->container, $container->arrival_date, $container->arrival_time");
+                $respone = "warning";
+                $msg = "Error al Cargar Documento";
             }
         }
 
-        return redirect()->back()->with('success', 'Documento Importado Exitosamente');
+        return redirect()->back()->with($respone, $msg);
     }
 
     /**
