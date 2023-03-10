@@ -12,6 +12,7 @@ use App\Models\Location;
 use App\Models\ShippingInstruction;
 use App\Models\TransactionType;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Facades\Excel;
 
 class ShippingInstructionController extends Controller
@@ -172,10 +173,17 @@ class ShippingInstructionController extends Controller
             ->get();
 
         foreach ($containers as $key => $container) {
-            Container::storeContainer($container->container, $container->arrival_date, $container->arrival_time);
+            if ($container->arrival_date != null && $container->arrival_time != null) {
+                Container::storeContainer($container->container, $container->arrival_date, $container->arrival_time);
+                $respone = "success";
+                $msg = "Documento Importado Exitosamente";
+            } else {
+                $respone = "warning";
+                $msg = "Error al Cargar Documento";
+            }
         }
 
-        return redirect()->back()->with('success', 'Documento Importado Exitosamente');
+        return redirect()->back()->with($respone, $msg);
     }
 
     /**
@@ -356,6 +364,5 @@ class ShippingInstructionController extends Controller
         ]);
 
         dd($request->all());
-
     }
 }

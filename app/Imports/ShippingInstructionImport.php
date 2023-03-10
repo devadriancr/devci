@@ -21,7 +21,13 @@ class ShippingInstructionImport implements ToModel, WithHeadingRow, WithBatchIns
     {
         if ($row['delivery_date'] != '#N/D') {
 
-            $shipping = ShippingInstruction::where('serial', $row['module_no'])->first();
+            $shipping = ShippingInstruction::where(
+                    [
+                        ['serial', $row['module_no']],
+                        ['part_no', $row['parts_no']],
+                        ['container', $row['ct_no']]
+                    ]
+                )->first();
 
             if ($shipping === null) {
                 return new ShippingInstruction([
