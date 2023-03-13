@@ -3,8 +3,7 @@
         {{ config('app.name') }}
     </a>
     <ul class="mt-6">
-        @can('all')
-        {{-- @can('dashboard') --}}
+        @can('dashboard')
         <li class="relative px-6 py-3">
             {!! request()->routeIs('dashboard') ? '<span class="absolute inset-y-0 left-0 w-1 bg-purple-600 rounded-tr-lg rounded-br-lg" aria-hidden="true"></span>' : '' !!}
             <a data-turbolinks-action="replace" class="inline-flex items-center w-full text-sm font-semibold text-gray-800 transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 dark:text-gray-100" href="{{route('dashboard')}}">
@@ -17,8 +16,7 @@
         </li>
         @endcan
 
-        @can('admin')
-        {{-- @can('user') --}}
+        @can('user')
         <li class="relative px-6 py-3">
             {!! request()->routeIs('user.index') ? '<span class="absolute inset-y-0 left-0 w-1 bg-purple-600 rounded-tr-lg rounded-br-lg" aria-hidden="true"></span>' : '' !!}
             <a data-turbolinks-action="replace" class="inline-flex items-center w-full text-sm font-semibold text-gray-800 transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 dark:text-gray-100" href="{{route('user.index')}}">
@@ -30,8 +28,7 @@
         </li>
         @endcan
 
-        @can('admin')
-        {{-- @can('role') --}}
+        @can('role')
         <li class="relative px-6 py-3">
             {!! request()->routeIs('role.index') ? '<span class="absolute inset-y-0 left-0 w-1 bg-purple-600 rounded-tr-lg rounded-br-lg" aria-hidden="true"></span>' : '' !!}
             <a data-turbolinks-action="replace" class="inline-flex items-center w-full text-sm font-semibold text-gray-800 transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 dark:text-gray-100" href="{{route('role.index')}}">
@@ -43,8 +40,7 @@
         </li>
         @endcan
 
-        @can('admin')
-        {{-- @can('measurement') --}}
+        @can('measurement')
         <li class="relative px-6 py-3">
             {!! request()->routeIs('measurement-type.index') ? '<span class="absolute inset-y-0 left-0 w-1 bg-purple-600 rounded-tr-lg rounded-br-lg" aria-hidden="true"></span>' : '' !!}
             <a data-turbolinks-action="replace" class="inline-flex items-center w-full text-sm font-semibold text-gray-800 transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 dark:text-gray-100" href="{{route('measurement-type.index')}}">
@@ -56,8 +52,7 @@
         </li>
         @endcan
 
-        @can('admin')
-        {{-- @can('type') --}}
+        @can('type')
         <li class="relative px-6 py-3">
             {!! request()->routeIs('item-type.index') ? '<span class="absolute inset-y-0 left-0 w-1 bg-purple-600 rounded-tr-lg rounded-br-lg" aria-hidden="true"></span>' : '' !!}
             <a data-turbolinks-action="replace" class="inline-flex items-center w-full text-sm font-semibold text-gray-800 transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 dark:text-gray-100" href="{{route('item-type.index')}}">
@@ -69,8 +64,7 @@
         </li>
         @endcan
 
-        @can('admin')
-        {{-- @can('class') --}}
+        @can('class')
         <li class="relative px-6 py-3">
             {!! request()->routeIs('item-class.index') ? '<span class="absolute inset-y-0 left-0 w-1 bg-purple-600 rounded-tr-lg rounded-br-lg" aria-hidden="true"></span>' : '' !!}
             <a data-turbolinks-action="replace" class="inline-flex items-center w-full text-sm font-semibold text-gray-800 transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 dark:text-gray-100" href="{{route('item-class.index')}}">
@@ -82,8 +76,7 @@
         </li>
         @endcan
 
-        @can('admin')
-        {{-- @can('warehouse') --}}
+        @can('warehouse')
         <li class="relative px-6 py-3">
             {!! request()->routeIs('warehouse.index') ? '<span class="absolute inset-y-0 left-0 w-1 bg-purple-600 rounded-tr-lg rounded-br-lg" aria-hidden="true"></span>' : '' !!}
             <a data-turbolinks-action="replace" class="inline-flex items-center w-full text-sm font-semibold text-gray-800 transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 dark:text-gray-100" href="{{route('warehouse.index')}}">
@@ -95,8 +88,7 @@
         </li>
         @endcan
 
-        @can('admin')
-        {{-- @can('location') --}}
+        @can('location')
         <li class="relative px-6 py-3">
             {!! request()->routeIs('location.index') ? '<span class="absolute inset-y-0 left-0 w-1 bg-purple-600 rounded-tr-lg rounded-br-lg" aria-hidden="true"></span>' : '' !!}
             <a data-turbolinks-action="replace" class="inline-flex items-center w-full text-sm font-semibold text-gray-800 transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 dark:text-gray-100" href="{{route('location.index')}}">
@@ -108,8 +100,7 @@
         </li>
         @endcan
 
-        @can('admin')
-        {{-- @can('transaction') --}}
+        @can('transaction')
         <li class="relative px-6 py-3">
             {!! request()->routeIs('transaction-type.index') ? '<span class="absolute inset-y-0 left-0 w-1 bg-purple-600 rounded-tr-lg rounded-br-lg" aria-hidden="true"></span>' : '' !!}
             <a data-turbolinks-action="replace" class="inline-flex items-center w-full text-sm font-semibold text-gray-800 transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 dark:text-gray-100" href="{{route('transaction-type.index')}}">
@@ -121,8 +112,7 @@
         </li>
         @endcan
 
-        @can('admin')
-        {{-- @can('item') --}}
+        @can('item')
         <li class="relative px-6 py-3">
             {!! request()->routeIs('item.index') ? '<span class="absolute inset-y-0 left-0 w-1 bg-purple-600 rounded-tr-lg rounded-br-lg" aria-hidden="true"></span>' : '' !!}
             <a data-turbolinks-action="replace" class="inline-flex items-center w-full text-sm font-semibold text-gray-800 transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 dark:text-gray-100" href="{{route('item.index')}}">
@@ -134,8 +124,7 @@
         </li>
         @endcan
 
-        @can('office')
-        {{-- @can('inventory') --}}
+        @can('inventory')
         <li class="relative px-6 py-3">
             {!! request()->routeIs('inventory.index') ? '<span class="absolute inset-y-0 left-0 w-1 bg-purple-600 rounded-tr-lg rounded-br-lg" aria-hidden="true"></span>' : '' !!}
             <a data-turbolinks-action="replace" class="inline-flex items-center w-full text-sm font-semibold text-gray-800 transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 dark:text-gray-100" href="{{route('inventory.index')}}">
@@ -147,8 +136,7 @@
         </li>
         @endcan
 
-        @can('office')
-        {{-- @can('shipping') --}}
+        @can('shipping')
         <li class="relative px-6 py-3">
             {!! request()->routeIs('shipping-instruction.index') ? '<span class="absolute inset-y-0 left-0 w-1 bg-purple-600 rounded-tr-lg rounded-br-lg" aria-hidden="true"></span>' : '' !!}
             <a data-turbolinks-action="replace" class="inline-flex items-center w-full text-sm font-semibold text-gray-800 transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 dark:text-gray-100" href="{{route('shipping-instruction.index')}}">
@@ -160,8 +148,7 @@
         </li>
         @endcan
 
-        @can('office')
-        {{-- @can('container') --}}
+        @can('container')
         <li class="relative px-6 py-3">
             {!! request()->routeIs('container.index') ? '<span class="absolute inset-y-0 left-0 w-1 bg-purple-600 rounded-tr-lg rounded-br-lg" aria-hidden="true"></span>' : '' !!}
             <a data-turbolinks-action="replace" class="inline-flex items-center w-full text-sm font-semibold text-gray-800 transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 dark:text-gray-100" href="{{route('container.index')}}">
@@ -174,8 +161,7 @@
         </li>
         @endcan
 
-        @can('office')
-        {{-- @can('consignment_input') --}}
+        @can('consignment_input')
         <li class="relative px-6 py-3">
             {!! request()->routeIs('input.index') ? '<span class="absolute inset-y-0 left-0 w-1 bg-purple-600 rounded-tr-lg rounded-br-lg" aria-hidden="true"></span>' : '' !!}
             <a data-turbolinks-action="replace" class="inline-flex items-center w-full text-sm font-semibold text-gray-800 transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 dark:text-gray-100" href="{{route('input.index')}}">
@@ -187,8 +173,7 @@
         </li>
         @endcan
 
-        @can('office')
-        {{-- @can('consignment_output') --}}
+        @can('consignment_output')
         <li class="relative px-6 py-3">
             {!! request()->routeIs('output.index') ? '<span class="absolute inset-y-0 left-0 w-1 bg-purple-600 rounded-tr-lg rounded-br-lg" aria-hidden="true"></span>' : '' !!}
             <a data-turbolinks-action="replace" class="inline-flex items-center w-full text-sm font-semibold text-gray-800 transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 dark:text-gray-100" href="{{route('output.index')}}">
@@ -204,16 +189,15 @@
         <li class="relative px-6 py-3">
             {!! request()->routeIs('consigment-instruction.data-upload-index') ? '<span class="absolute inset-y-0 left-0 w-1 bg-purple-600 rounded-tr-lg rounded-br-lg" aria-hidden="true"></span>' : '' !!}
             <a data-turbolinks-action="replace" class="inline-flex items-center w-full text-sm font-semibold text-gray-800 transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 dark:text-gray-100" href="{{route('consigment-instruction.data-upload-index')}}">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z" />
-                </svg>
-                <span class="ml-4">Carga de Datos Consigna</span>
-            </a>
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z" />
+        </svg>
+        <span class="ml-4">Carga de Datos Consigna</span>
+        </a>
         </li>
         @endcan --}}
 
-        @can('warehouse')
-        {{-- @can('consignment_reception') --}}
+        @can('consignment_reception')
         <li class="relative px-6 py-3">
             {!! request()->routeIs('consigment-instruction.consigment-barcode-index') ? '<span class="absolute inset-y-0 left-0 w-1 bg-purple-600 rounded-tr-lg rounded-br-lg" aria-hidden="true"></span>' : '' !!}
             <a data-turbolinks-action="replace" class="inline-flex items-center w-full text-sm font-semibold text-gray-800 transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 dark:text-gray-100" href="{{route('consigment-instruction.consigment-barcode-index')}}">
@@ -225,8 +209,7 @@
         </li>
         @endcan
 
-        @can('warehouse')
-        {{-- @can('consignment_reception') --}}
+        @can('consignment_reception')
         <li class="relative px-6 py-3">
             {!! request()->routeIs('shipping-instruction.scan') ? '<span class="absolute inset-y-0 left-0 w-1 bg-purple-600 rounded-tr-lg rounded-br-lg" aria-hidden="true"></span>' : '' !!}
             <a data-turbolinks-action="replace" class="inline-flex items-center w-full text-sm font-semibold text-gray-800 transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 dark:text-gray-100" href="{{route('shipping-instruction.scan')}}">
@@ -238,8 +221,7 @@
         </li>
         @endcan
 
-        @can('warehouse')
-        {{-- @can('consignment_reception') --}}
+        @can('consignment_reception')
         <li class="relative px-6 py-3">
             {!! request()->routeIs('consignment-instruction.container') ? '<span class="absolute inset-y-0 left-0 w-1 bg-purple-600 rounded-tr-lg rounded-br-lg" aria-hidden="true"></span>' : '' !!}
             <a data-turbolinks-action="replace" class="inline-flex items-center w-full text-sm font-semibold text-gray-800 transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 dark:text-gray-100" href="{{route('consignment-instruction.container')}}">
@@ -251,8 +233,7 @@
         </li>
         @endcan
 
-        @can('line')
-        {{-- @can('consignment_delivery') --}}
+        @can('consignment_delivery')
         <li class="relative px-6 py-3">
             {!! request()->routeIs('Delivery.index') ? '<span class="absolute inset-y-0 left-0 w-1 bg-purple-600 rounded-tr-lg rounded-br-lg" aria-hidden="true"></span>' : '' !!}
             <a data-turbolinks-action="replace" class="inline-flex items-center w-full text-sm font-semibold text-gray-800 transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 dark:text-gray-100" href="{{route('Delivery.index')}}">
@@ -264,8 +245,7 @@
         </li>
         @endcan
 
-        @can('admin')
-        {{-- @can('supplier_input') --}}
+        @can('supplier_input')
         <li class="relative px-6 py-3">
             {!! request()->routeIs('supplier-input.index') ? '<span class="absolute inset-y-0 left-0 w-1 bg-purple-600 rounded-tr-lg rounded-br-lg" aria-hidden="true"></span>' : '' !!}
             <a data-turbolinks-action="replace" class="inline-flex items-center w-full text-sm font-semibold text-gray-800 transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 dark:text-gray-100" href="{{route('supplier-input.index')}}">
@@ -277,8 +257,7 @@
         </li>
         @endcan
 
-        @can('admin')
-        {{-- @can('supplier_output') --}}
+        @can('supplier_output')
         <li class="relative px-6 py-3">
             {!! request()->routeIs('supplier-output.index') ? '<span class="absolute inset-y-0 left-0 w-1 bg-purple-600 rounded-tr-lg rounded-br-lg" aria-hidden="true"></span>' : '' !!}
             <a data-turbolinks-action="replace" class="inline-flex items-center w-full text-sm font-semibold text-gray-800 transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 dark:text-gray-100" href="{{route('supplier-output.index')}}">
@@ -290,8 +269,7 @@
         </li>
         @endcan
 
-        @can('admin')
-        {{-- @can('supplier_delivery') --}}
+        @can('supplier_delivery')
         <li class="relative px-6 py-3">
             {!! request()->routeIs('DeliverySupplier.index') ? '<span class="absolute inset-y-0 left-0 w-1 bg-purple-600 rounded-tr-lg rounded-br-lg" aria-hidden="true"></span>' : '' !!}
             <a data-turbolinks-action="replace" class="inline-flex items-center w-full text-sm font-semibold text-gray-800 transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 dark:text-gray-100" href="{{route('DeliverySupplier.index')}}">
@@ -313,8 +291,7 @@
             </a>
         </li> --}}
 
-        @can('all')
-        {{-- @can('movement_search') --}}
+        @can('movement_search')
         <li class="relative px-6 py-3">
             {!! request()->routeIs('output.search') ? '<span class="absolute inset-y-0 left-0 w-1 bg-purple-600 rounded-tr-lg rounded-br-lg" aria-hidden="true"></span>' : '' !!}
             <a data-turbolinks-action="replace" class="inline-flex items-center w-full text-sm font-semibold text-gray-800 transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 dark:text-gray-100" href="{{route('output.search')}}">
@@ -326,8 +303,7 @@
         </li>
         @endcan
 
-        @can('office')
-        {{-- @can('requirements_list') --}}
+        @can('requirements_list')
         <li class="relative px-6 py-3">
             {!! request()->routeIs('Requestlist.index') ? '<span class="absolute inset-y-0 left-0 w-1 bg-purple-600 rounded-tr-lg rounded-br-lg" aria-hidden="true"></span>' : '' !!}
             <a data-turbolinks-action="replace" class="inline-flex items-center w-full text-sm font-semibold text-gray-800 transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 dark:text-gray-100" href="{{route('Requestlist.index')}}">
@@ -339,8 +315,7 @@
         </li>
         @endcan
 
-        @can('all')
-        {{-- @can('views_requirements') --}}
+        @can('views_requirements')
         <li class="relative px-6 py-3">
             {!! request()->routeIs('RequestList.order_detail') ? '<span class="absolute inset-y-0 left-0 w-1 bg-purple-600 rounded-tr-lg rounded-br-lg" aria-hidden="true"></span>' : '' !!}
             <a data-turbolinks-action="replace" class="inline-flex items-center w-full text-sm font-semibold text-gray-800 transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 dark:text-gray-100" href="{{route('RequestList.order_detail')}}">
@@ -353,8 +328,7 @@
         </li>
         @endcan
 
-        @can('all')
-        {{-- @can('order_list') --}}
+        @can('order_list')
         <li class="relative px-6 py-3">
             {!! request()->routeIs('RequestList.list_order') ? '<span class="absolute inset-y-0 left-0 w-1 bg-purple-600 rounded-tr-lg rounded-br-lg" aria-hidden="true"></span>' : '' !!}
             <a data-turbolinks-action="replace" class="inline-flex items-center w-full text-sm font-semibold text-gray-800 transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 dark:text-gray-100" href="{{route('RequestList.list_order')}}">
@@ -366,8 +340,7 @@
         </li>
         @endcan
 
-        @can('all')
-        {{-- @can('travel_list') --}}
+        @can('travel_list')
         <li class="relative px-6 py-3">
             {!! request()->routeIs('travel.show') ? '<span class="absolute inset-y-0 left-0 w-1 bg-purple-600 rounded-tr-lg rounded-br-lg" aria-hidden="true"></span>' : '' !!}
             <a data-turbolinks-action="replace" class="inline-flex items-center w-full text-sm font-semibold text-gray-800 transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 dark:text-gray-100" href="{{route('travel.show')}}">
