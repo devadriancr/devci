@@ -278,14 +278,14 @@ class ShippingInstructionController extends Controller
                 ConsignmentInstruction::storeConsignment($serial, $supplier, $part_qty, $part_no, 'L60', $container->id);
                 $shipping->update(['search' => true]);
                 $respone = 'success';
-                $mesage = 'Registro Exitoso';
+                $mesage = 'El Registro del Material se Hizo Correctamente.';
             } else {
                 $respone = 'warning';
                 $mesage = 'Serial no Encontrado';
             }
         } else {
             $respone = 'warning';
-            $mesage = 'Registro ya Existente';
+            $mesage = 'Material Registrado Anteriormente';
         }
         return redirect()->back()->with($respone, $mesage);
     }

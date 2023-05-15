@@ -8,8 +8,13 @@ use App\Jobs\StoreConsignmentMzJob;
 use App\Models\ConsignmentInstruction;
 use App\Models\Container;
 use App\Models\Input;
+use App\Models\Inventory;
+use App\Models\Item;
+use App\Models\Location;
 use App\Models\ShippingInstruction;
+use App\Models\TransactionType;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Facades\Excel;
 
 class ConsignmentInstructionController extends Controller
@@ -435,37 +440,79 @@ class ConsignmentInstructionController extends Controller
             // dd($serial, $part_no, $snp, $supplier, $type, $input);
 
             if ($input === null) {
-                StoreConsignmentMcMhJob::dispatch($serial, $part_no, $snp, $supplier, $type);
+
+                // StoreConsignmentMcMhJob::dispatch($serial, $part_no, $snp, $supplier, $type);
+
+                $item = Item::where('item_number', 'LIKE', $part_no . '%')->first();
+                $transaction = TransactionType::where('code', 'LIKE', 'U3')->first();
+                $location = Location::where('code', 'LIKE', 'L60%')->first();
+
+                $input = Input::create([
+                    'supplier' => $supplier,
+                    'serial' => $serial,
+                    'item_id' => $item->id,
+                    'item_quantity' => $snp,
+                    'type_consignment' => $type,
+                    'transaction_type_id' => $transaction->id,
+                    'location_id' => $location->id,
+                    'user_id' => Auth::id()
+                ]);
+
+                $inventory = Inventory::where([
+                    ['item_id', '=', $item->id],
+                    ['location_id', '=', $location->id]
+                ])->first();
+
+
+                if ($inventory !== null) {
+                    $qty = $inventory->quantity ?? 0;
+
+                    $sum = 0;
+                    $sum = $snp + $qty;
+
+                    $inventory->update(['quantity' => $sum]);
+                } else {
+                    $inventory = Inventory::create([
+                        'item_id' => $item->id,
+                        'location_id' => $location->id,
+                        'quantity' => $snp
+                    ]);
+                }
+
                 $respone = 'success';
-                $mesage = 'Registro Exitoso';
+                $mesage = 'El Registro del Material se Hizo Correctamente.';
             } else {
                 $respone = 'warning';
-                $mesage = 'Registro ya Existente';
+                $mesage = 'Material Registrado Anteriormente';
             }
-        } else if (strlen($code) == 161) {
-            list($a, $b, $c, $d, $e, $f, $g, $h, $i, $j, $snp, $supplier, $m, $serial, $o, $p, $q, $r, $s, $t, $u, $v, $w, $x, $y, $z, $part_no) = explode(',', $code);
+        }
+        //
+        // else if (strlen($code) == 161) {
+        //     list($a, $b, $c, $d, $e, $f, $g, $h, $i, $j, $snp, $supplier, $m, $serial, $o, $p, $q, $r, $s, $t, $u, $v, $w, $x, $y, $z, $part_no) = explode(',', $code);
 
-            $input = Input::where(
-                [
-                    ['supplier', 'LIKE', $supplier],
-                    ['serial', 'LIKE', $serial],
-                    ['item_quantity', $snp],
-                    ['type_consignment', 'LIKE', 'MZ'],
-                ]
-            )->first();
+        //     $input = Input::where(
+        //         [
+        //             ['supplier', 'LIKE', $supplier],
+        //             ['serial', 'LIKE', $serial],
+        //             ['item_quantity', $snp],
+        //             ['type_consignment', 'LIKE', 'MZ'],
+        //         ]
+        //     )->first();
 
-            if ($input === null) {
-                $type = 'MZ';
-                StoreConsignmentMzJob::dispatch($serial, $part_no, $snp, $supplier, $type);
-                $respone = 'success';
-                $mesage = 'Registro Exitoso';
-            } else {
-                $respone = 'warning';
-                $mesage = 'Registro ya Existente';
-            }
-        } else {
+        //     if ($input === null) {
+        //         $type = 'MZ';
+        //         StoreConsignmentMzJob::dispatch($serial, $part_no, $snp, $supplier, $type);
+        //         $respone = 'success';
+        //         $mesage = 'El Registro del Material se Hizo Correctamente.';
+        //     } else {
+        //         $respone = 'warning';
+        //         $mesage = 'Material Registrado Anteriormente';
+        //     }
+        // }
+        //
+        else {
             $respone = 'warning';
-            $mesage = 'Código no Valido ';
+            $mesage = 'El Codigo de Material no es Valido.';
         }
 
         return redirect()->back()->with($respone, $mesage);

@@ -18,7 +18,7 @@
 
         @if (session('success'))
         <div class="bg-blue-100 border border-blue-400 text-blue-700 px-4 py-3 mb-2 rounded relative" role="alert">
-            <strong class="font-bold">¡Muy Bien!</strong>
+            <strong class="font-bold">¡Escaneado Correctamente!</strong>
             <span class="block sm:inline">{{ session('success') }}</span>
         </div>
         @endif
