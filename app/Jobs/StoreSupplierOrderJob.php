@@ -62,25 +62,25 @@ class StoreSupplierOrderJob implements ShouldQueue
         /**
          * Inventory
          */
-        $inventory = Inventory::where([
-            ['item_id', '=', $part_no->id],
-            ['location_id', '=', $location->id]
-        ])->first();
+        // $inventory = Inventory::where([
+        //     ['item_id', '=', $part_no->id],
+        //     ['location_id', '=', $location->id]
+        // ])->first();
 
-        $inventoryQuantity = $inventory->quantity ?? 0;
-        $sum = $inventoryQuantity + $this->snp;
+        // $inventoryQuantity = $inventory->quantity ?? 0;
+        // $sum = $inventoryQuantity + $this->snp;
 
-        if ($inventory !== null) {
-            // Log::info('Item ID: ' . $part_no->id . ' No Part: ' . $this->item . ' Sum: ' . $sum . ' IF');
-            $inventory->update(['quantity' => $sum]);
-        } else {
-            // Log::info('Item ID: ' . $part_no->id . ' No Part: ' . $this->item . ' Sum: ' . $sum . ' ELSE');
-            Inventory::create([
-                'item_id' =>  $part_no->id,
-                'location_id' => $location->id,
-                'quantity' => $sum
-            ]);
-        }
+        // if ($inventory !== null) {
+        //     Log::info('Item ID: ' . $part_no->id . ' No Part: ' . $this->item . ' Sum: ' . $sum . ' IF');
+        //     $inventory->update(['quantity' => $sum]);
+        // } else {
+        //     Log::info('Item ID: ' . $part_no->id . ' No Part: ' . $this->item . ' Sum: ' . $sum . ' ELSE');
+        //     Inventory::create([
+        //         'item_id' =>  $part_no->id,
+        //         'location_id' => $location->id,
+        //         'quantity' => $sum
+        //     ]);
+        // }
 
         InputSupplier::create([
             'supplier' => $this->supplier,
