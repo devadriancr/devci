@@ -13,6 +13,8 @@ use App\Models\Item;
 use App\Models\Location;
 use App\Models\ShippingInstruction;
 use App\Models\TransactionType;
+use App\Models\YH003;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Facades\Excel;
@@ -441,7 +443,7 @@ class ConsignmentInstructionController extends Controller
 
             if ($input === null) {
 
-                // StoreConsignmentMcMhJob::dispatch($serial, $part_no, $snp, $supplier, $type);
+                StoreConsignmentMcMhJob::dispatch($serial, $part_no, $snp, $supplier, $type);
 
                 $item = Item::where('item_number', 'LIKE', $part_no . '%')->first();
                 $transaction = TransactionType::where('code', 'LIKE', 'U3')->first();
@@ -456,6 +458,16 @@ class ConsignmentInstructionController extends Controller
                     'transaction_type_id' => $transaction->id,
                     'location_id' => $location->id,
                     'user_id' => Auth::id()
+                ]);
+
+                $yh003 = YH003::query()->insert([
+                    'H3PROD' => $item->item_number,
+                    'H3SUCD' => $supplier,
+                    'H3SENO' => $serial,
+                    'H3RQTY' => $snp,
+                    'H3CUSR' => Auth::user()->user_infor ?? '',
+                    'H3RDTE' => Carbon::parse($input->created_at)->format('Ymd'),
+                    'H3RTIM' => Carbon::parse($input->created_at)->format('His')
                 ]);
 
                 $inventory = Inventory::where([
