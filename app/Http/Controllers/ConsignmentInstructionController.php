@@ -439,11 +439,9 @@ class ConsignmentInstructionController extends Controller
                 ]
             )->first();
 
-            // dd($serial, $part_no, $snp, $supplier, $type, $input);
-
             if ($input === null) {
 
-                StoreConsignmentMcMhJob::dispatch($serial, $part_no, $snp, $supplier, $type);
+                // StoreConsignmentMcMhJob::dispatch($serial, $part_no, $snp, $supplier, $type);
 
                 $item = Item::where('item_number', 'LIKE', $part_no . '%')->first();
                 $transaction = TransactionType::where('code', 'LIKE', 'U3')->first();
