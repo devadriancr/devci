@@ -63,10 +63,10 @@ class DeiveryProductionController extends Controller
     {
         DeliveryProduction::where('id', $request->Delivery_id)
             ->update(['finish' => 1]);
-        // $conn = odbc_connect("Driver={Client Access ODBC Driver (32-bit)};System=192.168.200.7;", "LXSECOFR;", "LXSECOFR;");
-        // $query = "CALL LX834OU.YIN151C";
-        //   live
-        // $query = "CALL LX834OU.YIN151C";
+        $conn = odbc_connect("Driver={Client Access ODBC Driver (32-bit)};System=192.168.200.7;", "LXSECOFR;", "LXSECOFR;");
+        $query = "CALL LX834OU.YIN151C";
+        $result = odbc_exec($conn, $query);
+
         return redirect()->action([DeiveryProductionController::class, 'index']);
     }
 
