@@ -132,6 +132,7 @@ class OutputController extends Controller
                 'serial' => $cadena[13],
                 'item_id' => $item->id,
                 'item_quantity' =>  $cadena[10],
+                'type_consignment' => "MY/MZ",
                 'transaction_type_id' => $Transaction_type->id,
                 'travel_id' => $request->travel_id,
                 'location_id' => $request->location_id,
