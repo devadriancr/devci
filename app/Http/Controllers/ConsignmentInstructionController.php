@@ -418,12 +418,12 @@ class ConsignmentInstructionController extends Controller
     public function consignmentBarcodeStore(Request $request)
     {
         $request->validate([
-            'scan' => ['required', 'string', 'max:161', 'min:35']
+            'scan' => ['required', 'string', 'max:161', 'min:30']
         ]);
 
         $code = strtoupper($request->scan);
 
-        if (strlen($code) == 35) {
+        if (strlen($code) >= 30) {
             $serial = substr($code, 0, 10);
             $part_no = substr($code, 10, 10);
             $snp = substr($code, 20, 6);
