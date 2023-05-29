@@ -20,9 +20,11 @@ class ShippingInstructionController extends Controller
     /**
      *
      */
-    public function reportShipping()
+    public function reportShipping(Request $request)
     {
-        $containers = Container::orderByRaw('arrival_date DESC, arrival_time DESC')->paginate(10);
+        $search = $request->search ?? '';
+
+        $containers = Container::where('code', 'LIKE', '%' . $search . '%')->orderByRaw('arrival_date DESC, arrival_time DESC')->paginate(10);
 
         return view('shipping-instruction.report', ['containers' => $containers]);
     }
