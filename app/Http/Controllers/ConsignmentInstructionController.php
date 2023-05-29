@@ -412,7 +412,17 @@ class ConsignmentInstructionController extends Controller
      */
     public function consigmentBarcodeIndex()
     {
-        return view('consignment-instruction.consignment-barcode');
+        $mcmh = Input::where('type_consignment', 'LIKE', 'MC')
+            ->orWhere('type_consignment', 'LIKE', 'MH')
+            ->where(
+                    [
+                        ['location_id', '=', 328],
+                        ['transaction_type_id', '=', 82]
+                    ]
+                )
+            ->paginate(5);
+
+        return view('consignment-instruction.consignment-barcode', ['mcmh' => $mcmh]);
     }
 
     public function consignmentBarcodeStore(Request $request)
