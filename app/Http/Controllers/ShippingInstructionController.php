@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Exports\ConsignmentInstructionExport;
+use App\Exports\McMhExport;
 use App\Imports\ShippingInstructionImport;
 use App\Models\ConsignmentInstruction;
 use App\Models\Container;
@@ -11,6 +12,7 @@ use App\Models\Item;
 use App\Models\Location;
 use App\Models\ShippingInstruction;
 use App\Models\TransactionType;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Facades\Excel;
@@ -360,11 +362,24 @@ class ShippingInstructionController extends Controller
     public function downloadConsignment(Request $request)
     {
         $request->validate([
-            'type' => ['required'],
             'start' => ['required', 'date'],
             'end' => ['required', 'date']
         ]);
 
-        dd($request->all());
+        $mcmh = Input::select('inputs.supplier', 'inputs.serial', 'items.item_number', 'inputs.item_quantity', 'inputs.type_consignment', 'inputs.created_at')
+            ->join('items', 'items.id', '=', 'inputs.item_id')
+            ->where('inputs.type_consignment', 'LIKE', 'MC')
+            ->orWhere('inputs.type_consignment', 'LIKE', 'MH')
+            ->whereBetween(
+                'inputs.created_at',
+                [
+                    $request->start, Carbon::parse($request->end)->addDay()
+                ]
+            )
+            ->orderBy('inputs.created_at', 'DESC')
+            ->get()
+            ->toArray();
+
+        return Excel::download(new McMhExport($mcmh), 'Report.xlsx');
     }
 }
