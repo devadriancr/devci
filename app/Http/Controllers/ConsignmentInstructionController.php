@@ -420,6 +420,7 @@ class ConsignmentInstructionController extends Controller
                         ['transaction_type_id', '=', 82]
                     ]
                 )
+            ->orderBy('created_at', 'DESC')
             ->paginate(5);
 
         return view('consignment-instruction.consignment-barcode', ['mcmh' => $mcmh]);
