@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\YH003;
 use App\Models\ShippingInstruction;
 use Carbon\Carbon;
+use Symfony\Component\Console\Input\Input as InputInput;
 
 class OutputController extends Controller
 {
@@ -406,7 +407,7 @@ class OutputController extends Controller
             } else {
                 $location_old = location::where('code', 'like', '%L61%')->first();
             }
-             // -------------------------------ingresa los movimientos de entrada y salidad  -------------------
+            // -------------------------------ingresa los movimientos de entrada y salidad  -------------------
 
             Output::create([
                 'supplier' =>  $suppier,
@@ -431,7 +432,7 @@ class OutputController extends Controller
             if ($error == 0) {
                 $message = 'serial capturado exitosamente';
             }
-              // -------------------------------ingresa los movimientos de entrada y salidad inventario-------------------
+            // -------------------------------ingresa los movimientos de entrada y salidad inventario-------------------
 
             $operacion = Inventory::where('location_id', $location->id)->where('item_id', $item->id)->first();
             $operacion_ant = Inventory::where('location_id', $location_old->id)->where('item_id', $item->id)->first();
@@ -455,7 +456,7 @@ class OutputController extends Controller
                 ['location_id' => $location_old->id, 'item_id' => $item->id],
                 ['quantity' => $totalant]
             );
-              // -------------------------------ingresa los movimientos de entrada y salidad  Infor-------------------
+            // -------------------------------ingresa los movimientos de entrada y salidad  Infor-------------------
 
             $fechascan = date('Ymd', strtotime($re->created_at));
             $horascan = date('His', strtotime($re->created_at));
@@ -574,7 +575,7 @@ class OutputController extends Controller
                 if ($error == 0) {
                     $message = 'serial capturado exitosamente';
                 }
-                  // -------------------------------ingresa los movimientos de inventario de suma y resta   -------------------
+                // -------------------------------ingresa los movimientos de inventario de suma y resta   -------------------
                 $operacion = Inventory::where('location_id', $location->id)->where('item_id', $item->id)->first();
                 $operacion_ant = Inventory::where('location_id', $location_old->id)->where('item_id', $item->id)->first();
                 if (is_null($operacion)) {
@@ -700,52 +701,65 @@ class OutputController extends Controller
     public function show(Output $output)
     {
     }
+
+    /**
+     *
+     */
     public function search(Request $request)
     {
-        if ($request->serial != null) {
-            $serial = $request->serial ?? 0;
+        $search = $request->search ?? '';
 
-            $cont = strlen($serial);
-            $error = 0;
-            $msg = '';
+        $data = Input::join('items', 'items.id', 'inputs.item_id')
+            ->where('items.item_number', 'LIKE', '%' . $search . '%')
+            ->orWhere('inputs.serial', 'LIKE', '%' . $search . '%')
+            ->get();
 
-            switch ($cont) {
-                case 10:
-                    $serial = substr($serial, 1);
-                    break;
-                case 9:
-                    $serial = $serial;
-                    break;
-                default:
-                    if ($cont < 9) {
-                        $serial = 0;
-                        $error = 1;
-                        $msg = 'Escaneo incorrecto';
-                    } else {
-                        $cadena = explode(",", $serial);
-                        $serial = $cadena[13];
-                    }
-                    break;
-            }
 
-            $regin = input::with('item', 'location', 'container')->where('serial', $serial)->orderby('id', 'desc')->simplePaginate(10);
-            $total = count($regin);
-            if (count($regin) == 0) {
-                $error = 2;
-                $msg = 'Serial no encontrado';
-            }
-            if ($serial == 0) {
-                $error = 0;
-                $msg = '';
-            }
-        } else {
-            $regin = null;
-            $error = 0;
-            $msg = '';
-            $total = 0;
-        }
 
-        return view('Output.search', ['in' => $regin, 'error' => $error, 'msg' => $msg, 'total' => $total]);
+        // if ($request->serial != null) {
+        //     $serial = $request->serial ?? 0;
+
+        //     $cont = strlen($serial);
+        //     $error = 0;
+        //     $msg = '';
+
+        //     switch ($cont) {
+        //         case 10:
+        //             $serial = substr($serial, 1);
+        //             break;
+        //         case 9:
+        //             $serial = $serial;
+        //             break;
+        //         default:
+        //             if ($cont < 9) {
+        //                 $serial = 0;
+        //                 $error = 1;
+        //                 $msg = 'Escaneo incorrecto';
+        //             } else {
+        //                 $cadena = explode(",", $serial);
+        //                 $serial = $cadena[13];
+        //             }
+        //             break;
+        //     }
+
+        //     $regin = input::with('item', 'location', 'container')->where('serial', $serial)->orderby('id', 'desc')->simplePaginate(10);
+        //     $total = count($regin);
+        //     if (count($regin) == 0) {
+        //         $error = 2;
+        //         $msg = 'Serial no encontrado';
+        //     }
+        //     if ($serial == 0) {
+        //         $error = 0;
+        //         $msg = '';
+        //     }
+        // } else {
+        //     $regin = null;
+        //     $error = 0;
+        //     $msg = '';
+        //     $total = 0;
+        // }
+
+        return view('Output.search', ['consignment' => $data]);
     }
 
     /**
