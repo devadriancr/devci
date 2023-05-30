@@ -54,5 +54,63 @@
                 </div>
             </form>
         </div>
+
+        <div class="w-full overflow-hidden rounded-lg shadow-xs">
+            <div class="w-full overflow-x-auto">
+                <table class="w-full whitespace-no-wrap">
+                    <thead>
+                        <tr class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b dark:border-gray-700 bg-gray-50 dark:text-gray-400 dark:bg-gray-800">
+
+                            <th class="px-4 py-3">Serial</th>
+                            <th class="px-4 py-3">No Parte</th>
+                            <!-- <th class="px-4 py-3">Sequencia</th> -->
+                            <th class="px-4 py-3">Cantidad</th>
+                            <th class="px-4 py-3">Proveedor</th>
+                            <th class="px-4 py-3">Tipo de Consigna</th>
+                            <th class="px-4 py-3">Fecha de Registro<th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white uppercase divide-y dark:divide-gray-700 dark:bg-gray-800">
+                        @foreach ($mcmh as $consignment)
+                        <tr class="text-gray-700 dark:text-gray-400">
+                            <td class="px-4 py-3 text-sm">
+                                {{ $consignment->serial }}
+                            </td>
+                            <td class="px-4 py-3 text-sm">
+                                {{ $consignment->item->item_number }}
+                            </td>
+                            <!-- <td class="px-4 py-3 text-sm">
+                                {{ $consignment->sequence }}
+                            </td> -->
+                            <td class="px-4 py-3 text-sm">
+                                {{ $consignment->item_quantity }}
+                            </td>
+                            <td class="px-4 py-3 text-sm">
+                                {{ $consignment->supplier }}
+                            </td>
+                            <td class="px-4 py-3 text-sm">
+                                {{ $consignment->type_consignment }}
+                            </td>
+                            <td class="px-4 py-3 text-sm">
+                                {{ $consignment->created_at }}
+                            </td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+            <div class="grid px-4 py-3 text-xs font-semibold tracking-wide text-gray-500 uppercase border-t dark:border-gray-700 bg-gray-50 sm:grid-cols-9 dark:text-gray-400 dark:bg-gray-800">
+                <span class="flex items-center col-span-3">
+                    <!-- Mostrando {{ $mcmh->firstItem() }} - {{ $mcmh->lastItem() }} de {{ $mcmh->total()}} -->
+                </span>
+                <span class="col-span-2"></span>
+                <!-- Pagination -->
+                <span class="flex col-span-4 mt-2 sm:mt-auto sm:justify-end">
+                    <nav aria-label="Table navigation">
+                        {{ $mcmh->withQueryString()->links()}}
+                    </nav>
+                </span>
+            </div>
+        </div>
     </div>
 </x-app-layout>
