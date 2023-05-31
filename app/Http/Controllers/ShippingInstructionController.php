@@ -373,7 +373,7 @@ class ShippingInstructionController extends Controller
             ->whereBetween(
                 'inputs.created_at',
                 [
-                    $request->start, Carbon::parse($request->end)->addDay()
+                    Carbon::parse($request->start)->format('Y-d-m H:i:s.v'), Carbon::parse($request->end)->addDay()->format('Y-d-m H:i:s')
                 ]
             )
             ->orderBy('inputs.created_at', 'DESC')
