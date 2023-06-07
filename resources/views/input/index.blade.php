@@ -41,8 +41,8 @@
                         <th class="px-4 py-3">No. Parte</th>
                         <th class="px-4 py-3">Cantidad</th>
                         <th class="px-4 py-3">Transacción</th>
-                        <th class="px-4 py-3">Almacen</th>
                         <th class="px-4 py-3">Locación</th>
+                        <th class="px-4 py-3">Almacen</th>
                         <th class="px-4 py-3">Contenedor</th>
                         <th class="px-4 py-3">Fecha de Entrada</th>
                     </tr>
@@ -57,25 +57,25 @@
                             {{ $input->serial ?? '' }}
                         </td>
                         <td class="px-4 py-3 text-sm">
-                            {{ $input->item->item_number ?? '' }}
+                            {{ $input->item_number ?? '' }}
                         </td>
                         <td class="px-4 py-3 text-sm">
                             {{ $input->item_quantity ?? '' }}
                         </td>
                         <td class="px-4 py-3 text-sm">
-                            {{ $input->transaction->code ?? '' }}
+                            {{ $input->code ?? '' }}
                         </td>
                         <td class="px-4 py-3 text-sm">
-                            {{ $input->location->warehouse->code ?? '' }}
+                            {{ $input->name_loc ?? '' }}
                         </td>
                         <td class="px-4 py-3 text-sm">
-                            {{ $input->location->code ?? '' }}
+                            {{ $input->name_whs ?? '' }}
                         </td>
                         <td class="px-4 py-3 text-sm">
-                            {{ $input->container->code ?? '' }}
+                            {{ $input->cont ?? '' }}
                         </td>
                         <td class="px-4 py-3 text-sm">
-                            {{ $input->created_at ?? '' }}
+                            {{ $input->date ?? '' }}
                         </td>
                     </tr>
                     @endforeach

@@ -19,7 +19,15 @@ class InputController extends Controller
         $search = strtoupper($request->search) ?? '';
 
         $inputs = Input::query()
+            ->select(
+                'inputs.supplier', 'inputs.serial', 'items.item_number', 'inputs.item_quantity', 'transaction_types.code', 'inputs.created_at AS date',
+                'locations.code AS name_loc', 'warehouses.code AS name_whs', 'containers.code AS cont'
+            )
             ->join('items', 'inputs.item_id', '=', 'items.id')
+            ->leftJoin('transaction_types', 'inputs.transaction_type_id', '=', 'transaction_types.id')
+            ->leftJoin('locations', 'locations.id', '=', 'inputs.location_id')
+            ->leftJoin('warehouses', 'warehouses.id', '=', 'locations.warehouse_id')
+            ->leftJoin('containers', 'containers.id', '=', 'inputs.container_id')
             ->where('inputs.serial', 'LIKE', '%' . $search . '%')
             ->orWhere('items.item_number', 'LIKE', '%' . $search . '%')
             ->orderBy('inputs.created_at', 'DESC')
