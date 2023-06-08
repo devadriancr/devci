@@ -47,7 +47,7 @@ class SupplierOrderMigrationJob implements ShouldQueue
 
         foreach ($orders as $key => $order) {
             $date = Carbon::parse(str_replace('/', '-', $order->R1DAT))->format('Y-m-d');
-            $time = Carbon::parse($order->R1TIM)->format('H:i:s.v');
+            $time = Carbon::parse(trim($order->R1TIM))->format('H:i:s.v');
             // Log::info($key . '.    No. Order: ' . $order->R1ORN . '    Seqence: ' . $order->R1SQN . '    Date: ' . $order->R1DAT . '    Flag: ' . $order->R1FLG);
             $input = InputSupplier::where(
                 [
