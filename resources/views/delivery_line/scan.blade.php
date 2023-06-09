@@ -153,6 +153,22 @@
                                 <td class="px-4 py-3 text-sm">
                                     {{ $consignment->supplier }}
                                 </td>
+                                <td>
+                                    <form method="POST" action="{{ route('output.returnitem') }}">
+                                        @csrf
+                                        <input name="id" value="{{ $consignment->id }}" hidden>
+                                        <input name="type" value="1" hidden>
+                                        <input name="delivery_id" value="{{ $entrega->id }}" hidden>
+                                        <div class="flex justify-end mt-2 gap-2">
+                                            <button class="bg-grey-light hover:bg-grey text-grey-darkest font-bold py-2 px-4 rounded inline-flex items-center">
+                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 15L3 9m0 0l6-6M3 9h12a6 6 0 010 12h-3" />
+                                                </svg>
+                                              </button>
+                                        </div>
+                                    </form>
+
+                                </td>
                             </tr>
                         @endforeach
                     </tbody>

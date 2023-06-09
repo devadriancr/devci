@@ -12,6 +12,8 @@ use App\Models\User;
 use App\Models\YI007;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
+use App\Models\DeliveryProduction;
+
 use Illuminate\Support\Facades\Auth;
 
 
@@ -49,20 +51,46 @@ class OutputController extends Controller
         $location = location::with('warehouse')->find($request->location_id);
         $cadena = explode(",", $request->serial);
 
-        if (count($cadena) != 27) {
-            $error = 8;
+        if (strlen($request->serial) == 35) {
+            $serial = substr($request->serial, -35, 10);
+            $number_part = substr($request->serial, -25, 10);
+            $quantity = substr($request->serial, -15, 6);
+            $supplier = substr($request->serial, -9, 5);
+            $type_consigment = substr($request->serial, -4, 2);
 
-            $message = 'ESCANEO INCORRECTO';
+        } else {
+            $cadena = explode(",", $request->serial);
+            if (count($cadena) != 27) {
+
+                $error = 1;
+                $message = 'ESCANEO INCORRECTO';
+            } else {
+                $serial = $cadena[13];
+                $number_part = end($cadena);
+                $quantity = $cadena[10];
+                $supplier = $cadena[11];
+                $type_consigment = 'MY/MZ';
+            }
         }
+
+
+
+
+
+        // if (count($cadena) != 27) {
+        //     $error = 8;
+
+        //     $message = 'ESCANEO INCORRECTO';
+        // }
         if ($error == 0) {
-            $item = DB::table('items')->whereRaw("item_number like '" .  end($cadena) . "%'")->first();
+            $item = DB::table('items')->whereRaw("item_number like '" .  $number_part  . "%'")->first();
             if ($item == false) {
                 $error = 2;
                 $message = 'Item no existe';
             }
         }
         if ($error == 0) {
-            $serial_exist = input::where([['serial', $cadena[13]], ['supplier', $cadena[11]], ['item_id', $item->id]])->orderby('id', 'desc')->first();
+            $serial_exist = input::where([['serial',  $serial], ['supplier', $supplier], ['item_id', $item->id]])->orderby('id', 'desc')->first();
             if ($serial_exist == null) {
                 $error = 5;
                 $message = 'Serial no encontrado en shipping se ha dado de alta';
@@ -78,7 +106,7 @@ class OutputController extends Controller
                     $error = 3;
                     $message = 'serial ya fue  escaneado';
                 } else {
-                    $scan_ac = input::where([['serial', $cadena[13]], ['supplier', $cadena[11]], ['item_id', $item->id], ['travel_id', $request->travel_id]])->orderby('id', 'desc')->first();
+                    $scan_ac = input::where([['serial', $serial ], ['supplier', $supplier],['item_id', $item->id], ['travel_id', $request->travel_id]])->orderby('id', 'desc')->first();
                     if ($scan_ac != null) {
                         $error = 3;
                         $message = 'serial ya fue  escaneado';
@@ -114,22 +142,24 @@ class OutputController extends Controller
             if ($error == 0) {
                 $message = 'serial capturado exitosamente';
             }
+            dd( $type_consigment);
+
             Output::create([
-                'supplier' =>  $cadena[11],
-                'serial' => $cadena[13],
+                'supplier' =>  $supplier ,
+                'serial' => $serial,
                 'item_id' => $item->id,
-                'item_quantity' =>  $cadena[10],
+                'item_quantity' =>   $quantity,
                 'transaction_type_id' => $Transaction_type->id,
                 'travel_id' => $request->travel_id,
                 'location_id' => $location_old->id,
                 'user_id' =>     Auth::user()->id
             ]);
             $re = input::create([
-                'supplier' =>  $cadena[11],
-                'serial' => $cadena[13],
+                'supplier' =>  $supplier ,
+                'serial' => $serial,
                 'item_id' => $item->id,
-                'item_quantity' =>  $cadena[10],
-                'type_consignment' => "MY/MZ",
+                'item_quantity' =>  $quantity,
+                'type_consignment' =>   $type_consigment ,
                 'transaction_type_id' => $Transaction_type->id,
                 'travel_id' => $request->travel_id,
                 'location_id' => $request->location_id,
@@ -165,11 +195,11 @@ class OutputController extends Controller
             $infor = YI007::Query()->insert(
                 [
                     'I7PROD' => $item->item_number,
-                    'I7SENO' => $cadena[13],
+                    'I7SENO' => $serial,
                     'I7TFLG' => 'O',
                     'I7TDTE' => $fechascan,
                     'I7TTIM' => $horascan,
-                    'I7TQTY' => $cadena[10],
+                    'I7TQTY' => $quantity,
                     'I7WHS' =>  $location_old->warehouse->code,
                     'I7CUSR' => 'YKMS',
                     'I7CCDT' => $fechainfor,
@@ -180,11 +210,11 @@ class OutputController extends Controller
             $infor = YI007::Query()->insert(
                 [
                     'I7PROD' => $item->item_number,
-                    'I7SENO' => $cadena[13],
+                    'I7SENO' => $serial,
                     'I7TFLG' => 'I',
                     'I7TDTE' => $fechascan,
                     'I7TTIM' => $horascan,
-                    'I7TQTY' => $cadena[10],
+                    'I7TQTY' => $quantity,
                     'I7WHS' =>  $location->warehouse->code,
                     'I7CUSR' => 'YKMS',
                     'I7CCDT' => $fechainfor,
@@ -203,10 +233,11 @@ class OutputController extends Controller
                     $location_old = location::where('code', 'like', '%L61%')->first();
                 }
                 $re = input::create([
-                    'supplier' =>  $cadena[11],
-                    'serial' => $cadena[13],
+                    'supplier' =>  $supplier,
+                    'serial' => $serial,
                     'item_id' => $item->id,
-                    'item_quantity' =>  $cadena[10],
+                    'item_quantity' =>  $quantity,
+                    'type_consignment' =>   $type_consigment ,
                     'transaction_type_id' => $Transaction_type->id,
                     'location_id' =>  $location_old->id,
                     'user_id' =>   Auth::user()->id
@@ -218,7 +249,7 @@ class OutputController extends Controller
                     $inv = $operacion->quantity;
                 }
 
-                $total = $inv +  $cadena[10];
+                $total = $inv +  $quantity;
 
                 $mov = Inventory::updateOrCreate(
                     ['location_id' => $location_old->id, 'item_id' => $item->id],
@@ -232,11 +263,11 @@ class OutputController extends Controller
                 $infor = YI007::Query()->insert(
                     [
                         'I7PROD' => $item->item_number,
-                        'I7SENO' => $cadena[13],
+                        'I7SENO' => $serial,
                         'I7TFLG' => 'A',
                         'I7TDTE' => $fechascan,
                         'I7TTIM' => $horascan,
-                        'I7TQTY' =>  $cadena[10],
+                        'I7TQTY' =>  $quantity,
                         'I7WHS' =>   $location_old->warehouse->code,
                         'I7CUSR' => 'YKMS',
                         'I7CCDT' => $fechainfor,
@@ -248,20 +279,21 @@ class OutputController extends Controller
                 }
 
                 Output::create([
-                    'supplier' =>  $cadena[11],
-                    'serial' => $cadena[13],
+                    'supplier' =>  $supplier,
+                    'serial' => $serial,
                     'item_id' => $item->id,
-                    'item_quantity' =>  $cadena[10],
+                    'item_quantity' =>  $quantity,
                     'transaction_type_id' => $Transaction_type->id,
                     'travel_id' => $request->travel_id,
                     'location_id' => $location_old->id,
                     'user_id' =>     Auth::user()->id
                 ]);
                 $re = input::create([
-                    'supplier' =>  $cadena[11],
-                    'serial' => $cadena[13],
+                    'supplier' =>  $supplier,
+                    'serial' => $serial,
                     'item_id' => $item->id,
-                    'item_quantity' =>  $cadena[10],
+                    'item_quantity' =>  $quantity,
+                    'type_consignment' =>   $type_consigment ,
                     'transaction_type_id' => $Transaction_type->id,
                     'travel_id' => $request->travel_id,
                     'location_id' => $request->location_id,
@@ -280,8 +312,8 @@ class OutputController extends Controller
                 } else {
                     $inv_ant = $operacion_ant->quantity;
                 }
-                $total = $inv +  $cadena[10];
-                $totalant = $inv_ant -  $cadena[10];
+                $total = $inv +  $quantity;
+                $totalant = $inv_ant -   $quantity;
                 $mov = Inventory::updateOrCreate(
                     ['location_id' => $location->id, 'item_id' => $item->id],
                     ['quantity' => $total]
@@ -297,11 +329,11 @@ class OutputController extends Controller
                 $infor = YI007::Query()->insert(
                     [
                         'I7PROD' => $item->item_number,
-                        'I7SENO' => $cadena[13],
+                        'I7SENO' => $serial,
                         'I7TFLG' => 'O',
                         'I7TDTE' => $fechascan,
                         'I7TTIM' => $horascan,
-                        'I7TQTY' => $cadena[10],
+                        'I7TQTY' => $quantity,
                         'I7WHS' =>  $location_old->warehouse->code,
                         'I7CUSR' => 'YKMS',
                         'I7CCDT' => $fechainfor,
@@ -312,11 +344,11 @@ class OutputController extends Controller
                 $infor = YI007::Query()->insert(
                     [
                         'I7PROD' => $item->item_number,
-                        'I7SENO' => $cadena[13],
+                        'I7SENO' => $serial,
                         'I7TFLG' => 'I',
                         'I7TDTE' => $fechascan,
                         'I7TTIM' => $horascan,
-                        'I7TQTY' => $cadena[10],
+                        'I7TQTY' => $quantity,
                         'I7WHS' =>  $location->warehouse->code,
                         'I7CUSR' => 'YKMS',
                         'I7CCDT' => $fechainfor,
@@ -666,12 +698,7 @@ class OutputController extends Controller
         return view('output.scanbar', ['travels' => $travels, 'scan' => $scan,  'location_id' => $locations]);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
+
     public function store(Request $request)
     {
 
@@ -706,16 +733,16 @@ class OutputController extends Controller
         $search = $request->search ?? '';
 
         $data = Input::select(
-                'inputs.supplier',
-                'inputs.serial',
-                'items.item_number',
-                'inputs.item_quantity',
-                'inputs.type_consignment',
-                'locations.code AS location',
-                'locations.name AS name',
-                'containers.code AS container',
-                'inputs.created_at AS date'
-            )
+            'inputs.supplier',
+            'inputs.serial',
+            'items.item_number',
+            'inputs.item_quantity',
+            'inputs.type_consignment',
+            'locations.code AS location',
+            'locations.name AS name',
+            'containers.code AS container',
+            'inputs.created_at AS date'
+        )
             ->join('items', 'items.id', '=', 'inputs.item_id')
             ->join('locations', 'locations.id', '=', 'inputs.location_id')
             ->leftJoin('containers', 'containers.id', '=', 'inputs.container_id')
@@ -735,12 +762,18 @@ class OutputController extends Controller
      * @param  \App\Models\Output  $output
      * @return \Illuminate\Http\Response
      */
-    public function return(Request $request)
+    public function returnitem(Request $request)
     {
+
+
+
+        $regup = input::where('id',$request->id)->update(['return_scan'=>'1']);
         $reg = input::with('item', 'location')->find($request->id);
+
+
         $location_new = location::where('code', 'like', '%L60%')->first();
         Output::create([
-            'supplier' =>   $reg->suppier,
+            'supplier' =>   $reg->supplier,
             'serial' => $reg->serial,
             'item_id' => $reg->item_id,
             'item_quantity' =>  $reg->item_quantity,
@@ -749,10 +782,11 @@ class OutputController extends Controller
             'user_id' =>     Auth::user()->id
         ]);
         input::create([
-            'supplier' => $reg->suppier,
+            'supplier' => $reg->supplier,
             'serial' => $reg->serial,
             'item_id' => $reg->item_id,
             'item_quantity' =>  $reg->item_quantity,
+            'type_consignment' =>  $reg->type_consignment,
             'transaction_type_id' => $reg->transaction_type_id,
             'location_id' =>  $location_new->id,
             'user_id' => Auth::user()->id
@@ -768,7 +802,7 @@ class OutputController extends Controller
             [
                 'I7PROD' => $reg->item->item_number,
                 'I7SENO' => $reg->serial,
-                'I7TFLG' => 'I',
+                'I7TFLG' => 'O',
                 'I7TDTE' => $fechascan,
                 'I7TTIM' => $horascan,
                 'I7TQTY' => $reg->item_quantity,
@@ -783,7 +817,7 @@ class OutputController extends Controller
             [
                 'I7PROD' => $reg->item->item_number,
                 'I7SENO' => $reg->serial,
-                'I7TFLG' => 'O',
+                'I7TFLG' => 'I',
                 'I7TDTE' => $fechascan,
                 'I7TTIM' => $horascan,
                 'I7TQTY' => $reg->item_quantity,
@@ -795,11 +829,27 @@ class OutputController extends Controller
 
         );
 
-        $regin = input::with('item', 'location', 'container')->where('serial', $reg->serial)->orderby('id', 'desc')->simplePaginate(10);
+
         $error = 1;
         $msg = 'se a regresado el material a W60';
-        $total = count($regin);
-        return view('Output.search', ['in' => $regin, 'error' => $error, 'msg' => $msg, 'total' => $total]);
+
+        $type=$request->type;
+        if($type==1)
+        {
+            $scan  = input::with('item')->where([['delivery_production_id', $request->delivery_id], ['return_scan', null]])->orderby('id', 'desc')->get();
+            $travels = array();
+            $entrega = DeliveryProduction::find($request->delivery_id);
+            return view('delivery_line.scan', ['entrega' => $entrega, 'scan' => $scan, 'error' => $error, 'msg' =>$msg, 'location_id' => $loc_new_id->warehouse->id]);
+
+
+
+        }else
+        {
+            $regin = input::with('item', 'location', 'container')->where('serial', $reg->serial)->orderby('id', 'desc')->simplePaginate(10);
+            $total = count($regin);
+            return view('Output.search', ['in' => $regin, 'error' => $error, 'msg' => $msg, 'total' => $total]);
+        }
+
     }
 
     /**
@@ -832,6 +882,9 @@ class OutputController extends Controller
         // live
         // $query = "CALL LX834OU.YIN151C";
         // $result = odbc_exec($conn, $query);
+        $conn = odbc_connect("Driver={Client Access ODBC Driver (32-bit)};System=192.168.200.7;", "LXSECOFR;", "LXSECOFR;");
+        $query = "CALL LX834OU.YIN151C";
+        $result = odbc_exec($conn, $query);
         Travel::updateOrCreate(
             ['id' => $request->travel_id],
             ['finish' => 1]
