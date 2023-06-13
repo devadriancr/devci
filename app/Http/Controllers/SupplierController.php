@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\InputSupplier;
 use App\Models\OutputSupplier;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class SupplierController extends Controller
@@ -87,7 +88,8 @@ class SupplierController extends Controller
     public function indexSupplierInput(Request $request)
     {
         $search = strtoupper($request->search) ?? '';
-
+        $time = trim('  001740');
+        dd(Carbon::parse($time)->format('H:i:s.v'));
         $suppliers = InputSupplier::join('items', 'input_suppliers.item_id', '=', 'items.id')
             ->where('input_suppliers.order_no', 'LIKE', '%' . $search . '%')
             ->orWhere('items.item_number', 'LIKE', '%' . $search . '%')
