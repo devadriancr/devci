@@ -142,7 +142,7 @@ class OutputController extends Controller
             if ($error == 0) {
                 $message = 'serial capturado exitosamente';
             }
-            dd( $type_consigment);
+
 
             Output::create([
                 'supplier' =>  $supplier ,
