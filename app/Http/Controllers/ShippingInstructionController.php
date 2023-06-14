@@ -8,13 +8,9 @@ use App\Imports\ShippingInstructionImport;
 use App\Models\ConsignmentInstruction;
 use App\Models\Container;
 use App\Models\Input;
-use App\Models\Item;
-use App\Models\Location;
 use App\Models\ShippingInstruction;
-use App\Models\TransactionType;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Facades\Excel;
 
 class ShippingInstructionController extends Controller
@@ -366,19 +362,14 @@ class ShippingInstructionController extends Controller
             'end' => ['required', 'date']
         ]);
 
-        $mcmh = Input::select('inputs.supplier', 'inputs.serial', 'items.item_number', 'inputs.item_quantity', 'inputs.type_consignment', 'inputs.created_at')
-            ->join('items', 'items.id', '=', 'inputs.item_id')
-            ->where('inputs.type_consignment', 'LIKE', 'MC')
-            ->orWhere('inputs.type_consignment', 'LIKE', 'MH')
-            ->whereBetween(
-                'inputs.created_at',
-                [
-                    Carbon::parse($request->start)->format('Y-d-m H:i:s.v'), Carbon::parse($request->end)->addDay()->format('Y-d-m H:i:s')
-                ]
-            )
-            ->orderBy('inputs.created_at', 'DESC')
-            ->get()
-            ->toArray();
+        $from = Carbon::parse($request->start)->format('Y-d-m');
+        $to = Carbon::parse($request->end)->addDay()->format('Y-d-m');
+
+        $mcmh = Input::join('items', 'inputs.item_id', '=', 'items.id')
+            ->whereBetween('inputs.created_at', [$from, $to])
+            ->whereIn('inputs.type_consignment', ['MC', 'MH'])
+            ->select('inputs.supplier', 'inputs.serial', 'items.item_number', 'inputs.item_quantity', 'inputs.type_consignment', 'inputs.created_at')
+            ->get();
 
         return Excel::download(new McMhExport($mcmh), 'Report.xlsx');
     }

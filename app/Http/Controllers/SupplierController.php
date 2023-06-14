@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\InputSupplier;
 use App\Models\OutputSupplier;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class SupplierController extends Controller
