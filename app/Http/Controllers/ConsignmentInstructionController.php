@@ -61,26 +61,25 @@ class ConsignmentInstructionController extends Controller
 
         $data = ConsignmentInstruction::where(
             [
-                ['serial', '=', $serial],
-                ['supplier', '=', $supplier],
-                ['part_no', 'LIKE', $part_no . '%']
+                ['supplier', $supplier],
+                ['serial', $serial],
+                ['part_no', 'LIKE', $part_no . '%'],
+                ['container_id', $request->container_id]
             ]
         )->first();
 
         if ($data === null) {
-
             $container = Container::find($request->container_id);
-
-            $shipping = ShippingInstruction::where(
-                [
-                    ['container', 'LIKE', $container->code],
-                    ['arrival_date', $container->arrival_date],
-                    ['arrival_time', $container->arrival_time],
-                    ['part_no', 'LIKE', $part_no . '%'],
-                    ['serial', 'LIKE', $supplier . $serial]
-                ]
-            )->first();
-
+            $shipping = ShippingInstruction::query()
+                ->where(
+                    [
+                        ['container', 'LIKE', $container->code],
+                        ['arrival_date', $container->arrival_date],
+                        ['arrival_time', $container->arrival_time],
+                        ['part_no', 'LIKE', $part_no . '%'],
+                        ['serial', 'LIKE', $supplier . $serial]
+                    ]
+                )->first();
             if ($shipping !== null) {
                 ConsignmentInstruction::storeConsignment($serial, $supplier, $part_qty, $part_no, 'L60', $request->container_id);
                 $msg = 'Registro Exitoso';
@@ -93,7 +92,6 @@ class ConsignmentInstructionController extends Controller
             $msg = 'Registro Duplicado';
             $status = 'warning';
         }
-
         return redirect()->back()->with($status, $msg);
     }
 
