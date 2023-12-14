@@ -199,6 +199,8 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function () {
      * Route Input
      */
     Route::resource('input', InputController::class);
+    Route::get('item-report', [InputController::class, 'itemReport'])->name('input.item-report');
+    Route::post('download-report', [InputController::class, 'downloadItemReport'])->name('input.download-report');
 
     /**
      * Route report request list

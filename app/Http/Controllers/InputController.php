@@ -20,8 +20,15 @@ class InputController extends Controller
 
         $inputs = Input::query()
             ->select(
-                'inputs.supplier', 'inputs.serial', 'items.item_number', 'inputs.item_quantity', 'transaction_types.code', 'inputs.created_at AS date',
-                'locations.code AS name_loc', 'warehouses.code AS name_whs', 'containers.code AS cont'
+                'inputs.supplier',
+                'inputs.serial',
+                'items.item_number',
+                'inputs.item_quantity',
+                'transaction_types.code',
+                'inputs.created_at AS date',
+                'locations.code AS name_loc',
+                'warehouses.code AS name_whs',
+                'containers.code AS cont'
             )
             ->join('items', 'inputs.item_id', '=', 'items.id')
             ->leftJoin('transaction_types', 'inputs.transaction_type_id', '=', 'transaction_types.id')
@@ -100,5 +107,22 @@ class InputController extends Controller
     public function destroy(Input $input)
     {
         //
+    }
+
+    /**
+     *
+     */
+    function itemReport()
+    {
+        return view('input.item-report');
+    }
+
+    /**
+     *
+     */
+    function downloadItemReport(Request $request)
+    {
+        $data = explode(',', $request->item);
+        dd($data);
     }
 }

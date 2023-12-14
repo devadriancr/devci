@@ -359,7 +359,8 @@ class ShippingInstructionController extends Controller
     {
         $request->validate([
             'start' => ['required', 'date'],
-            'end' => ['required', 'date']
+            'end' => ['required', 'date'],
+            'type_consignment' => ['required']
         ]);
 
         $from = Carbon::parse($request->start)->format('Y-d-m');
@@ -367,7 +368,7 @@ class ShippingInstructionController extends Controller
 
         $mcmh = Input::join('items', 'inputs.item_id', '=', 'items.id')
             ->whereBetween('inputs.created_at', [$from, $to])
-            ->whereIn('inputs.type_consignment', ['MC', 'MH'])
+            ->whereIn('inputs.type_consignment', [$request->type_consignment])
             ->select('inputs.supplier', 'inputs.serial', 'items.item_number', 'inputs.item_quantity', 'inputs.type_consignment', 'inputs.created_at')
             ->get();
 
