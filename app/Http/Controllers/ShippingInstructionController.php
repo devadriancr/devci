@@ -8,6 +8,7 @@ use App\Imports\ShippingInstructionImport;
 use App\Models\ConsignmentInstruction;
 use App\Models\Container;
 use App\Models\Input;
+use App\Models\Location;
 use App\Models\ShippingInstruction;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -349,7 +350,9 @@ class ShippingInstructionController extends Controller
      */
     public function reportConsignments()
     {
-        return view('shipping-instruction.reportConsigments');
+        $locations = Location::query()->whereIn('code', ['L60', 'L61', 'L12'])->get();
+
+        return view('shipping-instruction.reportConsigments', ['locations' => $locations]);
     }
 
     /**
@@ -360,18 +363,24 @@ class ShippingInstructionController extends Controller
         $request->validate([
             'start' => ['required', 'date'],
             'end' => ['required', 'date'],
-            'type_consignment' => ['required']
+            'type_consignment' => ['required'],
+            'locations' => ['required']
         ]);
 
         $from = Carbon::parse($request->start)->format('Y-d-m');
         $to = Carbon::parse($request->end)->addDay()->format('Y-d-m');
 
-        $mcmh = Input::join('items', 'inputs.item_id', '=', 'items.id')
+        $mcmh = Input::query()
+            ->join('items', 'inputs.item_id', '=', 'items.id')
+            ->join('locations', 'inputs.location_id', '=', 'locations.id')
+            ->leftJoin('containers', 'inputs.container_id', '=', 'containers.id')
+            ->join('transaction_types', 'inputs.transaction_type_id', '=', 'transaction_types.id')
             ->whereBetween('inputs.created_at', [$from, $to])
             ->whereIn('inputs.type_consignment', [$request->type_consignment])
-            ->select('inputs.supplier', 'inputs.serial', 'items.item_number', 'inputs.item_quantity', 'inputs.type_consignment', 'inputs.created_at')
+            ->whereIn('locations.id', $request->locations)
+            ->select('inputs.supplier', 'inputs.serial', 'items.item_number', 'inputs.item_quantity', 'inputs.type_consignment', 'containers.code as container_code', 'transaction_types.code as transaction_code', 'transaction_types.name as transaction_name', 'locations.code as location_code', 'locations.name as location_name', 'inputs.created_at')
             ->get();
 
-        return Excel::download(new McMhExport($mcmh), 'Report.xlsx');
+        return Excel::download(new McMhExport($mcmh), 'REPORT_' . date('dmYHis') . '.xlsx');
     }
 }

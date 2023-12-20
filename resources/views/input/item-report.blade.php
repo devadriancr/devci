@@ -1,7 +1,7 @@
-<x-app-layout title="Forms">
+<x-app-layout title="Reporte">
     <div class="container grid px-6 mx-auto">
-        <h2 class="my-6 text-2xl font-semibold text-gray-700 dark:text-gray-200">
-            Reporte
+        <h2 class="my-3 text-2xl font-semibold text-gray-700 dark:text-gray-200">
+            Reporte Consigna
         </h2>
 
         @livewire('item-report')
