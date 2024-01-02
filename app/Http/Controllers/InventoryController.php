@@ -4,15 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Imports\DuplicateEntriesImport;
 use App\Imports\InventoryAmountOpeningBalanceImport;
-use App\Models\ILI;
-use App\Models\Input;
-use App\Models\InputSupplier;
+use App\Jobs\OpeningBalanceJob;
 use App\Models\Inventory;
-use App\Models\Item;
-use App\Models\Location;
-use App\Models\TransactionType;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Facades\Excel;
 
 class InventoryController extends Controller
@@ -22,83 +16,8 @@ class InventoryController extends Controller
      */
     public function upload()
     {
-        $ili = ILI::select(
-            [
-                'LID', 'LPROD', 'LWHS', 'LLOC', 'LOPB'
-            ]
-        )
-            ->where('LID', 'LI')
-            ->orderBy('LOPB', 'DESC')
-            ->get();
+        OpeningBalanceJob::dispatch();
 
-        // foreach ($ili as $key => $iliVaue) {
-        //     $item = Item::where('item_number', $iliVaue->LPROD)->first();
-        //     $location = Location::where('code', $iliVaue->LLOC)->first();
-        //     if ($item !== null && $location !== null) {
-
-        //         $inventoryItem = Inventory::where([
-        //             ['item_id', $item->id],
-        //             ['location_id', $location->id]
-        //         ])
-        //             ->first();
-
-        //         if ($inventoryItem === null) {
-        //             Inventory::storeInventory($item->id, 0, $location->id, 0);
-        //         }
-        //     }
-        // }
-
-        foreach ($ili as $key => $iliVaue) {
-            $item = Item::where('item_number', $iliVaue->LPROD)->first();
-            $location = Location::where('code', $iliVaue->LLOC)->first();
-
-            if ($item !== null && $location !== null) {
-                $transaction = TransactionType::where('code', 'LIKE', '%O%')->first();
-
-                $data = Inventory::where(
-                    [
-                        ['item_id', $item->id],
-                        ['location_id', $location->id]
-                    ]
-                )->first();
-
-                if ($data !== null) {
-                    if ($data->item->itemClass->code == 'S1') {
-                        Input::storeOpeningConsignment($item->id,  $iliVaue->LOPB, $transaction->id, $location->id);
-
-                        $data->update(['opening_balance' => $iliVaue->LOPB]);
-                    } else if ($data->item->itemClass->code == 'P0' || $data->item->itemClass->code == 'P1' || $data->item->itemClass->code == 'P2') {
-                        InputSupplier::storeOpeningSupplier($item->id,  $iliVaue->LOPB, $transaction->id, $location->id);
-
-                        $data->update(['opening_balance' => $iliVaue->LOPB]);
-                    } else if ($data->item->itemClass->code == 'G0' || $data->item->itemClass->code == 'G1') {
-                        InputSupplier::storeOpeningSupplier($item->id,  $iliVaue->LOPB, $transaction->id, $location->id);
-
-                        $data->update(['opening_balance' => $iliVaue->LOPB]);
-                    } else {
-                        $data->update(['opening_balance' => $iliVaue->LOPB]);
-                    }
-                } else {
-                    $data = Inventory::create(
-                        [
-                            'item_id' => $item->id,
-                            'location_id' => $location->id,
-                            'opening_balance' => $iliVaue->LOPB,
-                        ]
-                    );
-
-                    if ($data->item->itemClass->code == 'S1') {
-                        $input = Input::storeOpeningConsignment($item->id, $iliVaue->LOPB, $transaction->id, $location->id);
-                    } else if ($data->item->itemClass->code == 'P0' || $data->item->itemClass->code == 'P1' || $data->item->itemClass->code == 'P2') {
-                        $input = InputSupplier::storeOpeningSupplier($item->id,  $iliVaue->LOPB, $transaction->id, $location->id);
-                    } else if ($data->item->itemClass->code == 'G0' || $data->item->itemClass->code == 'G1') {
-                        $input = InputSupplier::storeOpeningSupplier($item->id,  $iliVaue->LOPB, $transaction->id, $location->id);
-                    }
-                }
-            } else {
-                Log::info("Item: " . $iliVaue->LPROD . "Locación: " . $iliVaue->LLOC);
-            }
-        }
         return redirect('inventory');
     }
 
