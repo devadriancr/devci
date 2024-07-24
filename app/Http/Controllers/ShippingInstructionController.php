@@ -166,7 +166,6 @@ class ShippingInstructionController extends Controller
         $file = $request->file('import_file');
         $import = new ShippingInstructionImport;
 
-        // Valores predeterminados
         $response = 'success';
         $msg = '';
         $totalRows = 0;
@@ -179,17 +178,6 @@ class ShippingInstructionController extends Controller
             $processedRows = $import->getProcessedRows();
             $invalidRows = $import->getInvalidRows();
 
-            if (count($invalidRows) > 0) {
-                $filePath = storage_path('app/invalid_rows.txt');
-                $fileContent = '';
-
-                foreach ($invalidRows as $row) {
-                    $fileContent .= implode(',', $row) . "\n";
-                }
-
-                file_put_contents($filePath, $fileContent);
-            }
-
             $containers = ShippingInstruction::query()
                 ->select('container', 'arrival_date', 'arrival_time')
                 ->where('status', true)
@@ -201,8 +189,8 @@ class ShippingInstructionController extends Controller
                     Container::storeContainer($container->container, $container->arrival_date, $container->arrival_time);
                     $response = $processedRows < $totalRows ? 'warning' : 'success';
                     $msg = $processedRows < $totalRows
-                        ? "Advertencia: Solo se cargaron $processedRows de $totalRows registros. Fecha de carga: " . now()->format('d/m/Y')
-                        : "¡Éxito! Se cargaron correctamente $processedRows de $totalRows registros. Fecha de carga: " . now()->format('d/m/Y');
+                        ? "Solo se cargaron $processedRows de $totalRows registros."
+                        : "Se cargaron correctamente $processedRows de $totalRows registros.";
                 } else {
                     $response = 'warning';
                     $msg = "Error al Cargar Documento. Registros Procesados: $processedRows/$totalRows";

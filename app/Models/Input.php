@@ -73,7 +73,7 @@ class Input extends Model
      */
     public function deliveryproduction(): BelongsTo
     {
-        return $this->belongsTo(delveryproduction::class);
+        return $this->belongsTo(DeliveryProduction::class);
     }
 
     /**
