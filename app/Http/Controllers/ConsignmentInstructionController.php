@@ -17,6 +17,7 @@ use App\Models\YH003;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
 
 class ConsignmentInstructionController extends Controller
@@ -26,10 +27,7 @@ class ConsignmentInstructionController extends Controller
      */
     public function consignment_container()
     {
-        $containers = Container::where('status', '=', 1)
-            ->orderBy('arrival_date', 'ASC')
-            ->orderBy('arrival_time', 'ASC')
-            ->get();
+        $containers = Container::query()->where('status', '=', 1)->orderBy('arrival_date', 'ASC')->orderBy('arrival_time', 'ASC')->get();
 
         return view('consignment-instruction.container', ['containers' => $containers]);
     }
@@ -39,6 +37,13 @@ class ConsignmentInstructionController extends Controller
      */
     public function consignment_create(Request $request)
     {
+        $request->validate([
+            'container' => ['required', 'exists:containers,id']
+        ], [
+            'container.required' => 'Debe seleccionar un contenedor.',
+            'container.exists' => 'El contenedor seleccionado no es válido.'
+        ]);
+
         $container = Container::findOrFail($request->container);
         $consignments = ConsignmentInstruction::where('container_id', '=', $request->container)->orderBy('created_at', 'DESC')->paginate(5);
 
@@ -50,26 +55,31 @@ class ConsignmentInstructionController extends Controller
      */
     public function consignment_store(Request $request)
     {
-        $request->validate([
+        $validated = $request->validate([
             'code_qr' => ['required', 'string', 'min:160'],
             'container_id' => ['required', 'numeric'],
         ]);
 
-        $dataRequest = strtoupper($request->code_qr);
+        $dataRequest = strtoupper($validated['code_qr']);
+        $dataParts = explode(',', $dataRequest);
 
-        list($a, $b, $c, $d, $e, $f, $g, $h, $i, $j, $part_qty, $supplier, $m, $serial, $o, $p, $q, $r, $s, $t, $u, $v, $w, $x, $y, $z, $part_no) = explode(',', $dataRequest);
+        $part_qty = $dataParts[10];
+        $supplier = $dataParts[11];
+        $serial = $dataParts[13];
+        $part_no = end($dataParts);
 
         $data = ConsignmentInstruction::where(
             [
                 ['supplier', $supplier],
                 ['serial', $serial],
                 ['part_no', 'LIKE', $part_no . '%'],
-                ['container_id', $request->container_id]
+                ['container_id', $validated['container_id']]
             ]
         )->first();
 
-        if ($data === null) {
-            $container = Container::find($request->container_id);
+        if (is_null($data)) {
+            $container = Container::find($validated['container_id']);
+
             $shipping = ShippingInstruction::query()
                 ->where(
                     [
@@ -80,18 +90,20 @@ class ConsignmentInstructionController extends Controller
                         ['serial', 'LIKE', $supplier . $serial]
                     ]
                 )->first();
-            if ($shipping !== null) {
-                ConsignmentInstruction::storeConsignment($serial, $supplier, $part_qty, $part_no, 'L60', $request->container_id);
-                $msg = 'Registro Exitoso';
+
+            if ($shipping) {
+                ConsignmentInstruction::storeConsignment($serial, $supplier, $part_qty, $part_no, 'L60', $validated['container_id']);
+                $msg = 'Código QR guardado exitosamente.';
                 $status = 'success';
             } else {
-                $msg = 'Este Item no Pertenece al Contenedor';
+                $msg = 'El ítem no pertenece al contenedor';
                 $status = 'warning';
             }
         } else {
-            $msg = 'Registro Duplicado';
+            $msg = 'El Código QR ya ha sido registrado.';
             $status = 'warning';
         }
+
         return redirect()->back()->with($status, $msg);
     }
 
@@ -408,134 +420,123 @@ class ConsignmentInstructionController extends Controller
     /**
      *
      */
+
     public function consigmentBarcodeIndex()
     {
-        $mcmh = Input::where('type_consignment', 'LIKE', 'MC')
-            ->orWhere('type_consignment', 'LIKE', 'MH')
-            ->where(
-                    [
-                        ['location_id', '=', 328],
-                        ['transaction_type_id', '=', 82]
-                    ]
-                )
-            ->orderBy('created_at', 'DESC')
+        $mcmh = DB::table('consignment_data')
+            ->orderBy('max_id', 'DESC')
             ->paginate(5);
 
         return view('consignment-instruction.consignment-barcode', ['mcmh' => $mcmh]);
     }
 
+
+    /**
+     *
+     */
     public function consignmentBarcodeStore(Request $request)
     {
-        $request->validate([
-            'scan' => ['required', 'string', 'max:161', 'min:30']
+        $request->validate(
+            [
+                'code_qr' => ['required', 'string', 'min:30', 'max:35']
+            ],
+            [
+                'code_qr.required' => 'El campo Código de Barras es obligatorio.',
+                'code_qr.string' => 'El campo Código de Barras debe ser una cadena de texto.',
+                'code_qr.max' => 'El campo Código de Barras no puede tener más de 35 caracteres.',
+                'code_qr.min' => 'El campo Código de Barras debe tener al menos 30 caracteres.',
+            ]
+        );
+
+        $code = strtoupper($request->code_qr);
+
+        // if (strlen($code) < 30 || strlen($code) > 35) {
+        //     return redirect()->back()->with('warning', 'El Código de Material no es Válido.');
+        // }
+
+        $no_order = substr($code, 0, 7);
+        $serial = substr($code, 0, 10);
+        $part_no = substr($code, 10, 10);
+        $snp = substr($code, 20, 6);
+        $supplier = substr($code, 26, 5);
+        $type = substr($code, 31, 2);
+
+        $input = $this->findExistingInput($supplier, $serial, $snp, $type, $no_order);
+
+        if ($input) {
+            return redirect()->back()->with('warning', 'Material Registrado Anteriormente');
+        }
+
+        $item = Item::where('item_number', 'LIKE', $part_no . '%')->firstOrFail();
+        $transaction = TransactionType::where('code', 'LIKE', 'U3')->firstOrFail();
+        $location = Location::where('code', 'LIKE', 'L60%')->firstOrFail();
+
+        $input = Input::create([
+            'no_order' => $no_order,
+            'supplier' => $supplier,
+            'serial' => $serial,
+            'item_id' => $item->id,
+            'item_quantity' => $snp,
+            'type_consignment' => $type,
+            'transaction_type_id' => $transaction->id,
+            'location_id' => $location->id,
+            'user_id' => Auth::id()
         ]);
 
-        $code = strtoupper($request->scan);
+        $this->storeYH003($item, $supplier, $serial, $snp);
 
-        if (strlen($code) >= 30) {
-            $serial = substr($code, 0, 10);
-            $part_no = substr($code, 10, 10);
-            $snp = substr($code, 20, 6);
-            $supplier = substr($code, 26, 5);
-            $type = substr($code, 31, 2);
+        $this->updateInventory($item->id, $location->id, $snp);
 
-            $input = Input::where(
-                [
-                    ['supplier', 'LIKE', $supplier],
-                    ['serial', 'LIKE', $serial],
-                    ['item_quantity', $snp],
-                    ['type_consignment', 'LIKE', $type],
-                ]
-            )->first();
-
-            if ($input === null) {
-
-                // StoreConsignmentMcMhJob::dispatch($serial, $part_no, $snp, $supplier, $type);
-
-                $item = Item::where('item_number', 'LIKE', $part_no . '%')->first();
-                $transaction = TransactionType::where('code', 'LIKE', 'U3')->first();
-                $location = Location::where('code', 'LIKE', 'L60%')->first();
-
-                $input = Input::create([
-                    'supplier' => $supplier,
-                    'serial' => $serial,
-                    'item_id' => $item->id,
-                    'item_quantity' => $snp,
-                    'type_consignment' => $type,
-                    'transaction_type_id' => $transaction->id,
-                    'location_id' => $location->id,
-                    'user_id' => Auth::id()
-                ]);
-
-                $yh003 = YH003::query()->insert([
-                    'H3PROD' => $item->item_number,
-                    'H3SUCD' => $supplier,
-                    'H3SENO' => $serial,
-                    'H3RQTY' => $snp,
-                    'H3CUSR' => Auth::user()->user_infor ?? '',
-                    'H3RDTE' => Carbon::parse($input->created_at)->format('Ymd'),
-                    'H3RTIM' => Carbon::parse($input->created_at)->format('His')
-                ]);
-
-                $inventory = Inventory::where([
-                    ['item_id', '=', $item->id],
-                    ['location_id', '=', $location->id]
-                ])->first();
-
-
-                if ($inventory !== null) {
-                    $qty = $inventory->quantity ?? 0;
-
-                    $sum = 0;
-                    $sum = $snp + $qty;
-
-                    $inventory->update(['quantity' => $sum]);
-                } else {
-                    $inventory = Inventory::create([
-                        'item_id' => $item->id,
-                        'location_id' => $location->id,
-                        'quantity' => $snp
-                    ]);
-                }
-
-                $respone = 'success';
-                $mesage = 'El Registro del Material se Hizo Correctamente.';
-            } else {
-                $respone = 'warning';
-                $mesage = 'Material Registrado Anteriormente';
-            }
-        }
-        //
-        // else if (strlen($code) == 161) {
-        //     list($a, $b, $c, $d, $e, $f, $g, $h, $i, $j, $snp, $supplier, $m, $serial, $o, $p, $q, $r, $s, $t, $u, $v, $w, $x, $y, $z, $part_no) = explode(',', $code);
-
-        //     $input = Input::where(
-        //         [
-        //             ['supplier', 'LIKE', $supplier],
-        //             ['serial', 'LIKE', $serial],
-        //             ['item_quantity', $snp],
-        //             ['type_consignment', 'LIKE', 'MZ'],
-        //         ]
-        //     )->first();
-
-        //     if ($input === null) {
-        //         $type = 'MZ';
-        //         StoreConsignmentMzJob::dispatch($serial, $part_no, $snp, $supplier, $type);
-        //         $respone = 'success';
-        //         $mesage = 'El Registro del Material se Hizo Correctamente.';
-        //     } else {
-        //         $respone = 'warning';
-        //         $mesage = 'Material Registrado Anteriormente';
-        //     }
-        // }
-        //
-        else {
-            $respone = 'warning';
-            $mesage = 'El Codigo de Material no es Valido.';
-        }
-
-        return redirect()->back()->with($respone, $mesage);
+        return redirect()->back()->with('success', 'El Registro del Material se Hizo Correctamente.');
     }
+
+    private function findExistingInput($supplier, $serial, $snp, $type, $no_order)
+    {
+        $sixMonthsAgo = Carbon::now()->subMonths(6)->format('Ymd H:i:s.v');
+
+        return Input::query()
+            ->where([
+                ['supplier', 'LIKE', $supplier],
+                ['serial', 'LIKE', $serial],
+                ['item_quantity', $snp],
+                ['type_consignment', 'LIKE', $type],
+                ['no_order', 'LIKE', $no_order]
+            ])
+            ->where('created_at', '>=', $sixMonthsAgo)
+            ->first();
+    }
+
+    private function storeYH003($item, $supplier, $serial, $snp)
+    {
+        YH003::query()->insert([
+            'H3PROD' => $item->item_number,
+            'H3SUCD' => $supplier,
+            'H3SENO' => $serial,
+            'H3RQTY' => $snp,
+            'H3CUSR' => Auth::user()->user_infor ?? '',
+            'H3RDTE' => now()->format('Ymd'),
+            'H3RTIM' => now()->format('His')
+        ]);
+    }
+
+    private function updateInventory($itemId, $locationId, $quantity)
+    {
+        $inventory = Inventory::where([
+            ['item_id', '=', $itemId],
+            ['location_id', '=', $locationId]
+        ])->first();
+
+        if ($inventory) {
+            $inventory->increment('quantity', $quantity);
+        } else {
+            Inventory::create([
+                'item_id' => $itemId,
+                'location_id' => $locationId,
+                'quantity' => $quantity
+            ]);
+        }
+    }
+
 
     /**
      * Display a listing of the resource.

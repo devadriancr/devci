@@ -37,14 +37,8 @@ class ConsignmentInstruction extends Model
     /**
      *
      */
-    public static function storeConsignment(
-        string $serial,
-        string $supplier,
-        int $part_qty,
-        string $part_no,
-        string $location,
-        int $containerId
-    ) {
+    public static function storeConsignment(string $serial, string $supplier, int $part_qty, string $part_no, string $location, int $containerId)
+    {
         $item = Item::where('item_number', 'LIKE', '%' . $part_no . '%')->firstOrFail();
         $cont = Container::where('id', $containerId)->firstOrFail();
         $tran = TransactionType::where('code', '=', 'U3')->firstOrFail();
