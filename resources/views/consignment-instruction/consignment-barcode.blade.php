@@ -1,13 +1,12 @@
-<x-app-layout title="Consigna">
+<x-app-layout title="Consigna MC/MH">
     <div class="container grid px-6 mx-auto">
-        <h2 class="my-6 text-2xl font-semibold text-gray-700 dark:text-gray-200">
-            Recepción Consigna MC/MH
-        </h2>
-
-        <div class="px-4 py-3 mb-8 bg-white rounded-lg shadow-md dark:bg-gray-800">
+        <div class="px-4 py-3 my-4 bg-white rounded-lg shadow-md dark:bg-gray-800">
             <form id="consignment-form" action="{{ route('consigment-instruction.consignment-barcode-store') }}" method="post">
                 @csrf
                 <div>
+                    <h4 class="my-2 text-center text-lg uppercase font-bold text-gray-600 dark:text-gray-300">
+                        {{ __('Consigna MC/MH') }}
+                    </h4>
                     <label class="block text-sm my-2">
                         <span class="text-gray-700 dark:text-gray-400">{{ __('Ingrese Código de Barras') }}</span>
                         <input id="code_qr" name="code_qr" class="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:outline-none form-input {{ session('success') ? 'border-green-600 focus:border-green-400 focus:shadow-outline-green' : '' }} {{ session('warning') ? 'border-red-600 focus:border-red-400 focus:shadow-outline-red' : '' }}" autocomplete="off" />
@@ -51,34 +50,34 @@
                 <table class="w-full whitespace-no-wrap">
                     <thead>
                         <tr class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b dark:border-gray-700 bg-gray-50 dark:text-gray-400 dark:bg-gray-800">
-                            <th class="px-4 py-3">Serial</th>
+                            <th class="px-4 py-3">No Orden</th>
                             <th class="px-4 py-3">No Parte</th>
+                            <th class="px-4 py-3">Conteo</th>
                             <th class="px-4 py-3">Cantidad</th>
-                            <th class="px-4 py-3">Proveedor</th>
+                            <th class="px-4 py-3">Proveedores</th>
                             <th class="px-4 py-3">Tipo de Consigna</th>
-                            <th class="px-4 py-3">Fecha de Registro</th>
                         </tr>
                     </thead>
                     <tbody class="bg-white uppercase divide-y dark:divide-gray-700 dark:bg-gray-800">
                         @foreach ($mcmh as $consignment)
                         <tr class="text-gray-700 dark:text-gray-400">
                             <td class="px-4 py-3 text-sm">
-                                {{ $consignment->serial }}
+                                {{ $consignment->no_order }}
                             </td>
                             <td class="px-4 py-3 text-sm">
-                                {{ $consignment->item->item_number }}
+                                {{ $consignment->item_number }}
                             </td>
                             <td class="px-4 py-3 text-sm">
-                                {{ $consignment->item_quantity }}
+                                {{ $consignment->row_count }}
                             </td>
                             <td class="px-4 py-3 text-sm">
-                                {{ $consignment->supplier }}
+                                {{ $consignment->total_quantity }}
+                            </td>
+                            <td class="px-4 py-3 text-sm">
+                                {{ $consignment->suppliers }}
                             </td>
                             <td class="px-4 py-3 text-sm">
                                 {{ $consignment->type_consignment }}
-                            </td>
-                            <td class="px-4 py-3 text-sm">
-                                {{ $consignment->created_at }}
                             </td>
                         </tr>
                         @endforeach
@@ -87,7 +86,7 @@
             </div>
             <div class="grid px-4 py-3 text-xs font-semibold tracking-wide text-gray-500 uppercase border-t dark:border-gray-700 bg-gray-50 sm:grid-cols-9 dark:text-gray-400 dark:bg-gray-800">
                 <span class="flex items-center col-span-3">
-                    <!-- Mostrando {{ $mcmh->firstItem() }} - {{ $mcmh->lastItem() }} de {{ $mcmh->total()}} -->
+                    Mostrando {{ $mcmh->firstItem() }} - {{ $mcmh->lastItem() }} de {{ $mcmh->total() }}
                 </span>
                 <span class="col-span-2"></span>
                 <!-- Pagination -->

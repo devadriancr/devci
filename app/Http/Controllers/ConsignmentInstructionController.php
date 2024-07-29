@@ -17,6 +17,7 @@ use App\Models\YH003;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
 
 class ConsignmentInstructionController extends Controller
@@ -419,21 +420,16 @@ class ConsignmentInstructionController extends Controller
     /**
      *
      */
+
     public function consigmentBarcodeIndex()
     {
-        $mcmh = Input::where('type_consignment', 'LIKE', 'MC')
-            ->orWhere('type_consignment', 'LIKE', 'MH')
-            ->where(
-                [
-                    ['location_id', '=', 328],
-                    ['transaction_type_id', '=', 82]
-                ]
-            )
-            ->orderBy('created_at', 'DESC')
+        $mcmh = DB::table('consignment_data')
+            ->orderBy('max_id', 'DESC')
             ->paginate(5);
 
         return view('consignment-instruction.consignment-barcode', ['mcmh' => $mcmh]);
     }
+
 
     /**
      *
@@ -454,17 +450,18 @@ class ConsignmentInstructionController extends Controller
 
         $code = strtoupper($request->code_qr);
 
-        if (strlen($code) < 30 || strlen($code) > 35) {
-            return redirect()->back()->with('warning', 'El Código de Material no es Válido.');
-        }
+        // if (strlen($code) < 30 || strlen($code) > 35) {
+        //     return redirect()->back()->with('warning', 'El Código de Material no es Válido.');
+        // }
 
+        $no_order = substr($code, 0, 7);
         $serial = substr($code, 0, 10);
         $part_no = substr($code, 10, 10);
         $snp = substr($code, 20, 6);
         $supplier = substr($code, 26, 5);
         $type = substr($code, 31, 2);
 
-        $input = $this->findExistingInput($supplier, $serial, $snp, $type);
+        $input = $this->findExistingInput($supplier, $serial, $snp, $type, $no_order);
 
         if ($input) {
             return redirect()->back()->with('warning', 'Material Registrado Anteriormente');
@@ -475,6 +472,7 @@ class ConsignmentInstructionController extends Controller
         $location = Location::where('code', 'LIKE', 'L60%')->firstOrFail();
 
         $input = Input::create([
+            'no_order' => $no_order,
             'supplier' => $supplier,
             'serial' => $serial,
             'item_id' => $item->id,
@@ -492,14 +490,20 @@ class ConsignmentInstructionController extends Controller
         return redirect()->back()->with('success', 'El Registro del Material se Hizo Correctamente.');
     }
 
-    private function findExistingInput($supplier, $serial, $snp, $type)
+    private function findExistingInput($supplier, $serial, $snp, $type, $no_order)
     {
-        return Input::where([
-            ['supplier', 'LIKE', $supplier],
-            ['serial', 'LIKE', $serial],
-            ['item_quantity', $snp],
-            ['type_consignment', 'LIKE', $type],
-        ])->first();
+        $sixMonthsAgo = Carbon::now()->subMonths(6)->format('Ymd H:i:s.v');
+
+        return Input::query()
+            ->where([
+                ['supplier', 'LIKE', $supplier],
+                ['serial', 'LIKE', $serial],
+                ['item_quantity', $snp],
+                ['type_consignment', 'LIKE', $type],
+                ['no_order', 'LIKE', $no_order]
+            ])
+            ->where('created_at', '>=', $sixMonthsAgo)
+            ->first();
     }
 
     private function storeYH003($item, $supplier, $serial, $snp)

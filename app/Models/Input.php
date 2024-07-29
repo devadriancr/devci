@@ -25,7 +25,8 @@ class Input extends Model
         'location_id',
         'travel_id',
         'user_id',
-        'type_consignment'
+        'type_consignment',
+        'no_order'
     ];
 
     /**
