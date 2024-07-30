@@ -166,36 +166,15 @@ class ShippingInstructionController extends Controller
         $file = $request->file('import_file');
         $import = new ShippingInstructionImport;
 
-        $response = 'success';
-        $msg = '';
-        $totalRows = 0;
-        $processedRows = 0;
-
         try {
             Excel::import($import, $file);
 
             $totalRows = $import->getTotalRows();
             $processedRows = $import->getProcessedRows();
-            $invalidRows = $import->getInvalidRows();
-
-            $containers = ShippingInstruction::query()
-                ->select('container', 'arrival_date', 'arrival_time')
-                ->where('status', true)
-                ->distinct()
-                ->get();
-
-            foreach ($containers as $container) {
-                if ($container->arrival_date != null && $container->arrival_time != null) {
-                    Container::storeContainer($container->container, $container->arrival_date, $container->arrival_time);
-                    $response = $processedRows < $totalRows ? 'warning' : 'success';
-                    $msg = $processedRows < $totalRows
-                        ? "Solo se cargaron $processedRows de $totalRows registros."
-                        : "Se cargaron correctamente $processedRows de $totalRows registros.";
-                } else {
-                    $response = 'warning';
-                    $msg = "Error al Cargar Documento. Registros Procesados: $processedRows/$totalRows";
-                }
-            }
+            $response = $processedRows < $totalRows ? 'warning' : 'success';
+            $msg = $processedRows < $totalRows
+                ? "Solo se cargaron $processedRows de $totalRows registros."
+                : "Se cargaron correctamente $processedRows de $totalRows registros.";
         } catch (\Exception $e) {
             $response = 'error';
             $msg = "Error al Importar el Archivo: " . $e->getMessage();
@@ -203,8 +182,6 @@ class ShippingInstructionController extends Controller
 
         return redirect()->back()->with([
             $response => $msg,
-            'totalRows' => $totalRows,
-            'processedRows' => $processedRows,
         ]);
     }
 
