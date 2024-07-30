@@ -3,8 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Exports\ConsignmentInstructionExport;
-use App\Jobs\StoreConsignmentMcMhJob;
-use App\Jobs\StoreConsignmentMzJob;
+use App\Imports\QRCodeConsignmentImport;
 use App\Models\ConsignmentInstruction;
 use App\Models\Container;
 use App\Models\Input;
@@ -560,5 +559,23 @@ class ConsignmentInstructionController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    public function importQRCodeMy(Request $request)
+    {
+        $request->validate([
+            'import_file' => 'required|file|mimes:xlsx,csv,xls',
+        ]);
+
+        $file = $request->file('import_file');
+
+        Excel::import(new QRCodeConsignmentImport, $file);
+
+        $summary = session()->pull('import_summary', ['total' => 0, 'imported' => 0]);
+
+        return redirect()->back()->with([
+            'success' => 'Importación completada.',
+            'import_summary' => $summary
+        ]);
     }
 }
