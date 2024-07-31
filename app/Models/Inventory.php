@@ -41,4 +41,25 @@ class Inventory extends Model
             ]
         );
     }
+
+    /**
+     *
+     */
+    public static function updateInventory($itemId, $locationId, $quantity)
+    {
+        $inventory = Inventory::where([
+            ['item_id', '=', $itemId],
+            ['location_id', '=', $locationId]
+        ])->first();
+
+        if ($inventory) {
+            $inventory->increment('quantity', $quantity);
+        } else {
+            Inventory::create([
+                'item_id' => $itemId,
+                'location_id' => $locationId,
+                'quantity' => $quantity
+            ]);
+        }
+    }
 }

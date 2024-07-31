@@ -3,8 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Exports\ConsignmentInstructionExport;
-use App\Jobs\StoreConsignmentMcMhJob;
-use App\Jobs\StoreConsignmentMzJob;
+use App\Imports\QRCodeConsignmentImport;
 use App\Models\ConsignmentInstruction;
 use App\Models\Container;
 use App\Models\Input;
@@ -450,10 +449,6 @@ class ConsignmentInstructionController extends Controller
 
         $code = strtoupper($request->code_qr);
 
-        // if (strlen($code) < 30 || strlen($code) > 35) {
-        //     return redirect()->back()->with('warning', 'El Código de Material no es Válido.');
-        // }
-
         $no_order = substr($code, 0, 7);
         $serial = substr($code, 0, 10);
         $part_no = substr($code, 10, 10);
@@ -461,7 +456,7 @@ class ConsignmentInstructionController extends Controller
         $supplier = substr($code, 26, 5);
         $type = substr($code, 31, 2);
 
-        $input = $this->findExistingInput($supplier, $serial, $snp, $type, $no_order);
+        $input = Input::findExistingInput($supplier, $serial, $snp, $type, $no_order);
 
         if ($input) {
             return redirect()->back()->with('warning', 'Material Registrado Anteriormente');
@@ -483,60 +478,12 @@ class ConsignmentInstructionController extends Controller
             'user_id' => Auth::id()
         ]);
 
-        $this->storeYH003($item, $supplier, $serial, $snp);
+        YH003::store($item, $supplier, $serial, $snp);
 
-        $this->updateInventory($item->id, $location->id, $snp);
+        Inventory::updateInventory($item->id, $location->id, $snp);
 
         return redirect()->back()->with('success', 'El Registro del Material se Hizo Correctamente.');
     }
-
-    private function findExistingInput($supplier, $serial, $snp, $type, $no_order)
-    {
-        $sixMonthsAgo = Carbon::now()->subMonths(6)->format('Ymd H:i:s.v');
-
-        return Input::query()
-            ->where([
-                ['supplier', 'LIKE', $supplier],
-                ['serial', 'LIKE', $serial],
-                ['item_quantity', $snp],
-                ['type_consignment', 'LIKE', $type],
-                ['no_order', 'LIKE', $no_order]
-            ])
-            ->where('created_at', '>=', $sixMonthsAgo)
-            ->first();
-    }
-
-    private function storeYH003($item, $supplier, $serial, $snp)
-    {
-        YH003::query()->insert([
-            'H3PROD' => $item->item_number,
-            'H3SUCD' => $supplier,
-            'H3SENO' => $serial,
-            'H3RQTY' => $snp,
-            'H3CUSR' => Auth::user()->user_infor ?? '',
-            'H3RDTE' => now()->format('Ymd'),
-            'H3RTIM' => now()->format('His')
-        ]);
-    }
-
-    private function updateInventory($itemId, $locationId, $quantity)
-    {
-        $inventory = Inventory::where([
-            ['item_id', '=', $itemId],
-            ['location_id', '=', $locationId]
-        ])->first();
-
-        if ($inventory) {
-            $inventory->increment('quantity', $quantity);
-        } else {
-            Inventory::create([
-                'item_id' => $itemId,
-                'location_id' => $locationId,
-                'quantity' => $quantity
-            ]);
-        }
-    }
-
 
     /**
      * Display a listing of the resource.
@@ -612,5 +559,23 @@ class ConsignmentInstructionController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    public function importQRCodeMy(Request $request)
+    {
+        $request->validate([
+            'import_file' => 'required|file|mimes:xlsx,csv,xls',
+        ]);
+
+        $file = $request->file('import_file');
+
+        Excel::import(new QRCodeConsignmentImport, $file);
+
+        $summary = session()->pull('import_summary', ['total' => 0, 'imported' => 0]);
+
+        return redirect()->back()->with([
+            'success' => 'Importación completada.',
+            'import_summary' => $summary
+        ]);
     }
 }

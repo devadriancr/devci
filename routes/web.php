@@ -185,6 +185,8 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function () {
     Route::get('consigment-barcode-index', [ConsignmentInstructionController::class, 'consigmentBarcodeIndex'])->name('consigment-instruction.consigment-barcode-index');
     Route::post('consignment-barcode-store', [ConsignmentInstructionController::class, 'consignmentBarcodeStore'])->name('consigment-instruction.consignment-barcode-store');
 
+    Route::post('import-qr-code-my', [ConsignmentInstructionController::class, 'importQRCodeMy'])->name('consigment-instruction.import-qr-my');
+
     /**
      * Route Inventory
      */

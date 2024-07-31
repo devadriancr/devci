@@ -164,4 +164,23 @@ class Input extends Model
             ]
         );
     }
+
+    /**
+     *
+     */
+    public static function findExistingInput($supplier, $serial, $snp, $type, $no_order)
+    {
+        $sixMonthsAgo = Carbon::now()->subMonths(6)->format('Ymd H:i:s.v');
+
+        return Input::query()
+            ->where([
+                ['supplier', 'LIKE', $supplier],
+                ['serial', 'LIKE', $serial],
+                ['item_quantity', $snp],
+                ['type_consignment', 'LIKE', $type],
+                ['no_order', 'LIKE', $no_order]
+            ])
+            ->where('created_at', '>=', $sixMonthsAgo)
+            ->first();
+    }
 }
