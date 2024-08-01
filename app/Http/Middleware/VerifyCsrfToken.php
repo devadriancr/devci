@@ -23,12 +23,6 @@ class VerifyCsrfToken extends Middleware
      */
     protected function tokensMatch($request)
     {
-        $tokensMatch = parent::tokensMatch($request);
-
-        if ($tokensMatch) {
-            $request->session()->regenerateToken();
-        }
-
-        return $tokensMatch;
+       //
     }
 }

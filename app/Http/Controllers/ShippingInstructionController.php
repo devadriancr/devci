@@ -12,6 +12,7 @@ use App\Models\Location;
 use App\Models\ShippingInstruction;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
 
 class ShippingInstructionController extends Controller
@@ -166,8 +167,22 @@ class ShippingInstructionController extends Controller
         $file = $request->file('import_file');
         $import = new ShippingInstructionImport;
 
+        DB::beginTransaction();
+
         try {
             Excel::import($import, $file);
+
+            $containers = ShippingInstruction::query()
+                ->select('container', 'arrival_date', 'arrival_time')
+                ->where('status', true)
+                ->whereNotNull('arrival_date')
+                ->whereNotNull('arrival_time')
+                ->distinct()
+                ->get();
+
+            foreach ($containers as $container) {
+                Container::storeContainer($container->container, $container->arrival_date, $container->arrival_time);
+            }
 
             $totalRows = $import->getTotalRows();
             $processedRows = $import->getProcessedRows();
@@ -175,7 +190,10 @@ class ShippingInstructionController extends Controller
             $msg = $processedRows < $totalRows
                 ? "Solo se cargaron $processedRows de $totalRows registros."
                 : "Se cargaron correctamente $processedRows de $totalRows registros.";
+
+            DB::commit();
         } catch (\Exception $e) {
+            DB::rollBack();
             $response = 'error';
             $msg = "Error al Importar el Archivo: " . $e->getMessage();
         }
