@@ -52,6 +52,7 @@
                         <tr class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b dark:border-gray-700 bg-gray-50 dark:text-gray-400 dark:bg-gray-800">
                             <th class="px-4 py-3">No Orden</th>
                             <th class="px-4 py-3">No Parte</th>
+                            <th class="px-4 py-3">SNP</th>
                             <th class="px-4 py-3">Conteo</th>
                             <th class="px-4 py-3">Cantidad</th>
                             <th class="px-4 py-3">Proveedores</th>
@@ -68,10 +69,13 @@
                                 {{ $consignment->item_number }}
                             </td>
                             <td class="px-4 py-3 text-sm">
+                                {{  intval($consignment->total_quantity / $consignment->row_count)  }}
+                            </td>
+                            <td class="px-4 py-3 text-sm">
                                 {{ $consignment->row_count }}
                             </td>
                             <td class="px-4 py-3 text-sm">
-                                {{ $consignment->total_quantity }}
+                                {{ intval($consignment->total_quantity) }}
                             </td>
                             <td class="px-4 py-3 text-sm">
                                 {{ $consignment->suppliers }}
