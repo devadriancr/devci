@@ -419,16 +419,32 @@ class ConsignmentInstructionController extends Controller
     /**
      *
      */
+    function consignmentBarcodeStart()
+    {
+        session()->increment('scan_count');
 
+        return redirect()->back();
+    }
+
+    /**
+     *
+     */
     public function consigmentBarcodeIndex()
     {
+        if (is_null(session('scan_count'))) {
+            session(['scan_count' => 0]);
+        }
+
+        if (session('scan_count') == 0) {
+            session(['scan_count' => 0]);
+        }
+
         $mcmh = DB::table('consignment_data')
             ->orderBy('max_id', 'DESC')
             ->paginate(5);
 
         return view('consignment-instruction.consignment-barcode', ['mcmh' => $mcmh]);
     }
-
 
     /**
      *
@@ -482,7 +498,19 @@ class ConsignmentInstructionController extends Controller
 
         Inventory::updateInventory($item->id, $location->id, $snp);
 
+        session()->increment('scan_count');
+
         return redirect()->back()->with('success', 'El Registro del Material se Hizo Correctamente.');
+    }
+
+    /**
+     *
+     */
+    function consignmentBarcodeFinish()
+    {
+        session(['scan_count' => 0]);
+
+        return redirect()->back();
     }
 
     /**
