@@ -21,6 +21,7 @@ use App\Http\Controllers\ManualAdjustments;
 use App\Http\Controllers\OutputController;
 use App\Http\Controllers\RequestListController;
 use App\Http\Controllers\SupplierController;
+use App\Models\ConsignmentInstruction;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -182,8 +183,10 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function () {
     Route::post('barcode', [ConsignmentInstructionController::class, 'barcode'])->name('consigment-instruction.barcode');
     Route::post('store-barcode', [ConsignmentInstructionController::class, 'storeBarcode'])->name('consigment-instruction.store-barcode');
 
+    Route::get('consigment-barcode-start', [ConsignmentInstructionController::class, 'consignmentBarcodeStart'])->name('consigment-instruction.consigment-barcode-start');
     Route::get('consigment-barcode-index', [ConsignmentInstructionController::class, 'consigmentBarcodeIndex'])->name('consigment-instruction.consigment-barcode-index');
     Route::post('consignment-barcode-store', [ConsignmentInstructionController::class, 'consignmentBarcodeStore'])->name('consigment-instruction.consignment-barcode-store');
+    Route::get('consigment-barcode-finish', [ConsignmentInstructionController::class, 'consignmentBarcodeFinish'])->name('consigment-instruction.consigment-barcode-finish');
 
     Route::post('import-qr-code-my', [ConsignmentInstructionController::class, 'importQRCodeMy'])->name('consigment-instruction.import-qr-my');
 
