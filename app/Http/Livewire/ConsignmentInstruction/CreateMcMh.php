@@ -14,20 +14,33 @@ use Livewire\Component;
 class CreateMcMh extends Component
 {
     public $code_qr;
+    public $processing = false;
+    public $successMessage;
+    public $warningMessage;
+
+    protected $rules = [
+        'code_qr' => [
+            'required',
+            'string',
+            'min:30',
+            'max:35'
+        ],
+    ];
+
+    protected $messages = [
+        'code_qr.required' => 'El campo Código de Barras es obligatorio.',
+        'code_qr.string' => 'El campo Código de Barras debe ser una cadena de texto.',
+        'code_qr.max' => 'El campo Código de Barras no puede tener más de 35 caracteres.',
+        'code_qr.min' => 'El campo Código de Barras debe tener al menos 30 caracteres.',
+    ];
 
     public function save()
     {
-        // $request->validate(
-        //     [
-        //         'code_qr' => ['required', 'string', 'min:30', 'max:35']
-        //     ],
-        //     [
-        //         'code_qr.required' => 'El campo Código de Barras es obligatorio.',
-        //         'code_qr.string' => 'El campo Código de Barras debe ser una cadena de texto.',
-        //         'code_qr.max' => 'El campo Código de Barras no puede tener más de 35 caracteres.',
-        //         'code_qr.min' => 'El campo Código de Barras debe tener al menos 30 caracteres.',
-        //     ]
-        // );
+        $this->reset(['successMessage', 'warningMessage']);
+
+        $this->validate();
+
+        $this->processing = true;
 
         $code = strtoupper($this->code_qr);
 
@@ -41,7 +54,10 @@ class CreateMcMh extends Component
         $input = Input::findExistingInput($supplier, $serial, $snp, $type, $no_order);
 
         if ($input) {
-            return redirect()->back()->with('warning', 'Material Registrado Anteriormente');
+            $this->reset(['code_qr']);
+            $this->processing = false;
+            $this->warningMessage = 'Material Registrado Anteriormente';
+            return;
         }
 
         $item = Item::where('item_number', 'LIKE', $part_no . '%')->firstOrFail();
@@ -68,7 +84,8 @@ class CreateMcMh extends Component
 
         $this->emit('show-mc-mh');
 
-        // session()->increment('scan_count');
+        $this->successMessage = 'El Registro del Material se Hizo Correctamente.';
+        $this->processing = false;
     }
 
     public function render()
