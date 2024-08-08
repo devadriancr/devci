@@ -14,9 +14,14 @@ use Livewire\Component;
 class CreateMcMh extends Component
 {
     public $code_qr;
+    public $count = 0;
     public $processing = false;
     public $successMessage;
     public $warningMessage;
+
+    protected $listeners = [
+        'count-clean' => 'render',
+    ];
 
     protected $rules = [
         'code_qr' => [
@@ -86,10 +91,17 @@ class CreateMcMh extends Component
 
         $this->successMessage = 'El Registro del Material se Hizo Correctamente.';
         $this->processing = false;
+
+        $this->count++;
     }
 
     public function render()
     {
         return view('livewire.consignment-instruction.create-mc-mh');
+    }
+
+    public function countClean()
+    {
+        $this->reset(['count']);
     }
 }

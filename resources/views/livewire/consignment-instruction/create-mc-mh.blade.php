@@ -29,7 +29,12 @@
                 </label>
             </div>
 
-            <div class="flex flex-row justify-end">
+            <div class="flex flex-row justify-between">
+                <div>
+                    <h4 class="my-2 text-center text-lg uppercase font-bold text-gray-600 dark:text-gray-300">
+                        {{ __('Conteo de Escaneo') }} : {{ $count }}
+                    </h4>
+                </div>
                 <div>
                     <button type="submit"
                         class="flex items-center justify-between px-4 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple"

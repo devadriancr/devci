@@ -4,6 +4,7 @@
             {{ __('Consigna MC/MH') }}
         </h2>
 
+        @if ($scanEnabled)
         @livewire('consignment-instruction.create-mc-mh')
 
         <div class="w-full overflow-hidden rounded-lg shadow-xs">
@@ -40,9 +41,24 @@
                 <span class="col-span-2"></span>
                 <!-- Pagination -->
                 <span class="flex col-span-4 mt-2 sm:mt-auto sm:justify-end">
-                    <nav aria-label="Table navigation">{{ $mcmh->withQueryString()->links() }}</nav>
+                    <nav aria-label="Table navigation">{{ $mcmh->links() }}</nav>
                 </span>
             </div>
         </div>
+        <div class="px-4 py-3 my-2 bg-white rounded-lg shadow-md dark:bg-gray-800">
+            <x-button wire:click="finishScanning" class="w-full flex items-center justify-center">
+                <i class="fa-solid fa-qrcode mr-2"></i> <!-- Icono con margen derecho -->
+                Finalizar Escaneo
+            </x-button>
+        </div>
+        @else
+        <div class="px-4 py-3 my-2 bg-white rounded-lg shadow-md dark:bg-gray-800">
+            <x-button wire:click="startScanning" class="w-full flex items-center justify-center">
+                <i class="fa-solid fa-qrcode mr-2"></i> <!-- Icono con margen derecho -->
+                Iniciar Escaneo
+            </x-button>
+        </div>
+        @endif
+
     </div>
 </div>

@@ -431,19 +431,7 @@ class ConsignmentInstructionController extends Controller
      */
     public function consigmentBarcodeIndex()
     {
-        if (is_null(session('scan_count'))) {
-            session(['scan_count' => 0]);
-        }
-
-        if (session('scan_count') == 0) {
-            session(['scan_count' => 0]);
-        }
-
-        $mcmh = DB::table('consignment_data')
-            ->orderBy('max_id', 'DESC')
-            ->paginate(5);
-
-        return view('consignment-instruction.consignment-barcode', ['mcmh' => $mcmh]);
+        return view('consignment-instruction.consignment-barcode');
     }
 
     /**
