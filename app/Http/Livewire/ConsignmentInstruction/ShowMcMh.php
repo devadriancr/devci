@@ -31,6 +31,7 @@ class ShowMcMh extends Component
 
     public function finishScanning() {
         $this->scanEnabled = false;
+        session()->forget('scan_count');
 
         $this->emit('scan-enabled');
         $this->emit('count-clean');

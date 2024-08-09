@@ -23,6 +23,11 @@ class CreateMcMh extends Component
         'count-clean' => 'render',
     ];
 
+    public function mount()
+    {
+        $this->count = session()->get('scan_count', 0);
+    }
+
     protected $rules = [
         'code_qr' => [
             'required',
@@ -85,23 +90,26 @@ class CreateMcMh extends Component
 
         Inventory::updateInventory($item->id, $location->id, $snp);
 
-        $this->reset(['code_qr']);
 
         $this->emit('show-mc-mh');
 
-        $this->successMessage = 'El Registro del Material se Hizo Correctamente.';
-        $this->processing = false;
-
         $this->count++;
+        session()->put('scan_count', $this->count);
+
+        $this->processing = false;
+        $this->successMessage = 'El Registro del Material se Hizo Correctamente.';
+
+        $this->reset(['code_qr']);
+    }
+
+    public function countClean()
+    {
+        $this->count = 0;
+        session()->forget('scan_count');
     }
 
     public function render()
     {
         return view('livewire.consignment-instruction.create-mc-mh');
-    }
-
-    public function countClean()
-    {
-        $this->reset(['count']);
     }
 }
