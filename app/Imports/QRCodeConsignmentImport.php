@@ -6,6 +6,7 @@ use App\Models\ConsignmentInstruction;
 use App\Models\Container;
 use App\Models\ShippingInstruction;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Concerns\RegistersEventListeners;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithEvents;
@@ -28,11 +29,22 @@ class QRCodeConsignmentImport implements ToModel, WithHeadingRow, WithEvents
     public function model(array $row)
     {
         $this->total++;
-
         $qrCode = strtoupper(trim($row['qr_code']));
         $container = strtoupper(trim($row['container']));
         $date = is_numeric($row['date']) ? Carbon::instance(Date::excelToDateTimeObject($row['date']))->format('Y-m-d') : null;
         $time = is_numeric($row['time']) ? Carbon::instance(Date::excelToDateTimeObject($row['time']))->format('H:i') : null;
+
+        Log::info('Información del log', [
+            'total' => $this->total,
+            'qr_code_from_row' => trim($row['qr_code']),
+            'qr_code' => $qrCode,
+            'container_from_row' => trim($row['container']),
+            'container' => $container,
+            'date' => $date,
+            'time' => $time
+        ]);
+
+        // ->
 
         $containerData = Container::where([['code', $container], ['arrival_date', $date], ['arrival_time', $time]])->first();
         $dataParts = explode(',', $qrCode);
