@@ -16,20 +16,21 @@ class CheckQRCodeRegistrationJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    protected $supplier, $serial, $part_no, $part_qty, $container_id;
+    protected $supplier, $serial, $part_no, $part_qty, $container_id, $user_id;
 
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct($supplier, $serial, $part_no, $part_qty, $container_id)
+    public function __construct($supplier, $serial, $part_no, $part_qty, $container_id, $user_id)
     {
         $this->supplier = $supplier;
         $this->serial = $serial;
         $this->part_no = $part_no;
         $this->part_qty = $part_qty;
         $this->container_id = $container_id;
+        $this->user_id = $user_id;
     }
 
     /**
@@ -53,7 +54,7 @@ class CheckQRCodeRegistrationJob implements ShouldQueue
             )->first();
 
         if ($shipping) {
-            StoreConsignmentMaterialJob::dispatch($this->supplier, $this->serial,  $this->part_no, $this->part_qty,  $this->container_id);
+            StoreConsignmentMaterialJob::dispatch($this->supplier, $this->serial,  $this->part_no, $this->part_qty,  $this->container_id, $this->user_id);
         }
     }
 }

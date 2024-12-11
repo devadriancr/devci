@@ -66,7 +66,7 @@ class ConsignmentInstructionController extends Controller
             'container_id' => ['required', 'numeric'],
         ]);
 
-        FormatQRCodeJob::dispatch($validated['code_qr'], $validated['container_id']);
+        FormatQRCodeJob::dispatch($validated['code_qr'], $validated['container_id'], Auth::id() ?? '');
 
         // $dataRequest = strtoupper($validated['code_qr']);
         // $dataParts = explode(',', $dataRequest);

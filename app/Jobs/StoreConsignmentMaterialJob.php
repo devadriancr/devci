@@ -9,6 +9,7 @@ use App\Models\Inventory;
 use App\Models\Item;
 use App\Models\Location;
 use App\Models\TransactionType;
+use App\Models\User;
 use App\Models\YH003;
 use App\Models\YH003Failure;
 use Carbon\Carbon;
@@ -25,20 +26,21 @@ class StoreConsignmentMaterialJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    protected $supplier, $serial, $part_no, $part_qty, $container_id;
+    protected $supplier, $serial, $part_no, $part_qty, $container_id, $user_id;
 
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct($supplier, $serial, $part_no, $part_qty, $container_id)
+    public function __construct($supplier, $serial, $part_no, $part_qty, $container_id, $user_id)
     {
         $this->supplier = $supplier;
         $this->serial = $serial;
         $this->part_no = $part_no;
         $this->part_qty = $part_qty;
         $this->container_id = $container_id;
+        $this->user_id = $user_id;
     }
 
     /**
@@ -48,6 +50,7 @@ class StoreConsignmentMaterialJob implements ShouldQueue
      */
     public function handle()
     {
+        dump("Entro");
         // Obtener el artículo
         $item = Item::where('item_number', 'LIKE', $this->part_no . '%')->firstOrFail();
 
@@ -60,6 +63,9 @@ class StoreConsignmentMaterialJob implements ShouldQueue
         // Obtener ubicación
         $location = Location::where('code', 'LIKE', 'L60%')->firstOrFail();
 
+        // Obtener Usuario
+        $user = User::where('id', $this->user_id)->firstOrFail();
+
         // Crear ConsignmentInstruction
         ConsignmentInstruction::create([
             'supplier' => $this->supplier,
@@ -69,7 +75,7 @@ class StoreConsignmentMaterialJob implements ShouldQueue
             'location' => 'L60',
             'flag' => true,
             'container_id' => $this->container_id,
-            'user_id' => Auth::id(),
+            'user_id' => $user->id,
         ]);
 
         // Crear Input
@@ -82,35 +88,34 @@ class StoreConsignmentMaterialJob implements ShouldQueue
             'container_id' => $container->id,
             'transaction_type_id' => $transactionType->id,
             'location_id' => $location->id,
-            'user_id' => Auth::id()
+            'user_id' => $user->id
         ]);
 
         try {
             // Insertar en YH003
             YH003::insert([
-                'H3CONO' => $container->id ?? '',
+                'H3CONO' => $container->code ?? '',
                 'H3DDTE' => Carbon::parse($container->arrival_date)->format('Ymd'),
                 'H3DTIM' => Carbon::parse($container->arrival_time)->format('His'),
                 'H3PROD' => $item->item_number,
                 'H3SUCD' => $this->supplier,
                 'H3SENO' => $this->serial,
                 'H3RQTY' => $this->part_qty,
-                'H3CUSR' => Auth::user()->user_infor ?? '',
+                'H3CUSR' => $user->user_infor ?? '',
                 'H3RDTE' => Carbon::parse($input->created_at)->format('Ymd'),
                 'H3RTIM' => Carbon::parse($input->created_at)->format('His')
             ]);
-            dump('Entro');
         } catch (\Exception $e) {
             // En caso de error, guardar los datos en la tabla de fallos
             YH003Failure::create([
-                'H3CONO' => $container->id ?? '',
+                'H3CONO' => $container->code ?? '',
                 'H3DDTE' => Carbon::parse($container->arrival_date)->format('Ymd'),
                 'H3DTIM' => Carbon::parse($container->arrival_time)->format('His'),
                 'H3PROD' => $item->item_number,
                 'H3SUCD' => $this->supplier,
                 'H3SENO' => $this->serial,
                 'H3RQTY' => $this->part_qty,
-                'H3CUSR' => Auth::user()->user_infor ?? '',
+                'H3CUSR' => $user->user_infor ?? '',
                 'H3RDTE' => Carbon::parse($input->created_at)->format('Ymd'),
                 'H3RTIM' => Carbon::parse($input->created_at)->format('His'),
                 'status' => true
@@ -133,5 +138,6 @@ class StoreConsignmentMaterialJob implements ShouldQueue
             ['item_id' => $item->id, 'location_id' => $location->id],
             ['quantity' => $newQuantity]
         );
+        dump("Termino");
     }
 }

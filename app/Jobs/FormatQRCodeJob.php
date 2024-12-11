@@ -10,6 +10,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Auth;
 
 class FormatQRCodeJob implements ShouldQueue
 {
@@ -17,16 +18,18 @@ class FormatQRCodeJob implements ShouldQueue
 
     protected $code_qr;
     protected $container_id;
+    protected $user_id;
 
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct($code_qr, $container_id)
+    public function __construct($code_qr, $container_id, $user_id)
     {
         $this->code_qr = $code_qr;
         $this->container_id = $container_id;
+        $this->user_id = $user_id;
     }
 
     /**
@@ -54,7 +57,7 @@ class FormatQRCodeJob implements ShouldQueue
         )->first();
 
         if (is_null($data)) {
-            CheckQRCodeRegistrationJob::dispatch($supplier, $serial, $part_no, $part_qty, $this->container_id);
+            CheckQRCodeRegistrationJob::dispatch($supplier, $serial, $part_no, $part_qty, $this->container_id, $this->user_id);
         }
     }
 }
