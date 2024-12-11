@@ -7,6 +7,7 @@ use App\Jobs\ProcessShippingInstructionJob;
 use App\Models\ShippingInstruction;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithBatchInserts;
 use Maatwebsite\Excel\Concerns\WithChunkReading;
@@ -49,7 +50,9 @@ class ShippingInstructionImport implements ToModel, WithHeadingRow, WithBatchIns
         $shipping = ShippingInstruction::where([
             ['serial', $row['module_no']],
             ['part_no', $row['parts_no']],
-            ['container', $row['ct_no']]
+            ['container', $row['ct_no']],
+            ['arrival_date', $arrival_date],
+            ['arrival_time', $arrival_time]
         ])->first();
 
         if ($shipping === null) {

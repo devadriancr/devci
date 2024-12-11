@@ -10,8 +10,8 @@ class YH003 extends Model
 {
     use HasFactory;
 
-    protected $connection = 'odbc-lx834f01';
-    protected $table = 'LX834FU01.YH003';
+    protected $connection = 'odbc-lx834f02';
+    protected $table = 'LX834FU02.YH003';
 
     protected $fillable = [
         'H3SINO',

@@ -45,7 +45,6 @@
                             </svg>
                             <span class="ml-2 text-xs">{{ __('Guardar') }}</span>
                         </button>
-
                     </div>
                 </div>
             </form>
@@ -87,61 +86,12 @@
                 </button>
             </form>
         </div>
-
-        <div class="w-full overflow-hidden rounded-lg shadow-xs">
-            <div class="w-full overflow-x-auto">
-                <table class="w-full whitespace-no-wrap">
-                    <thead>
-                        <tr class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b dark:border-gray-700 bg-gray-50 dark:text-gray-400 dark:bg-gray-800">
-                            <th class="px-4 py-3">{{ __('No. Parte') }}</th>
-                            <th class="px-4 py-3">{{ __('Cantidad') }}</th>
-                            <th class="px-4 py-3">{{ __('Proveedor') }}</th>
-                            <th class="px-4 py-3">{{ __('Serial') }}</th>
-                            <th class="px-4 py-3">{{ __('Fecha de Registro') }}</th>
-                        </tr>
-                    </thead>
-                    <tbody class="bg-white uppercase divide-y dark:divide-gray-700 dark:bg-gray-800">
-                        @foreach ($consignments as $consignment)
-                        <tr class="text-gray-700 dark:text-gray-400">
-                            <td class="px-4 py-3 text-sm">
-                                {{ $consignment->part_no }}
-                            </td>
-                            <td class="px-4 py-3 text-sm">
-                                {{ $consignment->part_qty }}
-                            </td>
-                            <td class="px-4 py-3 text-sm">
-                                {{ $consignment->supplier }}
-                            </td>
-                            <td class="px-4 py-3 text-sm">
-                                {{ $consignment->serial }}
-                            </td>
-                            <td class="px-4 py-3 text-sm">
-                                {{ \Carbon\Carbon::parse($consignment->created_at)->format('d-m-Y H:i') }}
-                            </td>
-                        </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
-            <div class="grid px-4 py-3 text-xs font-semibold tracking-wide text-gray-500 uppercase border-t dark:border-gray-700 bg-gray-50 sm:grid-cols-9 dark:text-gray-400 dark:bg-gray-800">
-                <span class="flex items-center col-span-3">
-                    {{ __('Mostrando') }} {{ $consignments->firstItem() }} - {{ $consignments->lastItem() }} {{ __('de') }} {{ $consignments->total()}}
-                </span>
-                <span class="col-span-2"></span>
-                <!-- Paginación -->
-                <span class="flex col-span-4 mt-2 sm:mt-auto sm:justify-end">
-                    <nav aria-label="Table navigation">
-                        {{ $consignments->withQueryString()->links() }}
-                    </nav>
-                </span>
-            </div>
-        </div>
-
     </div>
+
     <script>
-        window.onload = function() {
+        document.addEventListener("DOMContentLoaded", function() {
             document.getElementById("code_qr").focus();
-        };
+        });
 
         document.getElementById("consignment-form").addEventListener("submit", function(event) {
             var button = document.getElementById("save-button");

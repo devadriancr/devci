@@ -20,30 +20,51 @@ class ItemController extends Controller
         $items = IIM::query()
             ->select(
                 [
-                    'IID', 'IPROD', 'IDESC', 'IOPB', 'IMIN', 'IITYP', 'ICLAS', 'IUMS', 'IMENDT', 'IMENTM'
+                    'IID',
+                    'IPROD',
+                    'IDESC',
+                    'IOPB',
+                    'IMIN',
+                    'IITYP',
+                    'ICLAS',
+                    'IUMS',
+                    'IMENDT',
+                    'IMENTM'
                 ]
             )
             ->orderBy('IMENDT', 'ASC')
             ->get();
 
-        foreach ($items as $key => $value) {
-            $itemType = ItemType::where('code', '=', $value->IITYP)->first();
-            $itemClass = ItemClass::where('code', '=', $value->ICLAS)->first();
-            $measurementType = MeasurementType::where('code', '=', $value->IUMS)->first();
+            foreach ($items as $key => $value) {
+                $itemType = ItemType::where('code', '=', $value->IITYP)->first();
+                $itemClass = ItemClass::where('code', '=', $value->ICLAS)->first();
+                $measurementType = MeasurementType::where('code', '=', $value->IUMS)->first();
 
-            Item::updateOrCreate(
-                [
-                    'item_number' => $value->IPROD,
-                ],
-                [
-                    'iid' => $value->IID,
-                    'item_description' => preg_replace('([^A-Za-z0-9])', '', $value->IDESC),
-                    'item_type_id' => $itemType->id,
-                    'item_class_id' => $itemClass->id,
-                    'measurement_type_id' => $measurementType->id,
-                ],
-            );
-        }
+                // Verificar si los tipos y clases existen
+                if (!$itemType || !$itemClass || !$measurementType) {
+                    // Puedes manejar el error como prefieras, por ejemplo:
+                    \Log::warning('Item no encontrado', [
+                        'item' => $value,
+                        'itemType' => $itemType,
+                        'itemClass' => $itemClass,
+                        'measurementType' => $measurementType,
+                    ]);
+                    continue; // Saltar al siguiente ítem
+                }
+
+                Item::updateOrCreate(
+                    [
+                        'item_number' => $value->IPROD,
+                    ],
+                    [
+                        'iid' => $value->IID,
+                        'item_description' => preg_replace('/[^a-zA-Z0-9\/\-\s]/', '', $value->IDESC),
+                        'item_type_id' => $itemType->id,
+                        'item_class_id' => $itemClass->id,
+                        'measurement_type_id' => $measurementType->id,
+                    ],
+                );
+            }
 
         return redirect('item');
     }
