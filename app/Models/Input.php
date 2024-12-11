@@ -131,7 +131,7 @@ class Input extends Model
 
         $cont = Container::where('id', '=', $containerId)->firstOrFail();
 
-        YH003::query()->insert([
+        $yh003 = YH003::query()->insert([
             'H3CONO' => $container ?? '',
             'H3DDTE' => Carbon::parse($cont->arrival_date)->format('Ymd') ?? '',
             'H3DTIM' => Carbon::parse($cont->arrival_time)->format('His') ?? '',

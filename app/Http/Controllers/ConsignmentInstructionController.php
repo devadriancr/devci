@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Exports\ConsignmentInstructionExport;
 use App\Imports\QRCodeConsignmentImport;
+use App\Jobs\FormatQRCodeJob;
 use App\Models\ConsignmentInstruction;
 use App\Models\Container;
 use App\Models\Input;
@@ -44,9 +45,15 @@ class ConsignmentInstructionController extends Controller
         ]);
 
         $container = Container::findOrFail($request->container);
-        $consignments = ConsignmentInstruction::where('container_id', '=', $request->container)->orderBy('created_at', 'DESC')->paginate(5);
+        // $consignments = ConsignmentInstruction::where('container_id', '=', $request->container)->orderBy('created_at', 'DESC')->paginate(5);
 
-        return view('consignment-instruction.create', ['container' => $container, 'consignments' => $consignments]);
+        return view(
+            'consignment-instruction.create',
+            [
+                'container' => $container,
+                // 'consignments' => $consignments
+            ]
+        );
     }
 
     /**
@@ -59,51 +66,53 @@ class ConsignmentInstructionController extends Controller
             'container_id' => ['required', 'numeric'],
         ]);
 
-        $dataRequest = strtoupper($validated['code_qr']);
-        $dataParts = explode(',', $dataRequest);
+        FormatQRCodeJob::dispatch($validated['code_qr'], $validated['container_id']);
 
-        $part_qty = $dataParts[10];
-        $supplier = $dataParts[11];
-        $serial = $dataParts[13];
-        $part_no = end($dataParts);
+        // $dataRequest = strtoupper($validated['code_qr']);
+        // $dataParts = explode(',', $dataRequest);
 
-        $data = ConsignmentInstruction::where(
-            [
-                ['supplier', $supplier],
-                ['serial', $serial],
-                ['part_no', 'LIKE', $part_no . '%'],
-                ['container_id', $validated['container_id']]
-            ]
-        )->first();
+        // $part_qty = $dataParts[10];
+        // $supplier = $dataParts[11];
+        // $serial = $dataParts[13];
+        // $part_no = end($dataParts);
 
-        if (is_null($data)) {
-            $container = Container::find($validated['container_id']);
+        // $data = ConsignmentInstruction::where(
+        //     [
+        //         ['supplier', $supplier],
+        //         ['serial', $serial],
+        //         ['part_no', 'LIKE', $part_no . '%'],
+        //         ['container_id', $validated['container_id']]
+        //     ]
+        // )->first();
 
-            $shipping = ShippingInstruction::query()
-                ->where(
-                    [
-                        ['container', 'LIKE', $container->code],
-                        ['arrival_date', $container->arrival_date],
-                        ['arrival_time', $container->arrival_time],
-                        ['part_no', 'LIKE', $part_no . '%'],
-                        ['serial', 'LIKE', $supplier . $serial]
-                    ]
-                )->first();
+        // if (is_null($data)) {
+        //     $container = Container::find($validated['container_id']);
 
-            if ($shipping) {
-                ConsignmentInstruction::storeConsignment($serial, $supplier, $part_qty, $part_no, 'L60', $validated['container_id']);
-                $msg = 'Código QR guardado exitosamente.';
-                $status = 'success';
-            } else {
-                $msg = 'El ítem no pertenece al contenedor';
-                $status = 'warning';
-            }
-        } else {
-            $msg = 'El Código QR ya ha sido registrado.';
-            $status = 'warning';
-        }
+        //     $shipping = ShippingInstruction::query()
+        //         ->where(
+        //             [
+        //                 ['container', 'LIKE', $container->code],
+        //                 ['arrival_date', $container->arrival_date],
+        //                 ['arrival_time', $container->arrival_time],
+        //                 ['part_no', 'LIKE', $part_no . '%'],
+        //                 ['serial', 'LIKE', $supplier . $serial]
+        //             ]
+        //         )->first();
 
-        return redirect()->back()->with($status, $msg);
+        //     if ($shipping) {
+        //         ConsignmentInstruction::storeConsignment($serial, $supplier, $part_qty, $part_no, 'L60', $validated['container_id']);
+        //         $msg = 'Código QR guardado exitosamente.';
+        //         $status = 'success';
+        //     } else {
+        //         $msg = 'El ítem no pertenece al contenedor';
+        //         $status = 'warning';
+        //     }
+        // } else {
+        //     $msg = 'El Código QR ya ha sido registrado.';
+        //     $status = 'warning';
+        // }
+
+        return redirect()->back();
     }
 
     /**
