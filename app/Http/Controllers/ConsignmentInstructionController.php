@@ -45,12 +45,16 @@ class ConsignmentInstructionController extends Controller
         ]);
 
         $container = Container::findOrFail($request->container);
+
+        $consignment = ConsignmentInstruction::query()->where('container_id', $container->id)->count();
+
         // $consignments = ConsignmentInstruction::where('container_id', '=', $request->container)->orderBy('created_at', 'DESC')->paginate(5);
 
         return view(
             'consignment-instruction.create',
             [
                 'container' => $container,
+                'count' => $consignment
                 // 'consignments' => $consignments
             ]
         );
