@@ -26,21 +26,20 @@ class StoreConsignmentMaterialJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    protected $supplier, $serial, $part_no, $part_qty, $container_id, $user_id;
+    protected $supplier, $serial, $part_no, $part_qty, $container_id;
 
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct($supplier, $serial, $part_no, $part_qty, $container_id, $user_id)
+    public function __construct($supplier, $serial, $part_no, $part_qty, $container_id)
     {
         $this->supplier = $supplier;
         $this->serial = $serial;
         $this->part_no = $part_no;
         $this->part_qty = $part_qty;
         $this->container_id = $container_id;
-        $this->user_id = $user_id;
     }
 
     /**
@@ -63,9 +62,6 @@ class StoreConsignmentMaterialJob implements ShouldQueue
         // Obtener ubicación
         $location = Location::where('code', 'LIKE', 'L60%')->firstOrFail();
 
-        // Obtener Usuario
-        $user = User::where('id', $this->user_id)->firstOrFail();
-
         // Crear ConsignmentInstruction
         ConsignmentInstruction::create([
             'supplier' => $this->supplier,
@@ -75,7 +71,6 @@ class StoreConsignmentMaterialJob implements ShouldQueue
             'location' => 'L60',
             'flag' => true,
             'container_id' => $this->container_id,
-            'user_id' => $user->id,
         ]);
 
         // Crear Input
@@ -88,7 +83,6 @@ class StoreConsignmentMaterialJob implements ShouldQueue
             'container_id' => $container->id,
             'transaction_type_id' => $transactionType->id,
             'location_id' => $location->id,
-            'user_id' => $user->id
         ]);
 
         try {
@@ -101,7 +95,7 @@ class StoreConsignmentMaterialJob implements ShouldQueue
                 'H3SUCD' => $this->supplier,
                 'H3SENO' => $this->serial,
                 'H3RQTY' => $this->part_qty,
-                'H3CUSR' => $user->user_infor ?? '',
+                'H3CUSR' => '',
                 'H3RDTE' => Carbon::parse($input->created_at)->format('Ymd'),
                 'H3RTIM' => Carbon::parse($input->created_at)->format('His')
             ]);
@@ -115,7 +109,7 @@ class StoreConsignmentMaterialJob implements ShouldQueue
                 'H3SUCD' => $this->supplier,
                 'H3SENO' => $this->serial,
                 'H3RQTY' => $this->part_qty,
-                'H3CUSR' => $user->user_infor ?? '',
+                'H3CUSR' => '',
                 'H3RDTE' => Carbon::parse($input->created_at)->format('Ymd'),
                 'H3RTIM' => Carbon::parse($input->created_at)->format('His'),
                 'status' => true
