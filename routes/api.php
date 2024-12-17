@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\ConsignmentInstructionController;
 use App\Http\Controllers\Api\ContainerController;
 use App\Http\Controllers\Api\MaterialController;
 use Illuminate\Http\Request;
@@ -17,8 +18,8 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('containers', [ContainerController::class, 'index']);
-
 Route::post('scanned-material', [MaterialController::class, 'store']);
+Route::post('check-material', [ConsignmentInstructionController::class, 'checkMaterial']);
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();

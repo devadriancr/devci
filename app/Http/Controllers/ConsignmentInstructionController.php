@@ -160,7 +160,6 @@ class ConsignmentInstructionController extends Controller
         $arrayNotFound = [];
         foreach ($shipments as $key => $shipping) {
             if (self::search($array_consignment, 0, count($array_consignment) - 1, $shipping->serial) === false) {
-                // echo $key . " " . $shipping->serial . " No Existe </br>";
                 array_push($arrayNotFound, [
                     'container' => $shipping->container,
                     'invoice' => $shipping->invoice,
