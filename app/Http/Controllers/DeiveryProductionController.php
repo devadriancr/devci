@@ -29,7 +29,11 @@ class DeiveryProductionController extends Controller
      */
     public function index()
     {
-        $travels = DeliveryProduction::where('deliverysupplier', null)->orderby('id', 'desc')->paginate(10);
+        $travels = DeliveryProduction::query()
+            ->where('deliverysupplier', null)
+            ->orderby('created_at', 'desc')
+            ->paginate(10);
+
         return view('delivery_line.index', ['travels' => $travels]);
     }
 
@@ -88,9 +92,7 @@ class DeiveryProductionController extends Controller
      * @param  \App\Models\deliveryproductions  $deliveryproductions
      * @return \Illuminate\Http\Response
      */
-    public function edit(Request $request)
-    {
-    }
+    public function edit(Request $request) {}
     public function inventario_nuevo($serial, $item, $loc, $cantidad)
     {
         $serial_18 = $serial . '         ';
@@ -183,6 +185,7 @@ class DeiveryProductionController extends Controller
     {
         $error = 0;
         $location = location::with('warehouse')->find($request->location_id);
+
         if (strlen($request->serial) == 35) {
             $serial = substr($request->serial, -35, 10);
             $number_part = substr($request->serial, -25, 10);
@@ -203,6 +206,7 @@ class DeiveryProductionController extends Controller
                 $type_consigment = 'MY/MZ';
             }
         }
+
         if ($error == 0) {
             $item = DB::table('items')->whereRaw("item_number like  '" .  $number_part . "%'")->first();
             if ($item == false) {
@@ -783,6 +787,10 @@ class DeiveryProductionController extends Controller
         $entrega = DeliveryProduction::find($request->Delivery_id);
         return view('delivery_line.scanbar', ['entrega' => $entrega, 'scan' => $scan, 'location_id' => $location->id]);
     }
+
+    /**
+     *
+     */
     public function scanqr(Request $request)
     {
         $location = location::find($request->location_id);
@@ -791,6 +799,10 @@ class DeiveryProductionController extends Controller
 
         return view('delivery_line.scan', ['entrega' => $entrega, 'scan' => $scan, 'location_id' => $location->id]);
     }
+
+    /**
+     *
+     */
     public function export(Request $request)
     {
 

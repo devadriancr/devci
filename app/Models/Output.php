@@ -38,7 +38,7 @@ class output extends Model
 
     public function deliveryproduction(): BelongsTo
     {
-        return $this->belongsTo(delveryproduction::class);
+        return $this->belongsTo(DeliveryProduction::class);
     }
 
     public function user(): BelongsTo
@@ -46,7 +46,7 @@ class output extends Model
         return $this->belongsTo(User::class);
     }
 
-     /**
+    /**
      *
      */
     public  static function storeOutput(int $item, string $quantity, int $transaction, int $location)
@@ -60,5 +60,44 @@ class output extends Model
                 'user_id' => Auth::id()
             ]
         );
+    }
+
+    /**
+     *
+     */
+    public static function dispatchStorage(String $supplier, String $serial, int $item_id, int $item_quantity, int $transaction_type_id, int $location_id)
+    {
+        output::create(
+            [
+                'supplier' => $supplier,
+                'serial' => $serial,
+                'item_id' => $item_id,
+                'item_quantity' => $item_quantity,
+                'transaction_type_id' => $transaction_type_id,
+                'location_id' => $location_id,
+            ]
+        );
+    }
+
+    /**
+     *
+     */
+    public static function adjustInventoryOutput(int $item_id, int $location, int $part_qty) {
+
+        // Obtener o crear la entrada en Inventory
+        $itemInventoryOld = Inventory::where([
+            ['item_id', '=', $item_id],
+            ['location_id', '=', $location]
+        ])->first();
+
+        $currentQuantity = $itemInventoryOld->quantity ?? 0;
+        $newQuantity = $currentQuantity - $part_qty;
+
+        // Actualizar la cantidad en Inventory
+        Inventory::updateOrCreate(
+            ['item_id' => $item_id, 'location_id' => $location],
+            ['quantity' => $newQuantity]
+        );
+
     }
 }

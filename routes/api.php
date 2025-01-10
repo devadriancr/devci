@@ -18,8 +18,12 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('containers', [ContainerController::class, 'index']);
+
 Route::post('scanned-material', [MaterialController::class, 'store']);
+
 Route::post('check-material', [ConsignmentInstructionController::class, 'checkMaterial']);
+
+Route::post('material-exit', [MaterialController::class, 'materialExit']);
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();

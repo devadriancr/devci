@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use PhpParser\Node\Expr\Cast\String_;
 
 class YI007 extends Model
 {
@@ -24,4 +25,21 @@ class YI007 extends Model
 
     ];
 
+    public static function storeYI007(String $item_number, String $serial, String $flag, String $arrival_date, String $arrival_time, int $part_qty, String $warehouse, String $user, String $date, String $time)
+    {
+        YI007::Query()->insert(
+            [
+                'I7PROD' =>  $item_number ?? '',
+                'I7SENO' => $serial ?? '',
+                'I7TFLG' => $flag ?? '',
+                'I7TDTE' => $arrival_date ?? '',
+                'I7TTIM' => $arrival_time ?? '',
+                'I7TQTY' => $part_qty ?? '',
+                'I7WHS' =>  $warehouse ?? '',
+                'I7CUSR' => $user ?? '',
+                'I7CCDT' => $date ?? '',
+                'I7CCTM' => $time ?? ''
+            ]
+        );
+    }
 }

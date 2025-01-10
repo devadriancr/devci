@@ -49,7 +49,6 @@ class StoreConsignmentMaterialJob implements ShouldQueue
      */
     public function handle()
     {
-        dump("Entro");
         // Obtener el artículo
         $item = Item::where('item_number', 'LIKE', $this->part_no . '%')->firstOrFail();
 
@@ -132,6 +131,5 @@ class StoreConsignmentMaterialJob implements ShouldQueue
             ['item_id' => $item->id, 'location_id' => $location->id],
             ['quantity' => $newQuantity]
         );
-        dump("Termino");
     }
 }

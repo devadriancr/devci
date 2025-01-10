@@ -183,4 +183,41 @@ class Input extends Model
             ->where('created_at', '>=', $sixMonthsAgo)
             ->first();
     }
+
+    public static function materialReceived(String $supplier, String $serial, int $item_id, int $item_quantity, int $container_id, int $transaction_type_id, int $location_id, String $no_order): Input
+    {
+        $input = Input::create(
+            [
+                'supplier' => $supplier,
+                'serial' => $serial,
+                'item_id' => $item_id,
+                'item_quantity' => $item_quantity,
+                'container_id' => $container_id,
+                'transaction_type_id' => $transaction_type_id,
+                'location_id' => $location_id,
+                'no_order' => $no_order
+            ]
+        );
+
+        return $input;
+    }
+
+    public static function adjustInventoryInput(int $item_id, int $location, int $part_qty)
+    {
+
+        // Obtener o crear la entrada en Inventory
+        $itemInventoryNew = Inventory::where([
+            ['item_id', '=', $item_id],
+            ['location_id', '=', $location]
+        ])->first();
+
+        $currentQuantity = $itemInventoryNew->quantity ?? 0;
+        $newQuantity = $currentQuantity + $part_qty;
+
+        // Actualizar la cantidad en Inventory
+        Inventory::updateOrCreate(
+            ['item_id' => $item_id, 'location_id' => $location],
+            ['quantity' => $newQuantity]
+        );
+    }
 }
