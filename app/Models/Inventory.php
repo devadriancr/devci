@@ -62,4 +62,47 @@ class Inventory extends Model
             ]);
         }
     }
+
+    /**
+     *
+     */
+    public static function inventoryAdjustment(int $item_id, int $location, int $part_qty)
+    {
+
+        // Obtener o crear la entrada en Inventory
+        $itemInventoryOld = Inventory::where([
+            ['item_id', '=', $item_id],
+            ['location_id', '=', $location]
+        ])->first();
+
+        $currentQuantity = $itemInventoryOld->quantity ?? 0;
+        $newQuantity = $currentQuantity + $part_qty;
+
+        // Actualizar la cantidad en Inventory
+        Inventory::updateOrCreate(
+            ['item_id' => $item_id, 'location_id' => $location],
+            ['quantity' => $newQuantity]
+        );
+    }
+
+    /**
+     *
+     */
+    public static function negativeInventoryAdjustment(int $item_id, int $location, int $part_qty)
+    {
+        // Obtener o crear la entrada en Inventory
+        $itemInventoryOld = Inventory::where([
+            ['item_id', '=', $item_id],
+            ['location_id', '=', $location]
+        ])->first();
+
+        $currentQuantity = $itemInventoryOld->quantity ?? 0;
+        $newQuantity = $currentQuantity - $part_qty;
+
+        // Actualizar la cantidad en Inventory
+        Inventory::updateOrCreate(
+            ['item_id' => $item_id, 'location_id' => $location],
+            ['quantity' => $newQuantity]
+        );
+    }
 }

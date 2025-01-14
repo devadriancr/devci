@@ -25,6 +25,8 @@ Route::post('check-material', [ConsignmentInstructionController::class, 'checkMa
 
 Route::post('material-exit', [MaterialController::class, 'materialExit']);
 
+Route::get('finish-material-exit', [MaterialController::class, 'finishMaterialExit']);
+
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });

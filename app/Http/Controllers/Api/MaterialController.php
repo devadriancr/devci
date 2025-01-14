@@ -116,8 +116,8 @@ class MaterialController extends Controller
             $supplier = $request->supplier;
             $serial = $request->serial;
             $part_no = $request->part_no;
-            $part_qty = $request->part_qty;
-            $container_id = $request->container_id ?? '';
+            $part_qty = intval($request->part_qty);
+            $container_id = $request->container_id ?? null;
             $no_order = $request->no_order ?? '';
 
             // Buscar el ítem
@@ -156,7 +156,7 @@ class MaterialController extends Controller
             }
 
             // Obtener el tipo de transacción
-            $transaction_type = TransactionType::where('code', 'like', '%T%')->first();
+            $transaction_type = TransactionType::where('code', 'like', 'T%')->first();
 
             if (!$transaction_type) {
                 Log::error("No se encontró el tipo de transacción");
@@ -170,14 +170,26 @@ class MaterialController extends Controller
             $serial_exist = Input::where([['serial', $serial], ['supplier', $supplier], ['item_id', $item->id], ['item_quantity', $part_qty]])
                 ->orderby('id', 'desc')->first();
 
+
             // Lógica cuando el serial existe
             if ($serial_exist != null) {
+                $serial_line = Input::where([['serial', $serial], ['supplier', $supplier], ['item_id', $item->id], ['item_quantity', $part_qty], ['location_id', $location_new->id]])
+                    ->orderby('id', 'desc')->first();
+
+                if ($serial_line) {
+                    Log::error("El serial ya se encuentra en línea");
+
+                    return response()->json([
+                        'message' => 'El serial ya se encuentra en línea',
+                    ], 404);
+                }
+
                 if ($serial_exist->location_id !=  $location_external->id) {
                     output::dispatchStorage($supplier, $serial, $item->id, $part_qty, $transaction_type->id, $location_old->id);
-                    output::adjustInventoryOutput($item->id, $location_old->id, $part_qty);
+                    Inventory::negativeInventoryAdjustment($item->id, $location_old->id, $part_qty);
 
                     $input = Input::materialReceived($supplier, $serial,  $item->id, $part_qty, $container_id, $transaction_type->id, $location_new->id, $no_order);
-                    Input::adjustInventoryInput($item->id, $location_old->id, $part_qty);
+                    Inventory::inventoryAdjustment($item->id, $location_new->id, $part_qty);
 
                     YI007::storeYI007(
                         $item->item_number ?? '',
@@ -185,7 +197,7 @@ class MaterialController extends Controller
                         'O',
                         Carbon::parse($input->arrival_date)->format('Ymd'),
                         Carbon::parse($input->arrival_time)->format('His'),
-                        $part_qty ?? '',
+                        $part_qty,
                         $location_old->warehouse->code ?? '',
                         'YKMS',
                         Carbon::parse($input->created_at)->format('Ymd'),
@@ -198,7 +210,7 @@ class MaterialController extends Controller
                         'I',
                         Carbon::parse($input->arrival_date)->format('Ymd'),
                         Carbon::parse($input->arrival_time)->format('His'),
-                        $part_no,
+                        $part_qty,
                         $location_new->warehouse->code,
                         'YKMS',
                         Carbon::parse($input->created_at)->format('Ymd'),
@@ -209,7 +221,7 @@ class MaterialController extends Controller
                 // Lógica cuando no existe el serial en el inventario
                 $input_new = Input::materialReceived($supplier, $serial,  $item->id, $part_qty, $container_id, $transaction_type->id, $location_old->id, $no_order);
 
-                Input::adjustInventoryInput($item->id, $location_old->id, $part_qty);
+                Inventory::inventoryAdjustment($item->id, $location_old->id, $part_qty);
 
                 YI007::storeYI007(
                     $item->item_number ?? '',
@@ -217,7 +229,7 @@ class MaterialController extends Controller
                     'A',
                     Carbon::parse($input_new->arrival_date)->format('Ymd'),
                     Carbon::parse($input_new->arrival_time)->format('His'),
-                    $part_qty ?? '',
+                    $part_qty,
                     $location_old->warehouse->code ?? '',
                     'YKMS',
                     Carbon::parse($input_new->created_at)->format('Ymd'),
@@ -225,10 +237,10 @@ class MaterialController extends Controller
                 );
 
                 output::dispatchStorage($supplier, $serial, $item->id, $part_qty, $transaction_type->id, $location_old->id);
-                output::adjustInventoryOutput($item->id, $location_old->id, $part_qty);
+                Inventory::negativeInventoryAdjustment($item->id, $location_old->id, $part_qty);
 
                 $input = Input::materialReceived($supplier, $serial,  $item->id, $part_qty, $container_id, $transaction_type->id, $location_new->id, $no_order);
-                Input::adjustInventoryInput($item->id, $location_old->id, $part_qty);
+                Inventory::inventoryAdjustment($item->id, $location_new->id, $part_qty);
 
                 YI007::storeYI007(
                     $item->item_number ?? '',
@@ -236,7 +248,7 @@ class MaterialController extends Controller
                     'O',
                     Carbon::parse($input->arrival_date)->format('Ymd'),
                     Carbon::parse($input->arrival_time)->format('His'),
-                    $part_qty ?? '',
+                    $part_qty,
                     $location_old->warehouse->code ?? '',
                     'YKMS',
                     Carbon::parse($input->created_at)->format('Ymd'),
@@ -249,7 +261,7 @@ class MaterialController extends Controller
                     'I',
                     Carbon::parse($input->arrival_date)->format('Ymd'),
                     Carbon::parse($input->arrival_time)->format('His'),
-                    $part_no ?? '',
+                    $part_qty ?? '',
                     $location_new->warehouse->code ?? '',
                     'YKMS',
                     Carbon::parse($input->created_at)->format('Ymd'),
@@ -274,120 +286,35 @@ class MaterialController extends Controller
                 'error' => $e->getMessage(),
             ], 500); // 500 Internal Server Error
         }
+    }
 
+    function finishMaterialExit()
+    {
+        try {
+            // Conexión a la base de datos mediante ODBC
+            $conn = odbc_connect("Driver={Client Access ODBC Driver (32-bit)};System=192.168.200.7;", "LXSECOFR;", "LXSECOFR;");
 
-        // $supplier = $request->supplier;
-        // $serial = $request->serial;
-        // $part_no = $request->part_no;
-        // $part_qty = $request->part_qty;
-        // $container_id = $request->container_id ?? '';
-        // $no_order = $request->no_order ?? '';
+            if (!$conn) {
+                // Si la conexión falla, lanzamos un error
+                return response()->json(['error' => 'Error de conexión a la base de datos'], 500);
+            }
 
-        // $item = Item::where('item_number', 'LIKE', $part_no . '%')->first();
+            // Consulta a la base de datos
+            $query = "CALL LX834OU.YIN151C";
+            $result = odbc_exec($conn, $query);
 
-        // if ($item  == null) {
+            if (!$result) {
+                // Si la ejecución de la consulta falla, retornamos un error
+                return response()->json(['error' => 'Error al ejecutar la consulta'], 500);
+            }
 
-        //     $location_external = Location::where('code', 'LIKE', 'L61%')->first();
-
-        //     $serial_exist = Input::where([['serial', $serial], ['supplier', $supplier], ['item_id', $item->id], ['item_quantity', $part_qty]])->orderby('id', 'desc')->first();
-
-        //     $location_old = location::with('warehouse')->where('code', 'like', 'L60%')->first();
-
-        //     $location_new = location::with('warehouse')->where('code', 'like', 'L12%')->first();
-
-        //     $transaction_type = TransactionType::where('code', 'like', '%T%')->first();
-
-        //     if ($serial_exist != null) {
-        //         if ($serial_exist->location_id !=  $location_external->id) {
-
-        //             output::dispatchStorage($supplier, $serial, $item->id, $part_qty, $transaction_type->id, $location_old->id);
-
-        //             output::adjustInventoryOutput($item->id, $location_old->id, $part_qty);
-
-        //             $input = Input::materialReceived($supplier, $serial,  $item->id, $part_qty, $container_id, $transaction_type->id, $location_new->id, $no_order);
-
-        //             Input::adjustInventoryInput($item->id, $location_old->id, $part_qty);
-
-        //             YI007::storeYI007(
-        //                 $item->item_number ?? '',
-        //                 $serial ?? '',
-        //                 'O',
-        //                 Carbon::parse($input->arrival_date)->format('Ymd'),
-        //                 Carbon::parse($input->arrival_time)->format('His'),
-        //                 $part_qty ?? '',
-        //                 $location_old->warehouse->code ?? '',
-        //                 'YKMS',
-        //                 Carbon::parse($input->created_at)->format('Ymd'),
-        //                 Carbon::parse($input->created_at)->format('His')
-        //             );
-
-
-        //             YI007::storeYI007(
-        //                 $item->item_number,
-        //                 $serial ?? '',
-        //                 'I',
-        //                 Carbon::parse($input->arrival_date)->format('Ymd'),
-        //                 Carbon::parse($input->arrival_time)->format('His'),
-        //                 $part_no,
-        //                 $location_new->warehouse->code,
-        //                 'YKMS',
-        //                 Carbon::parse($input->created_at)->format('Ymd'),
-        //                 Carbon::parse($input->created_at)->format('His'),
-        //             );
-        //         }
-        //     } else {
-        //         $input_new = Input::materialReceived($supplier, $serial,  $item->id, $part_qty, $container_id, $transaction_type->id, $location_old->id, $no_order);
-
-        //         Input::adjustInventoryInput($item->id, $location_old->id, $part_qty);
-
-        //         YI007::storeYI007(
-        //             $item->item_number ?? '',
-        //             $serial ?? '',
-        //             'A',
-        //             Carbon::parse($input_new->arrival_date)->format('Ymd'),
-        //             Carbon::parse($input_new->arrival_time)->format('His'),
-        //             $part_qty ?? '',
-        //             $location_old->warehouse->code ?? '',
-        //             'YKMS',
-        //             Carbon::parse($input_new->created_at)->format('Ymd'),
-        //             Carbon::parse($input_new->created_at)->format('His'),
-
-        //         );
-
-        //         output::dispatchStorage($supplier, $serial, $item->id, $part_qty, $transaction_type->id, $location_old->id);
-
-        //         output::adjustInventoryOutput($item->id, $location_old->id, $part_qty);
-
-        //         $input = Input::materialReceived($supplier, $serial,  $item->id, $part_qty, $container_id, $transaction_type->id, $location_new->id, $no_order);
-
-        //         Input::adjustInventoryInput($item->id, $location_old->id, $part_qty);
-
-        //         YI007::storeYI007(
-        //             $item->item_number ?? '',
-        //             $serial ?? '',
-        //             'O',
-        //             Carbon::parse($input->arrival_date)->format('Ymd'),
-        //             Carbon::parse($input->arrival_time)->format('His'),
-        //             $part_qty ?? '',
-        //             $location_old->warehouse->code ?? '',
-        //             'YKMS',
-        //             Carbon::parse($input->created_at)->format('Ymd'),
-        //             Carbon::parse($input->created_at)->format('His'),
-        //         );
-
-        //         YI007::storeYI007(
-        //             $item->item_number ?? '',
-        //             $serial ?? '',
-        //             'I',
-        //             Carbon::parse($input->arrival_date)->format('Ymd'),
-        //             Carbon::parse($input->arrival_time)->format('His'),
-        //             $part_no ?? '',
-        //             $location_new->warehouse->code ?? '',
-        //             'YKMS',
-        //             Carbon::parse($input->created_at)->format('Ymd'),
-        //             Carbon::parse($input->created_at)->format('His'),
-        //         );
-        //     }
-        // }
+            // Si todo va bien, devolvemos un mensaje de éxito
+            return response()->json(['message' => 'Operación completada con éxito'], 200);
+        } catch (\Exception $e) {
+            // Si ocurre una excepción, manejamos el error y lo respondemos
+            return response()->json([
+                'error' => 'Excepción en el servidor: ' . $e->getMessage()
+            ], 500);
+        }
     }
 }
