@@ -22,6 +22,7 @@ use App\Http\Controllers\OutputController;
 use App\Http\Controllers\RequestListController;
 use App\Http\Controllers\SupplierController;
 use App\Models\ConsignmentInstruction;
+use App\Models\DeliveryProduction;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -164,6 +165,8 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function () {
     Route::POST('Delivery-destroy', [DeiveryProductionController::class, 'destroy'])->name('Delivery.destroy');
     Route::POST('Delivery-scanbar', [DeiveryProductionController::class, 'scanbar'])->name('Delivery.scanbar');
     Route::POST('Delivery-scanqr', [DeiveryProductionController::class, 'scanqr'])->name('Delivery.scanqr');
+
+    Route::get('material-delivery', [DeiveryProductionController::class, 'materialDelivery'])->name('material-delivery.production-line');
 
     /**
      * Routes Consignment Instructions

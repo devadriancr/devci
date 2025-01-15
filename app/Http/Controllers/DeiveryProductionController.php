@@ -846,4 +846,14 @@ class DeiveryProductionController extends Controller
         //         return view('delivery_line.scan', ['entrega' => $entrega, 'scan' => $scan]);
         //     }
     }
+
+    /**
+     *
+     */
+    function materialDelivery(Request $request)
+    {
+        $outputs = Output::query()->orderBy('created_at', 'desc')->paginate(10);
+
+        return view('delivery_line.create', ['outputs' => $outputs]);
+    }
 }
