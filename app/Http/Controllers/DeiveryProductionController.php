@@ -19,6 +19,7 @@ use Maatwebsite\Excel\Facades\Excel;
 use Carbon\Carbon;
 
 use App\Exports\DeliveryExport as ExportsDeliveryExport;
+use Illuminate\Support\Facades\Log;
 
 class DeiveryProductionController extends Controller
 {
@@ -855,5 +856,184 @@ class DeiveryProductionController extends Controller
         $outputs = Output::query()->orderBy('created_at', 'desc')->paginate(10);
 
         return view('delivery_line.create', ['outputs' => $outputs]);
+    }
+
+    function storeMaterialDelivery(Request $request)
+    {
+        $code = strtoupper($request->code);
+
+        if (strlen($code) >= 159) {
+            $dataRequest = strtoupper($code);
+            $dataParts = explode(',', $dataRequest);
+
+            $supplier = $dataParts[11];
+            $serial = $dataParts[13];
+            $part_no = end($dataParts);
+            $part_qty = $dataParts[10];
+        } elseif (strlen($code) >= 30 && strlen($code) <= 35) {
+            $noOrder = substr($code, 0, 7);
+            $serial = substr($code, 0, 10);
+            $part_no = substr($code, 10, 10);
+            $part_qty = (int) substr($code, 20, 6);
+            $supplier = substr($code, 26, 5);
+        } else {
+            session()->flash('status', 'Código inválido. Por favor, verifica el código ingresado.');
+            session()->flash('status_type', 'error');
+            return redirect()->back();
+        }
+
+        $item = Item::where('item_number', 'LIKE', $part_no . '%')->first();
+
+        if (!$item) {
+            Log::error("No se encontró la ubicación externa para el código L61%");
+
+            session()->flash('status', 'Item no encontrado.');
+            session()->flash('status_type', 'error');
+
+            return redirect()->back();
+        }
+
+        // Buscar Location External
+        $location_external = Location::where('code', 'LIKE', 'L61%')->first();
+
+        if (!$location_external) {
+            session()->flash('status', 'Ubicación externa no encontrada.');
+            session()->flash('status_type', 'error');
+
+            return redirect()->back();
+        }
+
+        // Buscar las ubicaciones para los movimientos
+        $location_old = Location::with('warehouse')->where('code', 'like', 'L60%')->first();
+        $location_new = Location::with('warehouse')->where('code', 'like', 'L12%')->first();
+
+        if (!$location_old || !$location_new) {
+            Log::error("No se encontraron las ubicaciones L60% o L12%");
+
+            session()->flash('status', 'Ubicaciones no encontradas.');
+            session()->flash('status_type', 'error');
+
+            return redirect()->back();
+        }
+
+        // Obtener el tipo de transacción
+        $transaction_type = TransactionType::where('code', 'like', 'T%')->first();
+
+        if (!$transaction_type) {
+            Log::error("Tipo de transacción no encontrado");
+
+            session()->flash('status', 'Ubicaciones no encontradas.');
+            session()->flash('status_type', 'error');
+
+            return redirect()->back();
+        }
+
+        // Verificar si el serial existe
+        $serial_exist = Input::where([['serial', $serial], ['supplier', $supplier], ['item_id', $item->id], ['item_quantity', $part_qty]])
+            ->orderby('id', 'desc')->first();
+
+
+        // Lógica cuando el serial existe
+        if ($serial_exist != null) {
+            $serial_line = Input::where([['serial', $serial], ['supplier', $supplier], ['item_id', $item->id], ['item_quantity', $part_qty], ['location_id', $location_new->id]])
+                ->orderby('id', 'desc')->first();
+
+            if ($serial_line) {
+                Log::error("El serial ya se encuentra en línea");
+
+                session()->flash('status', 'El serial ya se encuentra en línea.');
+                session()->flash('status_type', 'error');
+
+                return redirect()->back();
+            }
+
+            if ($serial_exist->location_id !=  $location_external->id) {
+                output::dispatchStorage($supplier, $serial, $item->id, $part_qty, $transaction_type->id, $location_old->id);
+                Inventory::negativeInventoryAdjustment($item->id, $location_old->id, $part_qty);
+
+                $input = Input::materialReceived($supplier, $serial,  $item->id, $part_qty, $container_id ?? null, $transaction_type->id, $location_new->id, $no_order ?? '');
+                Inventory::inventoryAdjustment($item->id, $location_new->id, $part_qty);
+
+                YI007::storeYI007(
+                    $item->item_number ?? '',
+                    $serial ?? '',
+                    'O',
+                    Carbon::parse($input->arrival_date)->format('Ymd'),
+                    Carbon::parse($input->arrival_time)->format('His'),
+                    $part_qty,
+                    $location_old->warehouse->code ?? '',
+                    'YKMS',
+                    Carbon::parse($input->created_at)->format('Ymd'),
+                    Carbon::parse($input->created_at)->format('His')
+                );
+
+                YI007::storeYI007(
+                    $item->item_number,
+                    $serial ?? '',
+                    'I',
+                    Carbon::parse($input->arrival_date)->format('Ymd'),
+                    Carbon::parse($input->arrival_time)->format('His'),
+                    $part_qty,
+                    $location_new->warehouse->code,
+                    'YKMS',
+                    Carbon::parse($input->created_at)->format('Ymd'),
+                    Carbon::parse($input->created_at)->format('His')
+                );
+            }
+        } else {
+            // Lógica cuando no existe el serial en el inventario
+            $input_new = Input::materialReceived($supplier, $serial,  $item->id, $part_qty, $container_id ?? null, $transaction_type->id, $location_old->id, $no_order ?? '');
+
+            Inventory::inventoryAdjustment($item->id, $location_old->id, $part_qty);
+
+            YI007::storeYI007(
+                $item->item_number ?? '',
+                $serial ?? '',
+                'A',
+                Carbon::parse($input_new->arrival_date)->format('Ymd'),
+                Carbon::parse($input_new->arrival_time)->format('His'),
+                $part_qty,
+                $location_old->warehouse->code ?? '',
+                'YKMS',
+                Carbon::parse($input_new->created_at)->format('Ymd'),
+                Carbon::parse($input_new->created_at)->format('His')
+            );
+
+            output::dispatchStorage($supplier, $serial, $item->id, $part_qty, $transaction_type->id, $location_old->id);
+            Inventory::negativeInventoryAdjustment($item->id, $location_old->id, $part_qty);
+
+            $input = Input::materialReceived($supplier, $serial,  $item->id, $part_qty, $container_id ?? null, $transaction_type->id, $location_new->id, $no_order ?? '');
+            Inventory::inventoryAdjustment($item->id, $location_new->id, $part_qty);
+
+            YI007::storeYI007(
+                $item->item_number ?? '',
+                $serial ?? '',
+                'O',
+                Carbon::parse($input->arrival_date)->format('Ymd'),
+                Carbon::parse($input->arrival_time)->format('His'),
+                $part_qty,
+                $location_old->warehouse->code ?? '',
+                'YKMS',
+                Carbon::parse($input->created_at)->format('Ymd'),
+                Carbon::parse($input->created_at)->format('His')
+            );
+
+            YI007::storeYI007(
+                $item->item_number ?? '',
+                $serial ?? '',
+                'I',
+                Carbon::parse($input->arrival_date)->format('Ymd'),
+                Carbon::parse($input->arrival_time)->format('His'),
+                $part_qty ?? '',
+                $location_new->warehouse->code ?? '',
+                'YKMS',
+                Carbon::parse($input->created_at)->format('Ymd'),
+                Carbon::parse($input->created_at)->format('His')
+            );
+        }
+        session()->flash('status', 'Operación realizada correctamente.');
+        session()->flash('status_type', 'success');
+
+        return redirect()->back();
     }
 }

@@ -184,7 +184,7 @@ class Input extends Model
             ->first();
     }
 
-    public static function materialReceived(String $supplier, String $serial, int $item_id, int $item_quantity, ?int $container_id, int $transaction_type_id, int $location_id, String $no_order): Input
+    public static function materialReceived(String $supplier, String $serial, int $item_id, int $item_quantity, ?int $container_id, int $transaction_type_id, int $location_id, ?String $no_order): Input
     {
         $input = Input::create(
             [
