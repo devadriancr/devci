@@ -12,7 +12,7 @@ class ConsignmentInstruction extends Model
 {
     use HasFactory;
 
-    protected $dateFormat = 'Ymd H:i:s.v';
+    protected $dateFormat = 'Y-m-d H:i:s.v';
 
     protected $fillable = [
         'supplier', 'serial', 'part_qty', 'part_no', 'location', 'flag', 'container_id', 'user_id'
