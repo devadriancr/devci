@@ -65,7 +65,7 @@ class output extends Model
     /**
      *
      */
-    public static function dispatchStorage(String $supplier, String $serial, int $item_id, int $item_quantity, int $transaction_type_id, int $location_id)
+    public static function dispatchStorage(String $supplier, String $serial, int $item_id, int $item_quantity, int $transaction_type_id, int $location_id, int $delivery_production_id)
     {
         output::create(
             [
@@ -75,6 +75,7 @@ class output extends Model
                 'item_quantity' => $item_quantity,
                 'transaction_type_id' => $transaction_type_id,
                 'location_id' => $location_id,
+                'delivery_production_id' => $delivery_production_id
             ]
         );
     }
