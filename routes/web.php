@@ -166,8 +166,6 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function () {
     Route::POST('Delivery-scanbar', [DeiveryProductionController::class, 'scanbar'])->name('Delivery.scanbar');
     Route::POST('Delivery-scanqr', [DeiveryProductionController::class, 'scanqr'])->name('Delivery.scanqr');
 
-    Route::get('control-number', [DeiveryProductionController::class, 'controlNumber'])->name('material-delivery.control-number');
-
     Route::get('material-delivery', [DeiveryProductionController::class, 'materialDelivery'])->name('material-delivery.production-line');
     Route::post('material-delivery', [DeiveryProductionController::class, 'storeMaterialDelivery'])->name('material-delivery.store-material');
 
