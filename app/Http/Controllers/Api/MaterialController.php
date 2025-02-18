@@ -110,6 +110,7 @@ class MaterialController extends Controller
                 'part_qty' => 'required|integer',
                 'container_id' => 'nullable|integer',
                 'no_order' => 'nullable|string',
+                'delivery_production_id' => 'nullable|integer'
             ]);
 
             // Asignación de variables
@@ -119,6 +120,7 @@ class MaterialController extends Controller
             $part_qty = intval($request->part_qty);
             $container_id = $request->container_id ?? null;
             $no_order = $request->no_order ?? '';
+            $delivery_production_id = $request->delivery_production_id ?? null;
 
             // Buscar el ítem
             $item = Item::where('item_number', 'LIKE', $part_no . '%')->first();
@@ -185,10 +187,10 @@ class MaterialController extends Controller
                 }
 
                 if ($serial_exist->location_id !=  $location_external->id) {
-                    output::dispatchStorage($supplier, $serial, $item->id, $part_qty, $transaction_type->id, $location_old->id);
+                    output::dispatchStorage($supplier, $serial, $item->id, $part_qty, $transaction_type->id, $location_old->id, $delivery_production_id);
                     Inventory::negativeInventoryAdjustment($item->id, $location_old->id, $part_qty);
 
-                    $input = Input::materialReceived($supplier, $serial,  $item->id, $part_qty, $container_id, $transaction_type->id, $location_new->id, $no_order);
+                    $input = Input::materialReceived($supplier, $serial,  $item->id, $part_qty, $container_id, $transaction_type->id, $location_new->id, $no_order, $delivery_production_id);
                     Inventory::inventoryAdjustment($item->id, $location_new->id, $part_qty);
 
                     YI007::storeYI007(
@@ -219,7 +221,7 @@ class MaterialController extends Controller
                 }
             } else {
                 // Lógica cuando no existe el serial en el inventario
-                $input_new = Input::materialReceived($supplier, $serial,  $item->id, $part_qty, $container_id, $transaction_type->id, $location_old->id, $no_order);
+                $input_new = Input::materialReceived($supplier, $serial,  $item->id, $part_qty, $container_id, $transaction_type->id, $location_old->id, $no_order, $delivery_production_id);
 
                 Inventory::inventoryAdjustment($item->id, $location_old->id, $part_qty);
 
@@ -236,10 +238,10 @@ class MaterialController extends Controller
                     Carbon::parse($input_new->created_at)->format('His')
                 );
 
-                output::dispatchStorage($supplier, $serial, $item->id, $part_qty, $transaction_type->id, $location_old->id);
+                output::dispatchStorage($supplier, $serial, $item->id, $part_qty, $transaction_type->id, $location_old->id, $delivery_production_id);
                 Inventory::negativeInventoryAdjustment($item->id, $location_old->id, $part_qty);
 
-                $input = Input::materialReceived($supplier, $serial,  $item->id, $part_qty, $container_id, $transaction_type->id, $location_new->id, $no_order);
+                $input = Input::materialReceived($supplier, $serial,  $item->id, $part_qty, $container_id, $transaction_type->id, $location_new->id, $no_order, $delivery_production_id);
                 Inventory::inventoryAdjustment($item->id, $location_new->id, $part_qty);
 
                 YI007::storeYI007(

@@ -1,10 +1,37 @@
 <x-app-layout title="Tables">
     <div class="container grid px-6 mx-auto">
-
-        <!-- With actions -->
-        <h4 class="mb-4 text-lg font-semibold text-gray-600 dark:text-gray-300">
+        <h2 class="mt-4 mb-2 text-2xl font-semibold text-gray-700 dark:text-gray-200">
             {{ __('Salida de Material a Línea') }}
-        </h4>
+        </h2>
+
+        <div class="px-4 py-3 mb-2 bg-white rounded-lg shadow-md dark:bg-gray-800">
+            <form action="{{ route('material-delivery.store-material') }}" method="POST">
+                @csrf
+                <label class="block mt-2 text-sm">
+                    <span class="text-gray-700 dark:text-gray-400">
+                        {{ __('Escanea o Ingresar Código') }}
+                    </span>
+                    <div class="relative text-gray-500 focus-within:text-purple-600">
+                        <!-- Campo de entrada con estilos dinámicos -->
+                        <input id="code" name="code" class="block w-full pr-20 mt-1 text-sm text-black dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 focus:outline-none focus:shadow-outline-purple dark:focus:shadow-outline-gray form-input @if(session('status_type') == 'error') border-red-600 @elseif(session('status_type') == 'success') border-green-600 @endif" placeholder="{{ __('Ingrese el código') }}" value="{{ old('code') }}" />
+
+                        <!-- Botón con estilos dinámicos -->
+                        <button type="submit" class="absolute inset-y-0 right-0 px-4 text-sm font-medium leading-5 text-white transition-colors duration-150 @if(session('status_type') == 'error') bg-red-600 hover:bg-red-700 active:bg-red-600 focus:shadow-outline-red @elseif(session('status_type') == 'success') bg-green-600 hover:bg-green-700 active:bg-green-600 focus:shadow-outline-green @else bg-purple-600 hover:bg-purple-700 active:bg-purple-600 focus:shadow-outline-purple @endif border border-transparent rounded-r-md focus:outline-none">
+                            {{ __('Guardar') }}
+                        </button>
+
+                    </div>
+                    <!-- Mostrar notificación debajo del input -->
+                    @if(session('status'))
+                    <span class="text-xs @if(session('status_type') == 'error') text-red-600 dark:text-red-400 @elseif(session('status_type') == 'success') text-green-600 dark:text-green-400 @endif">
+                        {{ session('status') }}
+                    </span>
+                    @endif
+                </label>
+
+            </form>
+        </div>
+
         <div class="w-full overflow-hidden rounded-lg shadow-xs">
             <div class="w-full overflow-x-auto">
                 <table class="w-full whitespace-no-wrap">
@@ -62,83 +89,24 @@
                     </tbody>
                 </table>
             </div>
-            <div
-                class="grid px-4 py-3 text-xs font-semibold tracking-wide text-gray-500 uppercase border-t dark:border-gray-700 bg-gray-50 sm:grid-cols-9 dark:text-gray-400 dark:bg-gray-800">
+            <div class="grid px-4 py-3 text-xs font-semibold tracking-wide text-gray-500 uppercase border-t dark:border-gray-700 bg-gray-50 sm:grid-cols-9 dark:text-gray-400 dark:bg-gray-800">
                 <span class="flex items-center col-span-3">
-                    Showing 21-30 of 100
+                    Mostrando {{ $outputs->firstItem() }} - {{ $outputs->lastItem() }} de {{ $outputs->total()}}
                 </span>
                 <span class="col-span-2"></span>
                 <!-- Pagination -->
                 <span class="flex col-span-4 mt-2 sm:mt-auto sm:justify-end">
                     <nav aria-label="Table navigation">
-                        <ul class="inline-flex items-center">
-                            <li>
-                                <button
-                                    class="px-3 py-1 rounded-md rounded-l-lg focus:outline-none focus:shadow-outline-purple"
-                                    aria-label="Previous">
-                                    <svg class="w-4 h-4 fill-current" aria-hidden="true"
-                                        viewBox="0 0 20 20">
-                                        <path
-                                            d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
-                                            clip-rule="evenodd" fill-rule="evenodd"></path>
-                                    </svg>
-                                </button>
-                            </li>
-                            <li>
-                                <button
-                                    class="px-3 py-1 rounded-md focus:outline-none focus:shadow-outline-purple">
-                                    1
-                                </button>
-                            </li>
-                            <li>
-                                <button
-                                    class="px-3 py-1 rounded-md focus:outline-none focus:shadow-outline-purple">
-                                    2
-                                </button>
-                            </li>
-                            <li>
-                                <button
-                                    class="px-3 py-1 text-white transition-colors duration-150 bg-purple-600 border border-r-0 border-purple-600 rounded-md focus:outline-none focus:shadow-outline-purple">
-                                    3
-                                </button>
-                            </li>
-                            <li>
-                                <button
-                                    class="px-3 py-1 rounded-md focus:outline-none focus:shadow-outline-purple">
-                                    4
-                                </button>
-                            </li>
-                            <li>
-                                <span class="px-3 py-1">...</span>
-                            </li>
-                            <li>
-                                <button
-                                    class="px-3 py-1 rounded-md focus:outline-none focus:shadow-outline-purple">
-                                    8
-                                </button>
-                            </li>
-                            <li>
-                                <button
-                                    class="px-3 py-1 rounded-md focus:outline-none focus:shadow-outline-purple">
-                                    9
-                                </button>
-                            </li>
-                            <li>
-                                <button
-                                    class="px-3 py-1 rounded-md rounded-r-lg focus:outline-none focus:shadow-outline-purple"
-                                    aria-label="Next">
-                                    <svg class="w-4 h-4 fill-current" aria-hidden="true"
-                                        viewBox="0 0 20 20">
-                                        <path
-                                            d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-                                            clip-rule="evenodd" fill-rule="evenodd"></path>
-                                    </svg>
-                                </button>
-                            </li>
-                        </ul>
+                        {{ $outputs->withQueryString()->links()}}
                     </nav>
                 </span>
             </div>
         </div>
     </div>
+    <script>
+        window.onload = function() {
+
+            document.getElementById('code').focus();
+        };
+    </script>
 </x-app-layout>

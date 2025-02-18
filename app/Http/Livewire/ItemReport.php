@@ -99,7 +99,7 @@ class ItemReport extends Component
         $endDate = Carbon::parse($this->endDate)->endOfDay()->format('Ymd H:i:s.v');
 
         $query = Input::query()
-            ->select(
+            ->select([
                 'items.id as id_item',
                 'inputs.supplier',
                 'inputs.serial',
@@ -112,11 +112,10 @@ class ItemReport extends Component
                 'locations.code as location_code',
                 'locations.name as location_name',
                 'inputs.created_at'
-            )
+            ])
             ->join('items', 'inputs.item_id', '=', 'items.id')
             ->join('transaction_types', 'inputs.transaction_type_id', '=', 'transaction_types.id')
             ->join('locations', 'inputs.location_id', '=', 'locations.id')
-            ->join('users', 'inputs.user_id', '=', 'users.id')
             ->leftJoin('containers', 'inputs.container_id', '=', 'containers.id')
             ->whereIn('items.id', $this->selectedPartNumbers)
             ->whereIn('locations.id', $this->selectedLocations)
