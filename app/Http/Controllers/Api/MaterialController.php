@@ -37,16 +37,18 @@ class MaterialController extends Controller
      */
     public function store(Request $request)
     {
-        // Validar los datos recibidos
         $validator = Validator::make($request->all(), [
-            'part_no' => 'required|string',
-            'part_qty' => 'required',
-            'supplier' => 'required|string',
-            'serial' => 'required|string',
-            'container_id' => 'required|integer|exists:containers,id',
+            'records' => 'required|array',
+            'records.*.part_no' => 'required|string',
+            'records.*.part_qty' => 'required|integer|min:1',
+            'records.*.supplier' => 'required|string',
+            'records.*.serial' => 'required|string',
+            'records.*.container_id' => 'required|integer',
         ]);
 
         if ($validator->fails()) {
+            Log::error('Errores de validación:', $validator->errors()->toArray());
+
             return response()->json([
                 'status' => 'error',
                 'message' => 'Los datos proporcionados no son válidos.',
@@ -54,10 +56,11 @@ class MaterialController extends Controller
             ], 422);
         }
 
-        // Enviar los datos al job
-        $data = $request->only(['part_no', 'part_qty', 'supplier', 'serial', 'container_id']);
+        // Log::alert($request->all());
 
-        ScannedMaterialJob::dispatch($data);
+        foreach ($request->input('records') as $data) {
+            ScannedMaterialJob::dispatch($data);
+        }
 
         return response()->json([
             'status' => 'success',

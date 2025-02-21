@@ -11,10 +11,11 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
 
 class CheckQRCodeRegistrationJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable, InteractsWithQueue, Queueable;
 
     protected $supplier, $serial, $part_no, $part_qty, $container_id;
 
@@ -53,7 +54,16 @@ class CheckQRCodeRegistrationJob implements ShouldQueue
             )->first();
 
         if ($shipping) {
+            Log::alert("CheckQRCodeRegistrationJob", ['supplier' => $this->supplier, 'serial' => $this->serial, 'part_no' =>  $this->part_no, 'part_qty' => $this->part_qty, 'container_id' =>  $this->container_id]);
             StoreConsignmentMaterialJob::dispatch($this->supplier, $this->serial,  $this->part_no, $this->part_qty,  $this->container_id);
+        } else {
+            Log::alert(
+                "No se encontro en Shipping : ",
+                [
+                    'serial' => $this->supplier . $this->serial,
+                    'part_no' => $this->part_no
+                ]
+            );
         }
     }
 }

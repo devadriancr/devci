@@ -24,7 +24,7 @@ use Illuminate\Support\Facades\Log;
 
 class StoreConsignmentMaterialJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable, InteractsWithQueue, Queueable;
 
     protected $supplier, $serial, $part_no, $part_qty, $container_id;
 
@@ -49,11 +49,20 @@ class StoreConsignmentMaterialJob implements ShouldQueue
      */
     public function handle()
     {
+        Log::info('Datos:', [
+            'supplier' => $this->supplier,
+            'serial' => $this->serial,
+            'part_no' => $this->part_no,
+            'container_id' => $this->container_id,
+        ]);
+
         // Obtener el artículo
         $item = Item::where('item_number', 'LIKE', $this->part_no . '%')->firstOrFail();
+        Log::info($item->item_number);
 
         // Obtener el contenedor
         $container = Container::findOrFail($this->container_id);
+        Log::info($container->code);
 
         // Obtener tipo de transacción
         $transactionType = TransactionType::where('code', 'U3')->firstOrFail();
@@ -62,7 +71,7 @@ class StoreConsignmentMaterialJob implements ShouldQueue
         $location = Location::where('code', 'LIKE', 'L60%')->firstOrFail();
 
         // Crear ConsignmentInstruction
-        ConsignmentInstruction::create([
+        $cons = ConsignmentInstruction::create([
             'supplier' => $this->supplier,
             'serial' => $this->serial,
             'part_qty' => $this->part_qty,
@@ -71,6 +80,8 @@ class StoreConsignmentMaterialJob implements ShouldQueue
             'flag' => true,
             'container_id' => $this->container_id,
         ]);
+
+        Log::info($cons->id);
 
         // Crear Input
         $input = Input::create([
@@ -83,6 +94,8 @@ class StoreConsignmentMaterialJob implements ShouldQueue
             'transaction_type_id' => $transactionType->id,
             'location_id' => $location->id,
         ]);
+
+        Log::alert($input->id);
 
         try {
             // Insertar en YH003
@@ -114,8 +127,10 @@ class StoreConsignmentMaterialJob implements ShouldQueue
                 'status' => true
             ]);
 
-            // \Log::error("Error al insertar en YH003: " . $e->getMessage());
+            Log::error("Error al insertar en YH003: " . $e->getMessage());
         }
+
+        Log::alert("Registrado en infor");
 
         // Obtener o crear la entrada en Inventory
         $itemInventory = Inventory::where([
@@ -131,5 +146,7 @@ class StoreConsignmentMaterialJob implements ShouldQueue
             ['item_id' => $item->id, 'location_id' => $location->id],
             ['quantity' => $newQuantity]
         );
+
+        Log::info("OK");
     }
 }
