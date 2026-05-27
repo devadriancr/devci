@@ -174,11 +174,11 @@ class Input extends Model
 
         return Input::query()
             ->where([
-                ['supplier', 'LIKE', $supplier],
-                ['serial', 'LIKE', $serial],
-                ['item_quantity', $snp],
-                ['type_consignment', 'LIKE', $type],
-                ['no_order', 'LIKE', $no_order]
+                ['supplier', '=', $supplier],
+                ['serial', '=', $serial],
+                ['item_quantity', '=', $snp],
+                ['type_consignment', '=', $type],
+                ['no_order', '=', $no_order]
             ])
             ->where('created_at', '>=', $sixMonthsAgo)
             ->first();

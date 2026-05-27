@@ -83,7 +83,7 @@ class OutputController extends Controller
         //     $message = 'ESCANEO INCORRECTO';
         // }
         if ($error == 0) {
-            $item = DB::table('items')->whereRaw("item_number like '" .  $number_part  . "%'")->first();
+            $item = DB::table('items')->where('item_number', 'like', $number_part . '%')->first();
             if ($item == false) {
                 $error = 2;
                 $message = 'Item no existe';
@@ -377,7 +377,7 @@ class OutputController extends Controller
         $error = 0;
         $location = location::with('warehouse')->find($request->location_id);
         if ($error == 0) {
-            $item = DB::table('items')->whereRaw("item_number like '" . $item_n . "%'")->first();
+            $item = DB::table('items')->where('item_number', 'like', $item_n . '%')->first();
             if ($item == false) {
                 $error = 2;
                 $message = 'Item no existe';
@@ -836,7 +836,7 @@ class OutputController extends Controller
         $type=$request->type;
         if($type==1)
         {
-            $scan  = input::with('item')->where([['delivery_production_id', $request->delivery_id], ['return_scan', null]])->orderby('id', 'desc')->get();
+            $scan  = input::select('id', 'serial', 'item_id', 'item_quantity', 'supplier', 'type_consignment')->with('item:id,item_number')->where([['delivery_production_id', $request->delivery_id], ['return_scan', null]])->orderby('id', 'desc')->get();
             $travels = array();
             $entrega = DeliveryProduction::find($request->delivery_id);
             return view('delivery_line.scan', ['entrega' => $entrega, 'scan' => $scan, 'error' => $error, 'msg' =>$msg, 'location_id' => $loc_new_id->warehouse->id]);

@@ -18,7 +18,7 @@ class ShowMcMh extends Component
     {
         $mcmh = DB::table('consignment_data')
             ->orderBy('max_id', 'DESC')
-            ->paginate(5);
+            ->simplePaginate(5);
 
         return view('livewire.consignment-instruction.show-mc-mh', compact('mcmh'));
     }

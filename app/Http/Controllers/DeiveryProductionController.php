@@ -212,7 +212,7 @@ class DeiveryProductionController extends Controller
         }
 
         if ($error == 0) {
-            $item = DB::table('items')->whereRaw("item_number like  '" .  $number_part . "%'")->first();
+            $item = DB::table('items')->where('item_number', 'like', $number_part . '%')->first();
             if ($item == false) {
                 $error = 2;
                 $message = 'Item no existe';
@@ -484,7 +484,7 @@ class DeiveryProductionController extends Controller
                 );
             }
         }
-        $scan  = input::with('item')->where([['delivery_production_id', $request->delivery_id], ['return_scan', null]])->orderBy('created_at', 'desc')->get();
+        $scan  = input::select('id', 'serial', 'item_id', 'item_quantity', 'supplier', 'type_consignment')->with('item:id,item_number')->where([['delivery_production_id', $request->delivery_id], ['return_scan', null]])->orderBy('created_at', 'desc')->get();
         $travels = array();
         $entrega = DeliveryProduction::find($request->delivery_id);
         return view('delivery_line.scan', ['entrega' => $entrega, 'scan' => $scan, 'error' => $error, 'msg' => $message, 'location_id' => $location->id]);
@@ -510,7 +510,7 @@ class DeiveryProductionController extends Controller
             $message = 'Cantidad es erronea';
         }
         if ($error == 0) {
-            $item = DB::table('items')->whereRaw("item_number like  '" .   $item . "%'")->first();
+            $item = DB::table('items')->where('item_number', 'like', $item . '%')->first();
             if ($item == false) {
                 $error = 2;
                 $message = 'Item no existe';
@@ -779,7 +779,7 @@ class DeiveryProductionController extends Controller
                 );
             }
         }
-        $scan  = input::with('item')->where([['delivery_production_id', $request->delivery_id], ['return_scan', null]])->orderby('id', 'desc')->get();
+        $scan  = input::select('id', 'serial', 'item_id', 'item_quantity', 'supplier', 'type_consignment')->with('item:id,item_number')->where([['delivery_production_id', $request->delivery_id], ['return_scan', null]])->orderby('id', 'desc')->get();
         $travels = array();
         $entrega = DeliveryProduction::find($request->delivery_id);
         return view('delivery_line.scanbar', ['entrega' => $entrega, 'scan' => $scan, 'error' => $error, 'msg' => $message, 'location_id' => $location->id]);
@@ -787,7 +787,7 @@ class DeiveryProductionController extends Controller
     public function scanbar(Request $request)
     {
         $location = location::find($request->location_id);
-        $scan  = input::with('item')->where([['delivery_production_id', $request->Delivery_id], ['return_scan', null]])->get();
+        $scan  = input::select('id', 'serial', 'item_id', 'item_quantity', 'supplier', 'type_consignment')->with('item:id,item_number')->where([['delivery_production_id', $request->Delivery_id], ['return_scan', null]])->get();
         $entrega = DeliveryProduction::find($request->Delivery_id);
         return view('delivery_line.scanbar', ['entrega' => $entrega, 'scan' => $scan, 'location_id' => $location->id]);
     }
@@ -798,7 +798,7 @@ class DeiveryProductionController extends Controller
     public function scanqr(Request $request)
     {
         $location = location::find($request->location_id);
-        $scan  = input::with('item')->where([['delivery_production_id', $request->Delivery_id], ['return_scan', null]])->get();
+        $scan  = input::select('id', 'serial', 'item_id', 'item_quantity', 'supplier', 'type_consignment')->with('item:id,item_number')->where([['delivery_production_id', $request->Delivery_id], ['return_scan', null]])->get();
         $entrega = DeliveryProduction::find($request->Delivery_id);
 
         return view('delivery_line.scan', ['entrega' => $entrega, 'scan' => $scan, 'location_id' => $location->id ?? '']);
