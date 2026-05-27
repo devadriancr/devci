@@ -122,7 +122,7 @@ class OutputController extends Controller
                 }
             }
         }
-        if ($error <= 1) {
+        if ($error == 0) {
             $Transaction_type = transactiontype::where('code', 'like', '%T %')->first();
             if ($location->code == 'L61       ') {
                 $location_old  = location::with('warehouse')->where('code', 'like', '%L60%')->first();
@@ -882,7 +882,7 @@ class OutputController extends Controller
         // live
         // $query = "CALL LX834OU.YIN151C";
         // $result = odbc_exec($conn, $query);
-        $conn = odbc_connect("Driver={Client Access ODBC Driver (32-bit)};System=192.168.200.7;", "LXSECOFR;", "LXSECOFR;");
+        $conn = odbc_connect("Driver={Client Access ODBC Driver (32-bit)};System=192.168.200.7;", "LXSECOFR", "LXSECOFR");
         $query = "CALL LX834OU.YIN151C";
         $result = odbc_exec($conn, $query);
         Travel::updateOrCreate(

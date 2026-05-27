@@ -37,26 +37,7 @@ class MaterialController extends Controller
      */
     public function store(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'records' => 'required|array',
-            'records.*.part_no' => 'required|string',
-            'records.*.part_qty' => 'required|integer|min:1',
-            'records.*.supplier' => 'required|string',
-            'records.*.serial' => 'required|string',
-            'records.*.container_id' => 'required|integer',
-        ]);
-
-        if ($validator->fails()) {
-            Log::error('Errores de validación:', $validator->errors()->toArray());
-
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Los datos proporcionados no son válidos.',
-                'errors' => $validator->errors(),
-            ], 422);
-        }
-
-        // Log::alert($request->all());
+        $data = $request->only(['part_no', 'part_qty', 'supplier', 'serial', 'container_id']);
 
         foreach ($request->input('records') as $data) {
             ScannedMaterialJob::dispatch($data);

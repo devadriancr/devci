@@ -45,7 +45,7 @@ class DeiveryProductionController extends Controller
      */
     public function create(Request $request)
     {
-        $location = location::where('code', 'like', '%L12%')->first();
+        $location = Location::where('code', 'like', '%L12%')->first();
         $user = Auth::user()->id;
 
         $No = DeliveryProduction::create([
@@ -71,7 +71,7 @@ class DeiveryProductionController extends Controller
     {
         DeliveryProduction::where('id', $request->Delivery_id)
             ->update(['finish' => 1]);
-        $conn = odbc_connect("Driver={Client Access ODBC Driver (32-bit)};System=192.168.200.7;", "LXSECOFR;", "LXSECOFR;");
+        $conn = odbc_connect("Driver={Client Access ODBC Driver (32-bit)};System=192.168.200.7;", "LXSECOFR", "LXSECOFR");
         $query = "CALL LX834OU.YIN151C";
         $result = odbc_exec($conn, $query);
 

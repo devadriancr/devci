@@ -383,8 +383,8 @@ class ShippingInstructionController extends Controller
             'locations' => ['required']
         ]);
 
-        $from = Carbon::parse($request->start)->format('Y-d-m');
-        $to = Carbon::parse($request->end)->addDay()->format('Y-d-m');
+        $from = Carbon::parse($request->start)->startOfDay();
+        $to = Carbon::parse($request->end)->endOfDay();
 
         $mcmh = Input::query()
             ->join('items', 'inputs.item_id', '=', 'items.id')
