@@ -192,7 +192,7 @@ class ShippingInstructionController extends Controller
                 : "Se cargaron correctamente $processedRows de $totalRows registros.";
 
             DB::commit();
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             DB::rollBack();
             $response = 'error';
             $msg = "Error al Importar el Archivo: " . $e->getMessage();

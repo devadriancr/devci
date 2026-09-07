@@ -33,16 +33,18 @@ class YH003 extends Model
     /**
      *
      */
-    public static function store($item, $supplier, $serial, $snp)
+    public static function store($item, $supplier, $serial, $snp, $date = null)
     {
+        $date = $date ?? now();
+
         YH003::query()->insert([
             'H3PROD' => $item->item_number,
             'H3SUCD' => $supplier,
             'H3SENO' => $serial,
             'H3RQTY' => $snp,
             'H3CUSR' => Auth::user()->user_infor ?? '',
-            'H3RDTE' => now()->format('Ymd'),
-            'H3RTIM' => now()->format('His')
+            'H3RDTE' => $date->format('Ymd'),
+            'H3RTIM' => $date->format('His')
         ]);
     }
 }

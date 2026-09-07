@@ -37,7 +37,7 @@
                 </table>
             </div>
             <div class="grid px-4 py-3 text-xs font-semibold tracking-wide text-gray-500 uppercase border-t dark:border-gray-700 bg-gray-50 sm:grid-cols-9 dark:text-gray-400 dark:bg-gray-800">
-                <span class="flex items-center col-span-3">Mostrando {{ $mcmh->firstItem() }} - {{ $mcmh->lastItem() }} de {{ $mcmh->total() }}</span>
+                <span class="flex items-center col-span-3">Mostrando {{ $mcmh->firstItem() }} - {{ $mcmh->lastItem() }}</span>
                 <span class="col-span-2"></span>
                 <!-- Pagination -->
                 <span class="flex col-span-4 mt-2 sm:mt-auto sm:justify-end">
@@ -59,6 +59,47 @@
             </x-button>
         </div>
         @endif
+
+        <div class="px-4 py-3 my-2 bg-white rounded-lg shadow-md dark:bg-gray-800">
+            <form wire:submit.prevent="importExcel">
+                <label class="block text-sm my-2">
+                    <span class="text-gray-700 dark:text-gray-400">{{ __('Cargar Excel (columnas: CODE, DATE)') }}</span>
+                    <input type="file" wire:model="excelFile" accept=".xlsx,.xls,.csv"
+                        class="block w-full mt-1 text-sm text-gray-700 dark:text-gray-400 dark:border-gray-600 dark:bg-gray-700 focus:outline-none form-input" />
+
+                    @error('excelFile')
+                    <span class="block mt-2 text-xs text-red-600 dark:text-red-400">
+                        {{ $message }}
+                    </span>
+                    @enderror
+                </label>
+
+                <div wire:loading wire:target="excelFile" class="my-2 text-xs text-gray-600 dark:text-gray-400">
+                    Cargando archivo...
+                </div>
+
+                <div wire:loading wire:target="importExcel" class="my-2 text-xs text-gray-600 dark:text-gray-400">
+                    Procesando Excel, por favor espere...
+                </div>
+
+                @if ($importSummary)
+                <span class="block my-2 text-xs text-green-600 dark:text-green-400">
+                    {{ $importSummary }}
+                </span>
+                @endif
+
+                @foreach ($importErrors as $importError)
+                <span class="block mt-1 text-xs text-red-600 dark:text-red-400">
+                    {{ $importError }}
+                </span>
+                @endforeach
+
+                <x-button type="submit" class="w-full flex items-center justify-center" wire:loading.attr="disabled" wire:target="importExcel, excelFile">
+                    <i class="fa-solid fa-file-excel mr-2"></i>
+                    Importar Excel
+                </x-button>
+            </form>
+        </div>
 
     </div>
 </div>

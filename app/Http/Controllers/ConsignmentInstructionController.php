@@ -408,7 +408,8 @@ class ConsignmentInstructionController extends Controller
         $data = ConsignmentInstruction::where(
             [
                 ['serial', '=', strtoupper(substr($request->serial, 1))],
-                ['supplier', '=', strtoupper(substr($request->supplier, 1))]
+                ['supplier', '=', strtoupper(substr($request->supplier, 1))],
+                ['container_id', '=', $request->container]
             ]
         )->first();
 

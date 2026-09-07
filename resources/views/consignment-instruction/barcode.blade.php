@@ -20,15 +20,15 @@
             </div>
             @endif
 
-            @if (session('success'))
+            @if (isset($success))
             <div class="mb-4 font-medium text-green-600">
-                {{ session('success') }}
+                {{ $success }}
             </div>
             @endif
 
-            @if (session('warning'))
+            @if (isset($warning))
             <div class="mb-4 font-medium text-orange-600">
-                {{ session('warning') }}
+                {{ $warning }}
             </div>
             @endif
 
