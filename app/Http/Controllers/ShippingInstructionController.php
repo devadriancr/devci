@@ -12,7 +12,6 @@ use App\Models\Location;
 use App\Models\ShippingInstruction;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
 
 class ShippingInstructionController extends Controller
@@ -167,8 +166,6 @@ class ShippingInstructionController extends Controller
         $file = $request->file('import_file');
         $import = new ShippingInstructionImport;
 
-        DB::beginTransaction();
-
         try {
             Excel::import($import, $file);
 
@@ -190,10 +187,7 @@ class ShippingInstructionController extends Controller
             $msg = $processedRows < $totalRows
                 ? "Solo se cargaron $processedRows de $totalRows registros."
                 : "Se cargaron correctamente $processedRows de $totalRows registros.";
-
-            DB::commit();
         } catch (\Throwable $e) {
-            DB::rollBack();
             $response = 'error';
             $msg = "Error al Importar el Archivo: " . $e->getMessage();
         }

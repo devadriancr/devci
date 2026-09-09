@@ -13,11 +13,16 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
 
-class CheckQRCodeRegistrationJob implements ShouldQueue
+class CheckQRCodeRegistrationJob implements ShouldQueue, ShouldBeUnique
 {
     use Dispatchable, InteractsWithQueue, Queueable;
 
     protected $supplier, $serial, $part_no, $part_qty, $container_id;
+
+    /**
+     * @var int
+     */
+    public $uniqueFor = 300;
 
     /**
      * Create a new job instance.
@@ -31,6 +36,16 @@ class CheckQRCodeRegistrationJob implements ShouldQueue
         $this->part_no = $part_no;
         $this->part_qty = $part_qty;
         $this->container_id = $container_id;
+    }
+
+    /**
+     * Misma llave de unicidad que ScannedMaterialJob para el mismo material.
+     *
+     * @return string
+     */
+    public function uniqueId()
+    {
+        return $this->supplier . '-' . $this->serial . '-' . $this->container_id;
     }
 
     /**

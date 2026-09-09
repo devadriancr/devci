@@ -21,11 +21,21 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
 
-class ScannedMaterialJob implements ShouldQueue
+class ScannedMaterialJob implements ShouldQueue, ShouldBeUnique
 {
     use Dispatchable, InteractsWithQueue, Queueable;
 
     protected $data;
+
+    /**
+     * Número de segundos que el lock de unicidad permanece activo como máximo.
+     * Sirve como red de seguridad si la cola se atrasa; en condiciones normales
+     * el lock se libera en cuanto el job termina.
+     *
+     * @var int
+     */
+    public $uniqueFor = 300;
+
     /**
      * Create a new job instance.
      *
@@ -34,6 +44,17 @@ class ScannedMaterialJob implements ShouldQueue
     public function __construct($data)
     {
         $this->data = $data;
+    }
+
+    /**
+     * Llave de unicidad: evita procesar el mismo material (proveedor + serial +
+     * contenedor) más de una vez mientras ya hay una instancia en cola/ejecución.
+     *
+     * @return string
+     */
+    public function uniqueId()
+    {
+        return $this->data['supplier'] . '-' . $this->data['serial'] . '-' . $this->data['container_id'];
     }
 
 

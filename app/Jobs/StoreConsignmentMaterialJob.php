@@ -22,11 +22,16 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
-class StoreConsignmentMaterialJob implements ShouldQueue
+class StoreConsignmentMaterialJob implements ShouldQueue, ShouldBeUnique
 {
     use Dispatchable, InteractsWithQueue, Queueable;
 
     protected $supplier, $serial, $part_no, $part_qty, $container_id;
+
+    /**
+     * @var int
+     */
+    public $uniqueFor = 300;
 
     /**
      * Create a new job instance.
@@ -43,6 +48,16 @@ class StoreConsignmentMaterialJob implements ShouldQueue
     }
 
     /**
+     * Misma llave de unicidad que el resto de la cadena para el mismo material.
+     *
+     * @return string
+     */
+    public function uniqueId()
+    {
+        return $this->supplier . '-' . $this->serial . '-' . $this->container_id;
+    }
+
+    /**
      * Execute the job.
      *
      * @return void
@@ -55,6 +70,27 @@ class StoreConsignmentMaterialJob implements ShouldQueue
             'part_no' => $this->part_no,
             'container_id' => $this->container_id,
         ]);
+
+        // Última barrera contra duplicados: si por algún motivo la cadena de
+        // jobs se disparó más de una vez para el mismo material (p. ej. el
+        // lock de unicidad expiró por un atraso largo en la cola), no se
+        // vuelve a insertar.
+        $yaRegistrado = ConsignmentInstruction::where([
+            ['supplier', $this->supplier],
+            ['serial', $this->serial],
+            ['part_no', 'LIKE', $this->part_no . '%'],
+            ['container_id', $this->container_id],
+        ])->exists();
+
+        if ($yaRegistrado) {
+            Log::alert('StoreConsignmentMaterialJob: material ya registrado, se omite duplicado', [
+                'supplier' => $this->supplier,
+                'serial' => $this->serial,
+                'part_no' => $this->part_no,
+                'container_id' => $this->container_id,
+            ]);
+            return;
+        }
 
         // Obtener el artículo
         $item = Item::where('item_number', 'LIKE', $this->part_no . '%')->firstOrFail();
